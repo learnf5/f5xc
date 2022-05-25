@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: r-boutique-frontend
+  annotations:
+    ves.io.virtual-sites: shared/singapore-re
+spec:
+  type: ClusterIP
+  selector:
+    app: r-boutique-frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
