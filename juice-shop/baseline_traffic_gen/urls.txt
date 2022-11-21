@@ -1,0 +1,8 @@
+/styles.css
+/vendor-es2018.js
+/main-es2018.js
+/runtime-es2018.js
+/assets/public/favicon_js.ico
+/assets/public/images/carousel/5.png
+/assets/public/images/carousel/4.png
+/assets/public/images/carousel/7.png
