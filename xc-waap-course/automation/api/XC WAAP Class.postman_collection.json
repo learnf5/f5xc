@@ -1,0 +1,57 @@
+{
+	"info": {
+		"_postman_id": "cbfdb660-c71d-4039-bd2b-8bad1842d928",
+		"name": "XC WAAP Class",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Health Check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,409]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"metadata\": {\n    \"name\": \"brews-mongodb-hc\",\n    \"labels\": {}\n  },\n  \"spec\": {\n    \"tcp_health_check\": {\n      \"send_payload\": \"abc123\"\n    },\n    \"timeout\": 3,\n    \"interval\": 15,\n    \"unhealthy_threshold\": 1,\n    \"healthy_threshold\": 3,\n    \"jitter_percent\": 30\n  },\n  \"resource_version\": \"512132692\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{voltconsole-host}}.console.ves.volterra.io/api/config/namespaces/{{namespace_1}}/healthchecks",
+					"protocol": "https",
+					"host": [
+						"{{voltconsole-host}}",
+						"console",
+						"ves",
+						"volterra",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"namespaces",
+						"{{namespace_1}}",
+						"healthchecks"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
