@@ -6,10 +6,10 @@ import sys
 import requests
 
 if len(sys.argv) != 3:
-  print("usage: " + sys.argv[0] + " <student-number> <username>")
+  print("usage: " + sys.argv[0] + " <FQDN> <username>")
   sys.exit()
 
-url = 'http://10.10.' + sys.argv[1] + '.101:80/rest/user/login'
+url = 'https://' + sys.argv[1] + '/rest/user/login'
 cookies = dict(language='en', cookieconsent_status='dismiss', io='')
 pwdfile = 'juice_passwords.txt'
 

@@ -4,6 +4,7 @@
 /runtime-es2018.js
 /api/Feedbacks
 /api/Quantitys
+/api/Challenges
 /#/contact
 /#/payment/deluxe
 /rest/captcha
