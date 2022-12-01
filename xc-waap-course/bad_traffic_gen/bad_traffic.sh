@@ -39,28 +39,6 @@ do
                                         done                      
                         done
                 ;;
-                # "alternate")
-                #         while true; do
-                #                 clear
-                #                 echo "Hourly alternate traffic: $IP"
-                #                 echo
-                #                 if (( `date +%k` % 2 )); then
-                #                         for i in {1..100};
-                #                                 do
-                #                                         curl -0 --interface $SRC_ADDR1 -A -s "`shuf -n 1 useragents_with_bots.txt`" -w "High:\tstatus: %{http_code}\tbytes: %{size_download}\ttime: %{time_total}\n" https://$IP`shuf -n 1 urls.txt`
-                #                                 done
-                #                 else
-                #                         for i in {1..50};
-                #                                 do
-                #                                         curl --interface $SRC_ADDR1 -s  "`shuf -n 1 useragents_with_bots.txt`" -w "High:\tstatus: %{http_code}\tbytes: %{size_download}\ttime: %{time_total}\n" https://$IP`shuf -n 1 urls.txt`                                             
-                #                                 done
-                #                 fi
-                #                 clear
-                #         done
-                # ;;
-                # "Quit")
-                #         break
-                # ;;
         *) echo invalid option;;
     esac
 done

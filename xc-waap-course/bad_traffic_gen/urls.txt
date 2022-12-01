@@ -1,5 +1,2 @@
-/api/Feedbacks/?a=<script>
-/api/Quantitys/?a=<xss>
-/#/payment/deluxe/<iframe src="javascript:alert(`xss`)">
-/api/products/1/?a=<script>
-/api/products/7/?a=<iframe src="javascript:alert(`xss`)">
+/<iframe src="javascript:alert(`xss`)">
+/?a=<script>
