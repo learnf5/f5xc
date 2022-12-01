@@ -1,4 +1,4 @@
-"""Juice Shop Bot defense test v1.1 P.K 9/9/2022"""
+"""Juice Shop Bot defense test v1.1 P.Kuligowski 9/9/2022"""
 
 import sys
 import time
@@ -8,7 +8,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-url = "https://telefonica-juice.f5-consult.f5pslab.com/login#/login"
+url = "https://" + sys.argv[1] + "/#/login"
 browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 time.sleep(2)
 credentialsFile = open('./data/credentials.txt', 'r')
@@ -42,7 +42,7 @@ def main(credentials):
             element = browser.find_element(by=By.XPATH, value='//*[@id="loginButton"]/span[1]')
             browser.execute_script("arguments[0].click();", element)
             time.sleep(1.0)
-            title = browser.title
+            title = browser.title          
             if 'Account Information' in title:
                 print('Login Success!')
             else:

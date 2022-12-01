@@ -1,9 +1,5 @@
 /api/Feedbacks/?a=<script>
 /api/Quantitys/?a=<xss>
-/api/Challenges
-/#/contact/?a=<script>
 /#/payment/deluxe/<iframe src="javascript:alert(`xss`)">
 /api/products/1/?a=<script>
 /api/products/7/?a=<iframe src="javascript:alert(`xss`)">
-/#/privacy-security/privacy-policy
-/#/score-board/?a=<iframe src="javascript:alert(`xss`)">
