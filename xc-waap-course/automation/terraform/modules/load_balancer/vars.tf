@@ -1,4 +1,4 @@
-variable "load_balancer_name" {}
+variable "name" {}
 variable "namespace" {}
 variable "domains" {}
 variable "weight" {

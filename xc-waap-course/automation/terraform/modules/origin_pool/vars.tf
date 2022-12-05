@@ -1,4 +1,4 @@
-variable "origin_pool_name" {
+variable "name" {
   type = string
 }
 
@@ -7,7 +7,11 @@ variable "loadbalancer_algorithm" {
   default = "ROUND ROBIN"
 }
 
-variable "ip_origin_pool_name_port" {
+variable "origin_pool_ip" {
+  type = string
+}
+
+variable "origin_pool_port" {
   type = number
 }
 
@@ -15,14 +19,6 @@ variable "namespace" {
   type = string
 }
 
-variable "site_name" {
-  type = string
-}
-
 variable "health_check_name" {
-  type = string
-}
-
-variable "service_name" {
   type = string
 }

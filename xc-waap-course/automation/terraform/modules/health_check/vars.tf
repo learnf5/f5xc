@@ -1,4 +1,4 @@
-variable "health_check_name" {
+variable "name" {
   type = string
 }
 

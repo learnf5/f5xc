@@ -2,13 +2,13 @@ terraform {
   required_providers {
     volterra = {
       source  = "volterraedge/volterra"
-      version = "0.11.8"
+      version = "0.11.16"
     }
   }
 }
 
 resource "volterra_origin_pool" "volterra_ip_origin_pool" {
-  name                   = var.origin_pool_name
+  name                   = var.name
   namespace              = var.namespace
   loadbalancer_algorithm = var.loadbalancer_algorithm
   healthcheck {
@@ -16,19 +16,11 @@ resource "volterra_origin_pool" "volterra_ip_origin_pool" {
     namespace = var.namespace
   }
   origin_servers {
-    k8s_service {
-      service_name    = var.service_name
-      inside_network  = true
-      outside_network = false
-      site_locator {
-        site {
-          name      = var.site_name
-          namespace = "system"
-        }
-      }
+    public_ip {
+      ip              = var.origin_pool_ip
     }
   }
-  port               = var.ip_origin_pool_name_port
+  port               = var.origin_pool_port
   no_tls             = true
   endpoint_selection = "LOCAL_PREFERRED"
 }

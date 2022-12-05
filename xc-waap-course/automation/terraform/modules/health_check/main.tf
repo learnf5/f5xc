@@ -2,13 +2,13 @@ terraform {
   required_providers {
     volterra = {
       source  = "volterraedge/volterra"
-      version = "0.11.8"
+      version = "0.11.16"
     }
   }
 }
 
 resource "volterra_healthcheck" "volterra_health_check" {
-  name      = var.health_check_name
+  name      = var.name
   namespace = var.namespace
 
   http_health_check {
