@@ -1,9 +1,10 @@
-#! /usr/bin/env python3
+#!/usr/bin/python3
 # Created on Oct 28, 2020
 # F5 Global Services Training
 
 import sys
 import requests
+
 
 if len(sys.argv) != 2:
   print("usage: " + sys.argv[0] + " <FQDN> <username>")
