@@ -3,7 +3,7 @@
 # Created on Jul 12, 2022 12:30:39 PM
 
 # v1.0 by sVen Mueller
-# v1.1 Amended source IPs P.K
+# v1.1 Modified for XC WAAP class P.K 9/9/2022 
 ## This script creates dynamic basline traffic. It must be run for
 ## approximately 5-10 minutes prior to starting juice_BaDoS_DoS.sh.
 #
