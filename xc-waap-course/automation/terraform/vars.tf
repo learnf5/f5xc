@@ -3,20 +3,16 @@ variable "name" {
   type    = string
   default = "xc-class"
 }
-variable "site_name" {
-  type    = string
-  default = "gitops-tgw"
-}
 
 variable "namespace" {
   type    = string
-  default = "p-kuligowski"
+  default = "student-1"
 }
 
 ## Vars for Health check
 variable "health_check_name" {
   type    = string
-  default = "gitops-health-check-tf"
+  default = "xc-class-health-check-tf"
 }
 
 variable "health_check_path" {
@@ -30,20 +26,19 @@ variable "loadbalancer_algorithm" {
   default = "ROUND ROBIN"
 }
 
-variable "ip_origin_pool_name_port" {
+variable "ip_origin_pool_port" {
   type    = number
   default = 80
 }
-
+variable "origin_pool_ip" {
+  type    = string
+  default = "3.141.100.187"
+}
 ## Load Balancer
 variable "domains" {
-  default = "example.gitops.com"
+  default = "student1-tf.f5-consult.f5pslab.com"
 }
 
 variable "http_port" {
   default = 80
-}
-
-variable "service_name" {
-  default = "example.default"
 }

@@ -28,7 +28,7 @@ resource "volterra_http_loadbalancer" "load_balancer" {
     no_challenge = true
     round_robin  = true
     http {
-      dns_volterra_managed = false
+      dns_volterra_managed = true
     }
     multi_lb_app                    = true
     disable_rate_limit              = true
