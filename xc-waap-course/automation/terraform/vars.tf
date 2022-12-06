@@ -36,7 +36,7 @@ variable "origin_pool_ip" {
 }
 ## Load Balancer
 variable "domains" {
-  default = "student1-tf.f5-consult.f5pslab.com"
+  default = "student1-tf.aws.f5learn.cloud"
 }
 
 variable "http_port" {
