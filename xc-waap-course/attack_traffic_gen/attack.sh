@@ -39,9 +39,9 @@ VS_ADDR=$1
 # Source Address 1
 # Source Address 2
 # Source Address 3
-SRC_ADDR1=$(ipconfig getifaddr en0)
-SRC_ADDR2=$(ipconfig getifaddr en0)
-SRC_ADDR3=$(ipconfig getifaddr en0)
+SRC_ADDR1=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
+SRC_ADDR2=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
+SRC_ADDR3=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
 #
 ###########################################
 

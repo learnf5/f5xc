@@ -20,7 +20,7 @@ clear
 echo "Traffic Baselining"
 echo
 IP=$1
-SRC_ADDR1=$(ipconfig getifaddr en0)
+SRC_ADDR1=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
 BASELINE='Please enter your type of baselining: '
 options=("Send malicious traffic" "Quit")
 
