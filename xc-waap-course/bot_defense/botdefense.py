@@ -44,7 +44,7 @@ def main(credentials):
                 a -= 1
             browser.find_element(by=By.NAME, value="email").send_keys(login)
             browser.find_element(by=By.NAME, value="password").send_keys(password)
-            time.sleep(0.1)
+            time.sleep(1.5)
             element = browser.find_element(by=By.XPATH, value='//*[@id="loginButton"]/span[1]')
             browser.execute_script("arguments[0].click();", element)
             time.sleep(1.0)
