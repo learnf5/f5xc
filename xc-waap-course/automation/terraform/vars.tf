@@ -28,7 +28,7 @@ variable "loadbalancer_algorithm" {
 
 variable "ip_origin_pool_port" {
   type    = number
-  default = 80
+  default = 1001
 }
 variable "origin_pool_ip" {
   type    = string
