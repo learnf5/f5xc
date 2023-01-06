@@ -1,18 +1,17 @@
 ## Global variables
 variable "name" {
   type    = string
-  default = "xc-class"
+  default = "student1"
 }
 
 variable "namespace" {
   type    = string
-  default = "student-1"
+  default = "student1"
 }
 
 ## Vars for Health check
 variable "health_check_name" {
   type    = string
-  default = "xc-class-health-check-tf"
 }
 
 variable "health_check_path" {
