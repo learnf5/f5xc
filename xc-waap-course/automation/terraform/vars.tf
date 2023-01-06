@@ -32,7 +32,7 @@ variable "ip_origin_pool_port" {
 }
 variable "origin_pool_ip" {
   type    = string
-  default = "3.141.100.187"
+  default = "23.22.60.254"
 }
 ## Load Balancer
 variable "domains" {
