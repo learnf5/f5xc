@@ -16,7 +16,6 @@ Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0; .NET CLR 2.0.507
 .1.4322)
 Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/0.4.154.25 Safari/525.19
 Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.19 (KHTML, like Gecko) Chrome/1.0.154.48 Safari/525.19
-Wget/1.8.2 
 Mozilla/5.0 (PLAYSTATION 3; 1.00)
 Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; (R1 1.6)
 Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.8.1.1) Gecko/20061204 Firefox/2.0.0.1 
@@ -27,53 +26,4 @@ Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; SLCC1; .NET CLR 2.0.50727)
 Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.9.0.5) Gecko/2008120122 Firefox/3.0.5 
 Mozilla/5.0 (X11; U; SunOS i86pc; en-US; rv:1.7) Gecko/200707 
 Mozilla/5.0 (X11; U; SunOS i86pc; en-US; rv:1.8.1.14) Gecko/20080520 Firefox/2.0.0.14 
-Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.0.5) Gecko/2008120121 Firefox/3.0.5 
-Evil-sVen
-CatchBot
-2search
-Adidx
-BlueCoat
-Gigabot
-Evil-sVen
-Gigabot
-CatchBot
-Elasticsearch
-Evri
-Gigabot
-ExaBot
-Google Desktop
-Gigabot
-Evil-sVen
-Gigabot
-Grapeshot
-Jakespider
-NerdyBot
-AboutUsBot
-Acoon
-Adidx
-Alexa
-Amiga-AWeb
-AppScan
-AskPartnerCobranding
-Atomic_Email_Hunter
-Backdoor.Win32.Vertexbot.A
-BlackSun
-CATExplorador
-Careerbot
-CasperJS
-CholTBAgent
-2search
-CopyGuard
-314
-.nasl
-80legs
-CasperJS
-PhantomJS
-SlimerJS
-AppScan
-Acunetix
-DataCha0s
-Siege
-ab
-Pylot
-Cyberdog
+Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; en-US; rv:1.9.0.5) Gecko/2008120121 Firefox/3.0.5
