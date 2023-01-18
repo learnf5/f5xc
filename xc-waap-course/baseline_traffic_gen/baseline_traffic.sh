@@ -24,11 +24,16 @@ echo
 # $1    IP address
 IP=$1
 #
-# $2 Source Address 1
-# $3 Source Address 2
-# $4 Source Address 3
-SRC_ADDR1=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
-#
+# Platform Check
+platform=$(uname)
+if [[ $platform == 'Linux' ]]; then
+        echo "Your platform is Linux"
+        SRC_ADDR1=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
+elif [[ $platform == 'Darwin' ]]; then
+        echo "Your platform is Mac"
+        SRC_ADDR1=$(ifconfig en0 | grep inet | grep -v inet6 |awk '{print $2}')
+        echo $SRC_ADDR1
+fi
 
 BASELINE='Please enter your type of baselining: '
 options=("increasing" "Quit")
