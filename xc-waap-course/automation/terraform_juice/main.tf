@@ -6,13 +6,12 @@ module "health_check" {
 }
 
 module "ip_origin_pool" {
-  source                   = "./modules/origin_pool"
-  name                     = format("%s-pool-tf", var.name)
-  origin_pool_port         = var.ip_origin_pool_port
-  origin_pool_service_name = var.origin_pool_service_name
-  origin_pool_virtual_site = var.origin_pool_virtual_site
-  health_check_name        = module.health_check.health_check_name
-  namespace                = var.namespace
+  source            = "./modules/origin_pool"
+  name              = format("%s-pool-tf", var.name)
+  origin_pool_port  = var.ip_origin_pool_port
+  origin_pool_ip    = var.origin_pool_ip
+  health_check_name = module.health_check.health_check_name
+  namespace         = var.namespace
 }
 
 module "load_balancer" {

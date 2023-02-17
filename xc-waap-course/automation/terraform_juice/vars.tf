@@ -1,15 +1,17 @@
 ## Global variables
 variable "name" {
   type    = string
+  default = "student1"
 }
 
 variable "namespace" {
   type    = string
+  default = "student1"
 }
 
 ## Vars for Health check
 variable "health_check_name" {
-  type = string
+  type    = string
 }
 
 variable "health_check_path" {
@@ -25,20 +27,15 @@ variable "loadbalancer_algorithm" {
 
 variable "ip_origin_pool_port" {
   type    = number
-  default = 80
+  default = 1001
 }
-
-variable "origin_pool_service_name" {
+variable "origin_pool_ip" {
   type    = string
+  default = "23.22.60.254"
 }
-
-variable "origin_pool_virtual_site" {
-  type    = string
-  default = ""
-}
-
 ## Load Balancer
 variable "domains" {
+  default = "student1-tf.aws.learnf5.cloud"
 }
 
 variable "http_port" {

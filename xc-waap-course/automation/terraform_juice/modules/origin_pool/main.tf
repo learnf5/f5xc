@@ -16,18 +16,11 @@ resource "volterra_origin_pool" "volterra_ip_origin_pool" {
     namespace = var.namespace
   }
   origin_servers {
-    k8s_service {
-      service_name = var.origin_pool_service_name
-      site_locator {
-        virtual_site {
-          name      = var.origin_pool_virtual_site
-          namespace = "shared"
-        }
-      }
-}
-}
-     port               = var.origin_pool_port
-      no_tls             = true
-      endpoint_selection = "LOCAL_PREFERRED"
+    public_ip {
+      ip              = var.origin_pool_ip
     }
- 
+  }
+  port               = var.origin_pool_port
+  no_tls             = true
+  endpoint_selection = "LOCAL_PREFERRED"
+}
