@@ -34,7 +34,6 @@ variable "origin_pool_service_name" {
 
 variable "origin_pool_virtual_site" {
   type    = string
-  default = ""
 }
 
 ## Load Balancer
