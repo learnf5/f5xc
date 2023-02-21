@@ -22,4 +22,4 @@
 /assets/public/images/carousel/5.png
 /assets/public/images/carousel/4.png
 /assets/public/images/carousel/7.png
-/assets/public/images/uplods/
+/assets/public/images/uploads/
