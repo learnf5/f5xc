@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # set -e 
 
 ## for token info view https://docs.cloud.f5.com/docs/how-to/user-mgmt/credentials
