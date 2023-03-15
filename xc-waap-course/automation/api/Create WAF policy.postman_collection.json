@@ -1,0 +1,122 @@
+{
+	"info": {
+		"_postman_id": "2049eaf8-d3d8-4c59-85fa-d451d3c550eb",
+		"name": "Create WAF policy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Shared App Firewall",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"metadata\": {\n    \"name\": \"{{shared-appfw-name}}\",\n    \"namespace\": \"shared\",\n    \"labels\": {},\n    \"annotations\": {},\n    \"description\": \"\",\n    \"disable\": false\n  },\n  \"spec\": {\n    \"blocking\": {},\n    \"default_detection_settings\": {},\n    \"default_bot_setting\": {},\n    \"allow_all_response_codes\": {},\n    \"default_anonymization\": {},\n    \"use_default_blocking_page\": {}\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{voltconsole-host}}.console.ves.volterra.io/api/config/namespaces/shared/app_firewalls",
+					"protocol": "https",
+					"host": [
+						"{{voltconsole-host}}",
+						"console",
+						"ves",
+						"volterra",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"namespaces",
+						"shared",
+						"app_firewalls"
+					]
+				},
+				"description": "Shared NamesSpace Sites"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Shared Service Policy - allowed-http-methods",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "APIToken {{api_credential}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"metadata\": {\n    \"name\": \"{{namespace_1}}-shared-service-policy\",\n    \"namespace\": \"shared\",\n    \"labels\": {},\n    \"annotations\": {},\n    \"description\": null,\n    \"disable\": null\n  },\n  \"spec\": {\n    \"algo\": \"FIRST_MATCH\",\n    \"any_server\": {},\n    \"port_matcher\": null,\n    \"rule_list\": {\n      \"rules\": [\n        {\n          \"metadata\": {\n            \"name\": \"policy-allow\",\n            \"description\": null,\n            \"disable\": null\n          },\n          \"spec\": {\n            \"action\": \"ALLOW\",\n            \"any_client\": {},\n            \"client_role\": null,\n            \"server_selector\": null,\n            \"label_matcher\": {\n              \"keys\": null\n            },\n            \"path\": null,\n            \"headers\": null,\n            \"query_params\": null,\n            \"http_method\": {\n              \"methods\": [\n                \"GET\",\n                \"HEAD\",\n                \"POST\"\n              ],\n              \"invert_matcher\": null\n            },\n            \"any_ip\": {},\n            \"any_asn\": {},\n            \"api_group_matcher\": null,\n            \"port_matcher\": null,\n            \"expiration_timestamp\": null,\n            \"body_matcher\": null,\n            \"arg_matchers\": null,\n            \"cookie_matchers\": null,\n            \"waf_action\": {\n              \"none\": {}\n            },\n            \"domain_matcher\": null,\n            \"rate_limiter\": null,\n            \"virtual_host_matcher\": null,\n            \"tls_fingerprint_matcher\": null,\n            \"forwarding_class\": null,\n            \"malicious_user_mitigation_bypass\": null,\n            \"scheme\": null,\n            \"url_matcher\": null,\n            \"l4_dest_matcher\": null,\n            \"challenge_action\": \"DEFAULT_CHALLENGE\",\n            \"goto_policy\": null\n          }\n        }\n      ]\n    }\n  },\n  \"resource_version\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{voltconsole-host}}.console.ves.volterra.io/api/config/namespaces/shared/service_policys",
+					"protocol": "https",
+					"host": [
+						"{{voltconsole-host}}",
+						"console",
+						"ves",
+						"volterra",
+						"io"
+					],
+					"path": [
+						"api",
+						"config",
+						"namespaces",
+						"shared",
+						"service_policys"
+					]
+				},
+				"description": "Shared NamesSpace Sites"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "erik-api-token-ehtuliwi",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "NAUPLwypX38hFk6Z+0cOEB3hhro=",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
