@@ -12,10 +12,18 @@
 # VOLTERRA_TOKEN="foobar"
 # api_url="https://playground.console.ves.volterra.io/api"
 
+if [ "$#" -ne 2 ]; then
+    echo "Illegal number of parameters"
+    echo "APIToken consoleURL"
+    exit 1
+fi
+
+
 VOLTERRA_TOKEN=$1
 api_url=$2
 
-#### MAIN ####
+##NAMESPACES
+#ns_cleanup_list="$(curl -s -X GET -H "Authorization: APIToken $VOLTERRA_TOKEN" $api_url/api/web/namespaces | jq -r .[][].name |grep -E 'student[1-9]{1}')"
 ns_cleanup_list="$(curl -s -X GET -H "Authorization: APIToken $VOLTERRA_TOKEN" $api_url/web/namespaces | jq -r .[][].name |grep -E 'student[1-9]{1}')"
 
 
@@ -41,6 +49,7 @@ if [ "$mainmenuinput" = "y" ]; then
   done
 fi
 
+## SITES
 site_cleanup_list="$(curl -s -X GET -H "Authorization: APIToken $VOLTERRA_TOKEN" $api_url/config/namespaces/system/sites | jq -r .[][].name |grep -E 'student[1-9]{1}')"
 
 echo "Sites:"
@@ -68,6 +77,7 @@ if [ "$mainmenuinput" = "y" ]; then
   done
 fi
 
+## LABELS
 label_cleanup_list="$(curl -s -X GET \
                       -H "Authorization: APIToken $VOLTERRA_TOKEN" \
                       "$api_url/config/namespaces/shared/known_labels?key=&namespace=shared&query=QUERY_ALL_LABELS&value=" \
@@ -101,7 +111,7 @@ if [ "$mainmenuinput" = "y" ]; then
   done
 fi
 
-
+## KEYS
 key_cleanup_list="$(curl -s -X GET \
                       -H "Authorization: APIToken $VOLTERRA_TOKEN" \
                       "$api_url/config/namespaces/shared/known_label_keys?key=&namespace=shared&query=QUERY_ALL_LABEL_KEYS" \
@@ -113,7 +123,7 @@ echo $key_cleanup_list
 sleep 1
 
 echo
-read -n 1 -p "Do you want to delete the creds listed above (y or n):" mainmenuinput
+read -n 1 -p "Do you want to delete the keys listed above (y or n):" mainmenuinput
 echo
 if [ "$mainmenuinput" = "y" ]; then
   for key_name in $key_cleanup_list; do
@@ -128,6 +138,7 @@ if [ "$mainmenuinput" = "y" ]; then
   done
 fi
 
+## VSITES 
 vsite_cleanup_list="$(curl -s -X GET \
                       -H "Authorization: APIToken $VOLTERRA_TOKEN" \
                       "$api_url/config/namespaces/shared/virtual_sites" \
@@ -148,6 +159,86 @@ if [ "$mainmenuinput" = "y" ]; then
     curl -X 'DELETE' -s\
       -H "Authorization: APIToken $VOLTERRA_TOKEN"\
       "$api_url/config/namespaces/shared/virtual_sites/$vsite_name"; 
+    sleep 1
+    done
+fi
+
+## API CREDS
+api_creds_cleanup_list="$(curl -s -X GET \
+                      -H "Authorization: APIToken $VOLTERRA_TOKEN" \
+                      "$api_url/web/namespaces/system/api_credentials" \
+                       | jq -r .[][].name \
+                       |grep -E 'student[1-9]{1}')"
+
+
+
+echo "API Credentials:"
+echo  "$api_creds_cleanup_list"
+sleep 1
+echo
+read -n 1 -p "Do you want to revoke the API Credentials listed above (y or n):" mainmenuinput
+echo
+
+if [ "$mainmenuinput" = "y" ]; then
+  for api_cred in $api_creds_cleanup_list; do
+    echo
+    echo "=== REVOKING $api_cred ==="
+    curl -X 'POST' -s\
+      -H "Authorization: APIToken $VOLTERRA_TOKEN" \
+        "$api_url/web/namespaces/system/revoke/api_credentials" \
+      -d '{
+            "name": "'$api_cred'",
+            "namespace": "system"
+          }'; 
+    sleep 1
+    done
+fi
+
+## ALERT RECEIVERS
+alert_receivers_cleanup_list="$(curl -s -X GET \
+                            -H "Authorization: APIToken $VOLTERRA_TOKEN" \
+                            "$api_url/config/namespaces/system/alert_receivers" \
+                            | jq -r .[][].name \
+                            |grep -E 'student[1-9]{1}')"
+
+echo "Alert Receivers:"
+echo  "$alert_receivers_cleanup_list"
+sleep 1
+echo
+read -n 1 -p "Do you want to revoke the Alert Receivers listed above (y or n):" mainmenuinput
+echo
+
+if [ "$mainmenuinput" = "y" ]; then
+  for alert_receiver in $alert_receivers_cleanup_list; do
+    echo
+    echo "=== DECOMMISSIONING $alert_receiver ==="
+    curl -X 'DELETE' -s\
+      -H "Authorization: APIToken $VOLTERRA_TOKEN"\
+      "$api_url/config/namespaces/shared/alert_receivers/$alert_receiver"; 
+    sleep 1
+    done
+fi
+
+## ALERT RECEIVERS
+alert_policies_cleanup_list="$(curl -s -X GET \
+                            -H "Authorization: APIToken $VOLTERRA_TOKEN" \
+                            "$api_url/config/namespaces/shared/alert_policys" \
+                            | jq -r .[][].name \
+                            |grep -E 'student[1-9]{1}')"
+echo "Alert Policies:"
+echo  "$alert_policies_cleanup_list"
+sleep 1
+echo
+read -n 1 -p "Do you want to revoke the Alert Policies listed above (y or n):" mainmenuinput
+echo
+
+if [ "$mainmenuinput" = "y" ]; then
+  for alert_policy in $alert_policies_cleanup_list; do
+    echo
+    echo "=== DECOMMISSIONING $alert_policy ==="
+    curl -X 'DELETE' -s\
+      -H "Authorization: APIToken $VOLTERRA_TOKEN"\
+      "$api_url/config/namespaces/shared/alert_policys/$alert_policy"; 
     sleep 1
     done
 fi
