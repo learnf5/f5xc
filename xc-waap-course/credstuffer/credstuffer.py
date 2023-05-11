@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-# Modified on May 3, 2023
+# Modified on May 11, 2023
 # F5 Global Services Training
 
 import sys
