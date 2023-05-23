@@ -1,0 +1,6 @@
+a few ops Links
+
+Operations Guide - https://docs.f5net.com/display/CONSULTING/Distributed+Cloud+Operations+Guide PS Lab Guide - https://xc-labguide.f5pslab.com/waf/index.html SA WAAP Lab Guide (more in-depth than PS) - https://github.com/f5devcentral/xcwaapdemoguide/#waap-use-case-demos
+
+PS tenant: https://f5-consult.console.ves.volterra.io/web/home
+user: R0-JkfzWz-75OuGcGdf8o0ARHNfeTbHa7D0GRIp2jtA
