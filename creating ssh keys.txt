@@ -1,0 +1,10 @@
+Creating keys in CLI
+
+1)open Command Prompt
+2)type ssh-keygen
+3)confirm location and enter passphrase as needed
+4)go to directory by typing    cd .ssh
+5)display private key by typing    type id_rsa
+6)display public key by typing   type id_rsa.pub
+
+
