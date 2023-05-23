@@ -1,0 +1,9 @@
+create namespace
+create keys/labels
+create virtual site
+create AWS VPC
+create origin pool for TCP LB
+create TCP LB
+create/download vk8s
+create HTTP LB
+view app
