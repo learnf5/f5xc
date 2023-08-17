@@ -3,10 +3,8 @@
 # Created on Jul 12, 2022 12:30:39 PM
 
 # v1.0 by sVen Mueller
-# v1.1 modified for XC WAAP class P.K 10/9/2022
-## This script creates dynamic basline traffic. It must be run for
-## approximately 5-10 minutes prior to starting juice_BaDoS_DoS.sh.
-#
+# v1.1 modified for XC WAAP class E.N 8/17/2023
+## This script creates dynamic basline traffic. 
 # If you want to debug, change the first line to #!/bin/bash -x
 # to get the student_id number from SSH_CLIENT env variable
 trap ctrl_c INT
@@ -28,7 +26,7 @@ IP=$1
 platform=$(uname)
 if [[ $platform == 'Linux' ]]; then
         echo "Your platform is Linux"
-        SRC_ADDR1=$(ip a show dev eth1 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
+        SRC_ADDR1=$(ip a show dev eth0 | grep inet |grep -v inet6| awk -F'[/ ]+' '{print $3}')
 elif [[ $platform == 'Darwin' ]]; then
         echo "Your platform is Mac"
         SRC_ADDR1=$(ifconfig en0 | grep inet | grep -v inet6 |awk '{print $2}')
