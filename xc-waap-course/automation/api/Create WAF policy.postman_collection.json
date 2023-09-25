@@ -12,7 +12,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "APIToken {{APIToken}}",
+						"value": "APIToken {{api_credential}}",
 						"type": "default"
 					}
 				],
