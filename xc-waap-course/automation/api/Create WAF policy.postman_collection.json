@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2049eaf8-d3d8-4c59-85fa-d451d3c550eb",
+		"_postman_id": "f878adc1-d668-4efd-99cc-1f42ab0d2a88",
 		"name": "Create WAF policy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -9,7 +9,13 @@
 			"name": "Create Shared App Firewall",
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "APIToken {{APIToken}}",
+						"type": "default"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"metadata\": {\n    \"name\": \"{{shared-appfw-name}}\",\n    \"namespace\": \"shared\",\n    \"labels\": {},\n    \"annotations\": {},\n    \"description\": \"\",\n    \"disable\": false\n  },\n  \"spec\": {\n    \"blocking\": {},\n    \"default_detection_settings\": {},\n    \"default_bot_setting\": {},\n    \"allow_all_response_codes\": {},\n    \"default_anonymization\": {},\n    \"use_default_blocking_page\": {}\n  }\n}",
@@ -84,21 +90,6 @@
 			"response": []
 		}
 	],
-	"auth": {
-		"type": "apikey",
-		"apikey": [
-			{
-				"key": "key",
-				"value": "erik-api-token-ehtuliwi",
-				"type": "string"
-			},
-			{
-				"key": "value",
-				"value": "NAUPLwypX38hFk6Z+0cOEB3hhro=",
-				"type": "string"
-			}
-		]
-	},
 	"event": [
 		{
 			"listen": "prerequest",
