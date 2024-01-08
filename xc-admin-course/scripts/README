@@ -1,1 +1,19 @@
 This directory contains files to be run ONLY by F5 Instructors
+
+Unix/Linux/Windows format problem:
+
+Linux and Windows never play well together. We create an copy files in both environments and no matter what we do something always breaks. Here are the 2 common issues we face, and solutions:
+
+(permissions)
+
+When you try to run a file on the Ubuntu client you may see an error message about permissions. Set them using the commend:
+
+chmod 755 filename
+
+(Windows format cr/lf)
+
+The file is saved or uploaded in Windows format on GitHub. To run it on Ubuntu Linux change the format to Limux. The error seen when you try to run it in Bash is bad interpreter.
+
+vi filename
+:set ff=unix:
+wq!
