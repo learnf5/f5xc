@@ -17,7 +17,7 @@ student_name=$2
 #### v_url="https://training-dev.console.ves.volterra.io/api"
 
 ### Points to the public Training F5XC console which points to the Training AWS instance
-v_token="9F9igLid8gdh9ZJZNJAlLUOaxSs="
+v_token="kg3x9F9igLid8gdh9ZJZNJAlLUOaxSs="
 v_url="https://training.console.ves.volterra.io/api"
 
 
