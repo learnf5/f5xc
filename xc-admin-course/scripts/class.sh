@@ -367,7 +367,7 @@ s_op="$1-tcp"
 s_ipdns_name="$2"
 echo "Creating Origin Pool for $1 ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/origin_pools/student$snum-tcp" | jq
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'","namespace":"shared"},"spec":{"origin_servers":[{"private_name":{"dns_name":"'$s_ipdns_name'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","name":"'$1'-vsite","namespace":"shared"}},"outside_network":{}},"labels":{}}],"port":22,"same_as_endpoint_port":{},"healthcheck":[],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'","namespace":"shared"},"spec":{"origin_servers":[{"private_name":{"dns_name":"'$s_ipdns_name'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","name":"'$1'-vsite","namespace":"shared"}},"outside_network":{}},"labels":{}}],"port":443,"same_as_endpoint_port":{},"healthcheck":[],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}}'
 ### curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/student14/origin_pools/student14-tcp"
 }
 
