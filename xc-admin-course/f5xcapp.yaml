@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  annotations:
+    ves.io/workload-flavor: "ves-io-medium"
+spec:
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: server
+        image: ghcr.io/gsmythf5/f5xcapp:v1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        readinessProbe:
+          timeoutSeconds: 10
+          successThreshold: 3
+          failureThreshold: 6
+          periodSeconds: 15
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:3000"]
+        livenessProbe:
+          timeoutSeconds: 10
+          successThreshold: 3
+          failureThreshold: 6
+          periodSeconds: 15
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:3000"]
+        resources:
+          requests:
+            cpu: 200m
+            memory: 200Mi
+          limits:
+            cpu: 300m
+            memory: 300Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app
+spec:
+  type: ClusterIP
+  selector:
+    app: app
+  ports:
+  - name: grpc
+    port: 3000
+    targetPort: 3000
+---
