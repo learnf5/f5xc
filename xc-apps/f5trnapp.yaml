@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: f5trnapp
+  annotations:
+    ves.io/workload-flavor: "ves-io-medium"
+spec:
+  selector:
+    matchLabels:
+      app: f5trnapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: f5trnapp
+    spec:
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 5
+      containers:
+      - name: server
+        image: ghcr.io/gsmythf5/f5trnapp:v1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: f5trnapp
+spec:
+  type: ClusterIP
+  selector:
+    app: f5trnapp
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+---
