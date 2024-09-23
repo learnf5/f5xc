@@ -20,10 +20,10 @@ spec:
       - name: server
         image: ghcr.io/gsmythf5/f5trnapp:v1.0
         ports:
-        - containerPort: 3000
+        - containerPort: 3005
         env:
         - name: PORT
-          value: "3000"
+          value: "3005"
         resources:
           requests:
             cpu: 100m
@@ -42,6 +42,6 @@ spec:
     app: f5trnapp
   ports:
   - name: http
-    port: 3000
-    targetPort: 3000
+    port: 3005
+    targetPort: 3005
 ---
