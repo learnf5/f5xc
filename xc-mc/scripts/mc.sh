@@ -7,12 +7,15 @@ script_ver="1.0"
 script_name="mc.sh"
 student_name=$2
 
-v_token="CfxhI08CzaktknCrXwsrCmOPibI="
-v_url="https://training-dev.console.ves.volterra.io/api"
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
+
+v_token="oGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_url="https://training-dev.console.ves.volterra.io/api"
+v_aws_site_name="student99-vpc1"
+v_aws2_site_name="student99-vpc2"
 
 ### functions
 
@@ -42,7 +45,8 @@ curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 
 f_mc_check_sites_status()
 {
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$1'"},"spec":{}}' | jq
+echo "poop"
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws_site_name" | jq
 }
 
 ### main
