@@ -43,14 +43,21 @@ echo "Usage: ./${script_name} -option"
 echo ""
 echo "Options:"
 echo ""
+echo "-tok                       Test token"
+echo ""
 echo "Cloud Site Status"
 echo ""
-echo "-tok                       Test token"
 echo "-mcs1                      AWS site 1 status"
 echo "-mcs2                      AWS site 2 status"
 echo "-mcs3                      Azure site 1 status"
 echo ""
 echo "Base Configuration"
+echo ""
+echo "-mccn                      Create namespace 1"
+echo "-mcke                      Create MCN label key"
+echo "-mcla                      Create MCN label"
+echo "-mcwlk                     Create Brews workload"
+echo "-mcwaf                     Create SPA WAF"
 echo ""
 echo "vK8s and vsites"
 echo ""
@@ -83,6 +90,24 @@ f_mc_mcs3()
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$azure1_site_name" | jq
 }
 
+f_mc_mccn()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$v_namespace_1'"},"spec":{}}' | jq
+sleep 1
+}
+
+f_mc_mcke()
+{
+s_key=$v_app_name_1-sites
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label_key/create" -d '{"key":"'$s_key'","namespace":"shared"}'
+}
+
+f_mc_mcla()
+{
+s_key=$v_app_name_1-sites
+s_value="all-sites"
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/create" -d '{"key":"'$s_key'","namespace":"shared","value":"'$s_value'"}'
+}
 
 ### main
 
@@ -108,6 +133,18 @@ while [ $# -gt 0 ]; do
    -mcs3)
    f_echo "Checking Azure1 cloud site status ..."
    f_mc_mcs3
+   ;;
+   -mccn)
+   f_echo "Creating namespace 1 ..."
+   f_mc_mcs3
+   ;;
+   -mcke)
+   f_echo "Creating MCN label key ..."
+   f_mc_mcke
+   ;;
+   -mcla)
+   f_echo "Creating MCN label ..."
+   f_mc_mcke
    ;;
    *)
    ;;
