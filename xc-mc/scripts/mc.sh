@@ -14,8 +14,19 @@ v_azu_creds_name="all-students-credentials"
 
 v_token="oGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
-v_aws_site_name="student99-vpc1"
+v_aws1_site_name="student99-vpc1"
 v_aws2_site_name="student99-vpc2"
+v_azure1_site_name="student99-vnet1"
+v_namespace_1="student99-brews"
+v_app_name_1="brews99"
+v_brews_spa_domain="brews99.learnf5.cloud"
+v_brews_recs_domain="recs99.learnf5.cloud"
+v_brews_inv_domain="inventory99.brews.local"
+v_brews_mongodb_domain="mongodb99.brews.local"
+v_namespace_1_cert="abcd"
+v_namespace_1_key="bcd"
+v_use_https="no"
+v_use_autocert="yes"
 
 ### functions
 
@@ -45,7 +56,6 @@ curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 
 f_mc_check_sites_status()
 {
-echo "poop"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws_site_name" | jq
 }
 
