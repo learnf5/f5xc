@@ -43,8 +43,22 @@ echo "Usage: ./${script_name} -option"
 echo ""
 echo "Options:"
 echo ""
+echo "Cloud Site Status"
+echo ""
 echo "-tok                       Test token"
-echo "-mccs                      Check sites status"
+echo "-mcs1                      AWS site 1 status"
+echo "-mcs2                      AWS site 2 status"
+echo "-mcs3                      Azure site 1 status"
+echo ""
+echo "Base Configuration"
+echo ""
+echo "vK8s and vsites"
+echo ""
+echo "Workloads"
+echo ""
+echo "Deployments"
+echo ""
+echo "Load Balancing and WAAP"
 echo ""
 exit 0
 }
@@ -54,10 +68,21 @@ f_test_token()
 curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 }
 
-f_mc_check_sites_status()
+f_mc_mcs1()
 {
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws_site_name" | jq
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws1_site_name" | jq
 }
+
+f_mc_mcs2()
+{
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws2_site_name" | jq
+}
+
+f_mc_mcs3()
+{
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$azure1_site_name" | jq
+}
+
 
 ### main
 
@@ -72,9 +97,17 @@ while [ $# -gt 0 ]; do
    -tok)
    f_test_token
    ;;
-   -mccs)
-   f_echo "Checking cloud site status ..."
-   f_mc_check_sites_status
+   -mcs1)
+   f_echo "Checking AWS1 cloud site status ..."
+   f_mc_mcs1
+   ;;
+   -mcs2)
+   f_echo "Checking AWS2 cloud site status ..."
+   f_mc_mcs2
+   ;;
+   -mcs3)
+   f_echo "Checking Azure1 cloud site status ..."
+   f_mc_mcs3
    ;;
    *)
    ;;
