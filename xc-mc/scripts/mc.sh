@@ -28,6 +28,8 @@ v_namespace_1_key="bcd"
 v_use_https="no"
 v_use_autocert="yes"
 
+v_brews_spa_api_waf="brews-spa-api-appwf"
+
 ### functions
 
 f_echo()
@@ -109,6 +111,17 @@ s_value="all-sites"
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/create" -d '{"key":"'$s_key'","namespace":"shared","value":"'$s_value'"}'
 }
 
+f_mc_mcwlk()
+{
+s_wl_flavor=$v_namespace_1-large-flavor
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/workload_flavors" -d '{"metadata":{"name":"'$s_wl_flavor'","namespace":"shared"},"spec":{"memory":"512","vcpus":0.25,"ephemeral_storage":"0"}}'
+}
+
+f_mc_mcwaf()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/app_firewalls" -d '{"metadata":{"name":"'$v_brews_spa_api_waf'","namespace":"'$v_namespace_1'"},"spec":{}}'
+}
+
 ### main
 
 f_echo "F5 Training $product_name script Version $script_ver"
@@ -145,6 +158,14 @@ while [ $# -gt 0 ]; do
    -mcla)
    f_echo "Creating MCN label ..."
    f_mc_mcke
+   ;;
+   -mcwlk)
+   f_echo "Creating Brews workload ..."
+   f_mc_mcwlk
+   ;;
+   -mcwaf)
+   f_echo "Creating SPA WAF..."
+   f_mc_mcwaf
    ;;
    *)
    ;;
