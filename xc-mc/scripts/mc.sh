@@ -45,23 +45,26 @@ echo "Usage: ./${script_name} -option"
 echo ""
 echo "Options:"
 echo ""
-echo "-tok                       Test token"
+echo "-sa -tok                       Test token"
 echo ""
 echo "Cloud Site Status"
 echo ""
-echo "-mcs1                      AWS site 1 status"
-echo "-mcs2                      AWS site 2 status"
-echo "-mcs3                      Azure site 1 status"
+echo "-s1 -mcs1                      AWS site 1 status"
+echo "-s2 -mcs2                      AWS site 2 status"
+echo "-s3 -mcs3                      Azure site 1 status"
 echo ""
 echo "Base Configuration"
 echo ""
-echo "-mccn                      Create namespace 1"
-echo "-mcke                      Create MCN label key"
-echo "-mcla                      Create MCN label"
-echo "-mcwlk                     Create Brews workload"
-echo "-mcwaf                     Create SPA WAF"
+echo "-s4 -mccn                      Create namespace 1"
+echo "-s5 -mcke                      Create MCN label key"
+echo "-s6 -mcla                      Create MCN label"
+echo "-s7 -mcwlk                     Create Brews workload"
+echo "-s8 -mcwaf                     Create SPA WAF"
 echo ""
 echo "vK8s and vsites"
+echo ""
+echo "-s9 -mccvs                     Create MCN vsite"
+echo "-s10 -mccre                    Create RE vsite"
 echo ""
 echo "Workloads"
 echo ""
@@ -122,6 +125,18 @@ f_mc_mcwaf()
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/app_firewalls" -d '{"metadata":{"name":"'$v_brews_spa_api_waf'","namespace":"'$v_namespace_1'"},"spec":{}}'
 }
 
+f_mc_mccvs()
+{
+s_mcn_name=$v_namespace_1-mcn-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_mcn_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["'$v_app_name_1'"-sites in (all-sites)"]}}}'
+}
+
+f_mc_mccre()
+{
+s_re_name=$v_namespace_1-re-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_re_name'"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":[ves.io/siteName in (ves-io-wes-sea, ves-io-ny8-nyc)]}}}'
+}
+
 ### main
 
 f_echo "F5 Training $product_name script Version $script_ver"
@@ -132,40 +147,48 @@ fi
 
 while [ $# -gt 0 ]; do
  case "$1" in
-   -tok)
+   -sa | -tok)
    f_test_token
    ;;
-   -mcs1)
+   -s1 | -mcs1)
    f_echo "Checking AWS1 cloud site status ..."
    f_mc_mcs1
    ;;
-   -mcs2)
+   -s2 | -mcs2)
    f_echo "Checking AWS2 cloud site status ..."
    f_mc_mcs2
    ;;
-   -mcs3)
+   -s3 | -mcs3)
    f_echo "Checking Azure1 cloud site status ..."
    f_mc_mcs3
    ;;
-   -mccn)
+   -s4 | -mccn)
    f_echo "Creating namespace 1 ..."
    f_mc_mcs3
    ;;
-   -mcke)
+   -s5 | -mcke)
    f_echo "Creating MCN label key ..."
    f_mc_mcke
    ;;
-   -mcla)
+   -s6 | -mcla)
    f_echo "Creating MCN label ..."
    f_mc_mcke
    ;;
-   -mcwlk)
+   -s7 | -mcwlk)
    f_echo "Creating Brews workload ..."
    f_mc_mcwlk
    ;;
-   -mcwaf)
-   f_echo "Creating SPA WAF..."
+   -s8 | -mcwaf)
+   f_echo "Creating SPA WAF ..."
    f_mc_mcwaf
+   ;;
+   -s9 | -mccvs)
+   f_echo "Creating MCN vsite ..."
+   f_mc_mccvs
+   ;;
+   -s10 | -mccre)
+   f_echo "Creating RE only vsite ..."
+   f_mc_mccre
    ;;
    *)
    ;;
