@@ -65,6 +65,11 @@ echo "vK8s and vsites"
 echo ""
 echo "-s9 -mccvs                     Create MCN vsite"
 echo "-s10 -mccre                    Create RE vsite"
+echo "-s11 -mccaz                    Create Azure 1 vsite"
+echo "-s12 -mcca1                    Create AWS 1 vsite"
+echo "-s13 -mcca2                    Create AWS 2 vsite"
+echo "-s14 -mccvk                    Create vK8s cluster"
+echo "-s15 -mcgvk                    Get vK8s cluster status"
 echo ""
 echo "Workloads"
 echo ""
@@ -134,7 +139,30 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 f_mc_mccre()
 {
 s_re_name=$v_namespace_1-re-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_re_name'"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":[ves.io/siteName in (ves-io-wes-sea, ves-io-ny8-nyc)]}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_re_name'"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":[ves.io/siteName in (ves-io-wes-sea,ves-io-ny8-nyc)]}}}'
+}
+
+f_mc_mccaz()
+{
+s_az_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_az_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_azure1_site_name'")]}}}'
+}
+
+f_mc_mcca1()
+{
+s_aws1_name=$v_aws1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws1_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_aws1_site_name'")]}}}'
+}
+
+f_mc_mcca1()
+{
+s_aws2_name=$v_aws1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws2_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_aws2_site_name'")]}}}'
+}
+
+f_mc_mcgvk()
+{
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss?report_fields"
 }
 
 ### main
@@ -189,6 +217,26 @@ while [ $# -gt 0 ]; do
    -s10 | -mccre)
    f_echo "Creating RE only vsite ..."
    f_mc_mccre
+   ;;
+   -s11 | -mccaz)
+   f_echo "Creating Azure 1 vsite ..."
+   f_mc_mccaz
+   ;;
+   -s12 | -mccaz)
+   f_echo "Creating AWS 1 vsite ..."
+   f_mc_mcca1
+   ;;
+   -s13 | -mccaz)
+   f_echo "Creating AWS 2 vsite ..."
+   f_mc_mcca2
+   ;;
+   -s14 | -mccaz)
+   f_echo "Creating vK8s cluster ..."
+   f_mc_mcca2a
+   ;;
+   -s15 | -mcgvk)
+   f_echo "Geting vK8s cluster status ..."
+   f_mc_mcgvk
    ;;
    *)
    ;;
