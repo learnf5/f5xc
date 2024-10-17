@@ -9,6 +9,8 @@ student_name=$2
 
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
+### Adjust to whatever tenant and DNS domain in use
+### v_dom="learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
 
@@ -19,8 +21,9 @@ v_aws2_site_name="student99-vpc2"
 v_azure1_site_name="student99-vnet1"
 v_namespace_1="student99-brews"
 v_app_name_1="brews99"
-v_brews_spa_domain="brews99.learnf5.cloud"
-v_brews_recs_domain="recs99.learnf5.cloud"
+### Adjust to whatever tenant and DNS domain in use
+v_brews_spa_domain="brews99.aws.learnf5.cloud"
+v_brews_recs_domain="recs99.aws.learnf5.cloud"
 v_brews_inv_domain="inventory99.brews.local"
 v_brews_mongodb_domain="mongodb99.brews.local"
 v_namespace_1_cert="abcd"
@@ -154,10 +157,18 @@ s_aws1_name=$v_aws1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws1_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_aws1_site_name'")]}}}'
 }
 
-f_mc_mcca1()
+f_mc_mcca2()
 {
 s_aws2_name=$v_aws1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws2_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_aws2_site_name'")]}}}'
+}
+
+f_mc_mccvk()
+{
+s_vk8s_name=$v_app_name_1-vk8s
+s_mcn_name=$v_namespace_1-mcn-vsite
+s_wl_flavor=$v_namespace_1-large-flavor
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s_name'","namespace":"'$v_namespace_1'","disable":"false"},"spec":{"vsite_refs":[{"namespace":"'$v_namespace_1'"","name":"'$s_mcn_name'","kind":"virtual_site"}],"disabled":{},"default_flavor_ref":{"namespace":"shared","name":"'$s_wl_flavour'","kind":"workload_flavor"}}}}}'
 }
 
 f_mc_mcgvk()
@@ -230,9 +241,9 @@ while [ $# -gt 0 ]; do
    f_echo "Creating AWS 2 vsite ..."
    f_mc_mcca2
    ;;
-   -s14 | -mccaz)
+   -s14 | -mccvk)
    f_echo "Creating vK8s cluster ..."
-   f_mc_mcca2a
+   f_mc_mccvk
    ;;
    -s15 | -mcgvk)
    f_echo "Geting vK8s cluster status ..."
