@@ -10,17 +10,17 @@ script_name="cet.sh"
 student_name=$2
 
 ### Points to the Training Development F5XC console which points to the Internal Training AWS instance
-v_token="xerwCfxhI08CzaktknCrXwsrCmOPibI="
-v_url="https://training-dev.console.ves.volterra.io/api"
-v_tenant="training-dev-fcphvhww"
-v_dom="dev.learnf5.cloud"
-v_aws_creds_name="learnf5-aws"
+### v_token="CfxhI08CzaktknCrXwsrCmOPibI="
+### v_url="https://training-dev.console.ves.volterra.io/api"
+### v_tenant="training-dev-fcphvhww"
+### v_dom="dev.learnf5.cloud"
+### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 1
-### v_token="gtreu7Yp55Pfvon+MmLXpavWV7uAYXw="
-### v_url="https://training.console.ves.volterra.io/api"
-### v_tenant="training-ytfhxsmw"
-### v_dom="aws.learnf5.cloud"
+v_token="YTruu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_url="https://training.console.ves.volterra.io/api"
+v_tenant="training-ytfhxsmw"
+v_dom="aws.learnf5.cloud"
 ### AWS creds inside Multi-Cloud Network Connect > Manage > Site Management > Cloud Credentials > Cloud Sites
 v_aws_creds_name="learnf5-aws"
 
@@ -72,8 +72,8 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/s
 
 f_list_student_cloud_sites()
 {
-echo "All AWS VPC cloud sites ..."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites" | jq
+echo "All AWS VPC cloud sites for $2 ..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites" | jq -r .[][].name | grep -E $1
 }
 
 f_admin_create_single_student_objects_op()
