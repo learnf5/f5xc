@@ -17,7 +17,7 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 1
-v_token="YTruu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="u7Yp55Pfvon+MmLXpavWV7uAYXw="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -76,15 +76,15 @@ echo "All AWS VPC cloud sites for $2 ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites" | jq -r .[][].name | grep -E $1
 }
 
-f_admin_create_single_student_objects_op()
+f_admin_create_single_student_objects_tcp_op()
 {
-s_op="$1-op"
+s_tcp_op="$1-tcp"
 s_ipdns_name="$2"
 echo "Creating Origin Pool for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'","namespace":"shared"},"spec":{"origin_servers":[{"private_name":{"dns_name":"'$s_ipdns_name'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","name":"'$1'-vsite","namespace":"shared"}},"outside_network":{}},"labels":{}}],"port":22,"same_as_endpoint_port":{},"healthcheck":[],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_tcp_op'","namespace":"shared"},"spec":{"origin_servers":[{"private_name":{"dns_name":"'$s_ipdns_name'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","name":"'$1'-vsite","namespace":"shared"}},"outside_network":{}},"labels":{}}],"port":22,"same_as_endpoint_port":{},"healthcheck":[],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}}'
 }
 
-f_admin_create_single_student_objects_lb()
+f_admin_create_single_student_objects_tcp_lb()
 {
 singleordouble=`echo $1 | wc -m`
 if [ $singleordouble -eq 10 ]; then
@@ -94,12 +94,12 @@ else
  snum=`echo -n $1 | tail -c 1`
  pnum="200$snum"
 fi
-s_op="$1-tcp"
-s_lb="$1-tcp-lb"
+s_tcp_op="$1-tcp"
+s_tcp_lb="$1-tcp-lb"
 s_dom="$1.$v_dom"
 echo "Creating TCP Load Balancer for $1 ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/tcp_loadbalancers/student$snum-tcp-lb?report_fields" | jq
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/tcp_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"listen_port":'$pnum',"no_sni":{},"dns_volterra_managed":true,"origin_pools":[],"origin_pools_weights":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"advertise_on_public_default_vip":{},"hash_policy_choice_round_robin":{},"idle_timeout":3600000,"retract_cluster":{},"tcp":{},"service_policies_from_namespace":{},"auto_cert_info":{"auto_cert_state":"AutoCertDisabled","auto_cert_expiry":null,"auto_cert_subject":"","auto_cert_issuer":"","dns_records":[],"state_start_time":null}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/tcp_loadbalancers" -d '{"metadata":{"name":"'$s_tcp_lb'"},"spec":{"domains":["'$s_dom'"],"listen_port":'$pnum',"no_sni":{},"dns_volterra_managed":true,"origin_pools":[],"origin_pools_weights":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_tcp_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"advertise_on_public_default_vip":{},"hash_policy_choice_round_robin":{},"idle_timeout":3600000,"retract_cluster":{},"tcp":{},"service_policies_from_namespace":{},"auto_cert_info":{"auto_cert_state":"AutoCertDisabled","auto_cert_expiry":null,"auto_cert_subject":"","auto_cert_issuer":"","dns_records":[],"state_start_time":null}}}'
 }
 
 ### main
@@ -143,7 +143,7 @@ while [ $# -gt 0 ]; do
    echo Student name: $2
    echo IP DNS name: $3
    f_echo "Creating origin pool object for $2 ..."
-   f_admin_create_single_student_objects_op $2 $3
+   f_admin_create_single_student_objects_tcp_op $2 $3
    ;;
    -adcrelb)
    if [ "$#" != 2 ]; then
@@ -151,7 +151,7 @@ while [ $# -gt 0 ]; do
     exit 1
    fi
    f_echo "Creating TCP load balancer object for $2 ..."
-   f_admin_create_single_student_objects_lb $2
+   f_admin_create_single_student_objects_tcp_lb $2
    ;;
    *)
    ;;
