@@ -32,6 +32,10 @@ v_use_https="no"
 v_use_autocert="yes"
 
 v_brews_spa_api_waf="brews-spa-api-appwf"
+v_registry_name="f5demos"
+v_brews_mongodb_name="brews-mongodb"
+v_mongodb_container_name="mongo"
+v_spa_container_name="brews-spa"
 
 ### functions
 
@@ -77,14 +81,14 @@ echo ""
 echo "Workloads"
 echo ""
 echo "-s16 -mcwl1                    Create Container Registry"
-echo "-s17 -mcwl1                    Deploy Mongodb"
-echo "-s18 -mcwl1                    Deploy SPA"
-echo "-s19 -mcwl1                    Deploy API"
-echo "-s20 -mcwl1                    Deploy Inventory"
-echo "-s21 -mcwl1                    Deploy Recommendations HTTPS LB manual cert cleartext"
-echo "-s22 -mcwl1                    Deploy Recommendations HTTPS LB manual cert blindfold"
-echo "-s23 -mcwl1                    Deploy Recommendations HTTPS LB autocert"
-echo "-s24 -mcwl1                    Deploy Recommendations HTTPS LB"
+echo "-s17 -mcwl2                    Deploy Mongodb"
+echo "-s18 -mcwl3                    Deploy SPA"
+echo "-s19 -mcwl4                    Deploy API"
+echo "-s20 -mcwl5                    Deploy Inventory"
+echo "-s21 -mcwl6                    Deploy Recommendations HTTPS LB manual cert cleartext"
+echo "-s22 -mcwl7                    Deploy Recommendations HTTPS LB manual cert blindfold"
+echo "-s23 -mcwl8                    Deploy Recommendations HTTPS LB autocert"
+echo "-s24 -mcwl9                    Deploy Recommendations HTTPS LB"
 echo ""
 echo "Deployments"
 echo ""
@@ -186,6 +190,53 @@ f_mc_mcgvk()
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss?report_fields"
 }
 
+f_mc_mcwl1()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/container_registrys" -d '{"metadata":{"name":"'$v_registry_name'"},"spec":{"registry":"f5demos.azurecr.io","user_name":"1e21992e-4283-4afe-9a89-b3b314f1fd55","password":{"clear_secret_info":{"url":"string:///dVUzOFF+SFZwS1RXYWU0eWVXYkxSblVwbHg2ZXprMm9xWmpNS2FWUg=="},"secret_encoding_type":"EncodingNone"}}}'
+}
+
+f_mc_mcwl2()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_brews_mongodb_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_mongodb_container_name'","image":{"name":"public.ecr.aws/o2z6z0t3/friday:demo","public":{},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"SEED_FILE","value":"beerProducts.json"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":27017,"protocol":"PROTOCOL_TCP","same_as_port":}}}}}},"resource_version":null}}'
+}
+
+f_mc_mcwl3()
+{
+s_mcn_name=$v_namespace_1-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_spa_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_spa_container_name'","image":{"name":"f5demos.azurecr.io/spa","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":8081,"protocol":"PROTOCOL_TCP","target_port":80}}}}}},"resource_version":null}}'
+}
+
+f_mc_mcwl4()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+}
+
+f_mc_mcwl5()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+}
+
+f_mc_mcwl6()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+}
+
+f_mc_mcwl7()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+}
+
+f_mc_mcwl8()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+}
+
+f_mc_mcwl9()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+}
+
 ### main
 
 f_echo "F5 Training $product_name script Version $script_ver"
@@ -258,6 +309,42 @@ while [ $# -gt 0 ]; do
    -s15 | -mcgvk)
    f_echo "Geting vK8s cluster status ..."
    f_mc_mcgvk
+   ;;
+   -s16 | -mcwl1)
+   f_echo "Creating container registry ..."
+   f_mc_mcwl1
+   ;;
+   -s17 | -mcwl2)
+   f_echo "Deploy Mongodb ..."
+   f_mc_mcwl2
+   ;;
+   -s18 | -mcwl3)
+   f_echo "Deploy SPA ..."
+   f_mc_mcwl3
+   ;;
+   -s19 | -mcwl4)
+   f_echo "Deploy API ..."
+   f_mc_mcwl4
+   ;;
+   -s20 | -mcwl5)
+   f_echo "Deploy Inventory ..."
+   f_mc_mcwl5
+   ;;
+   -s21 | -mcwl6)
+   f_echo "Deploy Recommendations HTTP LB manual cert cleartext ..."
+   f_mc_mcwl6
+   ;;
+   -s22 | -mcwl7)
+   f_echo "Deploy Recommendations HTTP LB manual cert blindfold ..."
+   f_mc_mcwl7
+   ;;
+   -s23 | -mcwl8)
+   f_echo "Deploy Recommendations HTTP LB auto cert ..."
+   f_mc_mcwl8
+   ;;
+   -s24 | -mcwl9)
+   f_echo "Deploy Recommendations HTTP LB ..."
+   f_mc_mcwl9
    ;;
    *)
    ;;
