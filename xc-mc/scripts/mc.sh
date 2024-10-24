@@ -14,7 +14,7 @@ v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
 
-v_token="oGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="HHtroGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws1_site_name="student99-vpc1"
 v_aws2_site_name="student99-vpc2"
@@ -36,6 +36,11 @@ v_registry_name="f5demos"
 v_brews_mongodb_name="brews-mongodb"
 v_mongodb_container_name="mongo"
 v_spa_container_name="brews-spa"
+v_api_container_name="brews-api"
+v_inv_container_name="brews-inv"
+v_recs_container_name="brews-recs"
+v_base64_cert=""
+v_base64_key=""
 
 ### functions
 
@@ -209,17 +214,20 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 
 f_mc_mcwl4()
 {
-s_aws2_name=$v_aws2_site_name-vsite
+s_aws1_name=$v_aws1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_api_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_api_container_name'","image":{"name":"f5demos.azurecr.io/api","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_aws1_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":8000,"protocol":"PROTOCOL_TCP","same_as_port":{}}}}}}},"resource_version":null}}'
 }
 
 f_mc_mcwl5()
 {
-s_aws2_name=$v_aws2_site_name-vsite
+s_azure1_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_inv_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_inv_container_name'","image":{"name":"f5demos.azurecr.io/inv","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_azure1_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":8002,"protocol":"PROTOCOL_TCP","same_as_port":{}}}}}}},"resource_version":null}}'
 }
 
 f_mc_mcwl6()
 {
-s_aws2_name=$v_aws2_site_name-vsite
+s_re_name=$v_namespace_1-re-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_recs_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_recs_container_name'","image":{"name":"f5demos.azurecr.io/recs","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_re_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_re_name'"}]}},"advertise_options":{"advertise_on_public":{"port":{"info":{"port":8001,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$v_brews_recs_domain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///'$v_base64_cert'","private_key":{"clear_secret_info":{"url":"string:///'$v_base64_key'","provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":"EncodingNone"},"description":null}],"no_mtls":{}},"default_header":{}},"default_route":{"disable_host_rewrite":{}}}}}}},"resource_version":null}}'
 }
 
 f_mc_mcwl7()
