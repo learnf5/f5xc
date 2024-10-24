@@ -20,7 +20,8 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 1 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="HTrpu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="KKYTu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_debug_token="rK0FYCLzxaMtRSh7TfzEUTi/DJQ="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -54,6 +55,7 @@ echo "-dis                       Disable all student accounts (20 secs per stude
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
 echo "-del                       Delete all student objects"
+echo "-adlogs                    ** Under Construction ** ADMIN - Get logs"
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
@@ -279,6 +281,16 @@ f_delete_all_student_objects()
 {
 echo "Not built yet ... Exiting ..."
 exit 0
+}
+
+f_admin_get_logs()
+{
+s_cename="$1-vpc"
+s_nodename="$1"
+s_sitename="$1-vpc"
+curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_cename/vpm/debug/$s_nodename/vpm/log"
+sleep 1
+curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_debug_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/global/check-debug-info-collection"
 }
 
 f_admin_list_single_student_aws_vpc()
@@ -687,6 +699,14 @@ while [ $# -gt 0 ]; do
     echo "Exiting ..."
     exit 0
    fi
+   ;;
+   -adlogs)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Getting CE logs for $2 ..."
+   f_admin_get_logs $2
    ;;
    -adlst)
    if [ "$#" != 2 ]; then
