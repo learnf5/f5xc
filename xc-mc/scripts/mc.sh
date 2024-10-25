@@ -261,7 +261,27 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 
 f_mc_mcdp1()
 {
-s_re_name=$v_namespace_1-re-vsite
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/$v_namespace_1/$v_app_name_1-vk8s/apis/apps/v1/namespaces/$v_namespace_1}/deployments/brews-recs"
+}
+
+f_mc_mcdp2()
+{
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/$v_namespace_1/$v_app_name_1-vk8s/apis/apps/v1/namespaces/$v_namespace_1}/deployments/brews-inv"
+}
+
+f_mc_mcdp3()
+{
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/$v_namespace_1/$v_app_name_1-vk8s/apis/apps/v1/namespaces/$v_namespace_1}/deployments/brews-api"
+}
+
+f_mc_mcdp4()
+{
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/$v_namespace_1/$v_app_name_1-vk8s/apis/apps/v1/namespaces/$v_namespace_1}/deployments/brews-spa"
+}
+
+f_mc_mcdp5()
+{
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/$v_namespace_1/$v_app_name_1-vk8s/apis/apps/v1/namespaces/$v_namespace_1}/deployments/brews-mongodb"
 }
 
 ### main
@@ -376,6 +396,22 @@ while [ $# -gt 0 ]; do
    -s25 | -mcdp1)
    f_echo "Delete Recommendations ..."
    f_mc_mcdp1
+   ;;
+   -s26 | -mcdp2)
+   f_echo "Delete Inventory ..."
+   f_mc_mcdp2
+   ;;
+   -s27 | -mcdp3)
+   f_echo "Delete API ..."
+   f_mc_mcdp3
+   ;;
+   -s28 | -mcdp4)
+   f_echo "Delete SPA ..."
+   f_mc_mcdp4
+   ;;
+   -s29 | -mcdp5)
+   f_echo "Delete Mongodb ..."
+   f_mc_mcdp5
    ;;
    *)
    ;;
