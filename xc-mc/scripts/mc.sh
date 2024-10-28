@@ -284,6 +284,18 @@ f_mc_mcdp5()
 curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/$v_namespace_1/$v_app_name_1-vk8s/apis/apps/v1/namespaces/$v_namespace_1}/deployments/brews-mongodb"
 }
 
+f_mc_mcdp6()
+{
+s_app_vk8s_name=$v_app_name_1-vk8s
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-mongodb","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$v_aws2_site_name'-vsite","ves.io/workload-flavor-brews-api":"'$V_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-mongodb"}},"template":{"metadata":{"labels":{"ves.io/workload":"brews-mongodb"}},"spec":{"containers":[{"name":"brews-mongodb","image":"public.ecr.aws/o2z6z0t3/friday:demo","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+}
+
+f_mc_mcdp7()
+{
+s_app_vk8s_name=$v_app_name_1-vk8s
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-mongodb","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$v_aws2_site_name'-vsite","ves.io/workload-flavor-brews-api":"'$V_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-mongodb"}},"template":{"metadata":{"labels":{"ves.io/workload":"brews-mongodb"}},"spec":{"containers":[{"name":"brews-mongodb","image":"public.ecr.aws/o2z6z0t3/friday:demo","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+}
+
 ### main
 
 f_echo "F5 Training $product_name script Version $script_ver"
@@ -412,6 +424,26 @@ while [ $# -gt 0 ]; do
    -s29 | -mcdp5)
    f_echo "Delete Mongodb ..."
    f_mc_mcdp5
+   ;;
+   -s30 | -mcdp6)
+   f_echo "Deploy Mongodb ..."
+   f_mc_mcdp6
+   ;;
+   -s31 | -mcdp7)
+   f_echo "Deploy SPA ..."
+   f_mc_mcdp7
+   ;;
+   -s32 | -mcdp8)
+   f_echo "Deploy API ..."
+   f_mc_mcdp8
+   ;;
+   -s33 | -mcdp9)
+   f_echo "Deploy Inventory ..."
+   f_mc_mcdp9
+   ;;
+   -s34 | -mcdp10)
+   f_echo "Deploy Recommendations ..."
+   f_mc_mcdp10
    ;;
    *)
    ;;
