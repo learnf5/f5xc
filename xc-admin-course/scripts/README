@@ -11,7 +11,7 @@ chmod 755 class.sh
 
 (b) Set Unix/Linux file format (otherwise you get a Bad Interpreter message on attempted execution)
 
-vi class.sh
+vi class1.sh
 :
 set ff=unix
 :wq!
