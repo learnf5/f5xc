@@ -110,6 +110,11 @@ echo "-s34 -mcdp10                   Deploy Recommendations"
 echo ""
 echo "Load Balancing and WAAP"
 echo ""
+echo "-s35 -mclb1                    Create Mongodb healthcheck"
+echo "-s36 -mclb2                    Create API healthcheck"
+echo "-s37 -mclb3                    Create SPA healthcheck"
+echo "-s38 -mclb4                    Create INV healthcheck"
+echo ""
 exit 0
 }
 
@@ -298,12 +303,20 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v
 
 f_mc_mcdp8()
 {
-v_brews_spa_domain="brews99.aws.learnf5.cloud"
-v_brews_recs_domain="recs99.aws.learnf5.cloud"
-v_brews_inv_domain="inventory99.brews.local"
-v_brews_mongodb_domain="mongodb99.brews.local"
 s_aws1_name=$v_aws1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-api","namespace":"'$v_namespace_1'","annotations":{"deployment.kubernetes.io/revision":"1","ves.io/virtual-sites":"'$v_namespace_1'/'$s_aws1_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-api"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-api"}},"spec":{"containers":[{"name":"brews-api","image":"f5demos.azurecr.io/api","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-api-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+}
+
+f_mc_mcdp9()
+{
+s_azure1_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-inv","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_azure1_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-inv"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-inv"}},"spec":{"containers":[{"name":"brews-inv","image":"f5demos.azurecr.io/inv","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-inv-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+}
+
+f_mc_mcdp10()
+{
+s_re_name=$v_namespace_1-re-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-recs","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_re_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-recs"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-recs"}},"spec":{"containers":[{"name":"brews-recs","image":"f5demos.azurecr.io/recs","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-recs-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
 }
 
 ### main
