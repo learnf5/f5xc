@@ -308,25 +308,49 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v
 f_mc_mcdp7()
 {
 s_app_vk8s_name=$v_app_name_1-vk8s
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-spa","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$v_namespace_1'-mcn-vsite","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-spa"}},"template":{"metadata":{"labels":{"ves.io/workload":"brews-spa"}},"spec":{"containers":[{"name":"brews-spa","image":"f5demos.azurecr.io/spa","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-spa-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-spa","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$v_namespace_1'-mcn-vsite","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-spa"}},"template":{"metadata":{"labels":{"ves.io/workload":"brews-spa"}},"spec":{"containers":[{"name":"brews-spa","image":"f5demos.azurecr.io/spa","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-spa-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
 }
 
 f_mc_mcdp8()
 {
+s_app_vk8s_name=$v_app_name_1-vk8s
 s_aws1_name=$v_aws1_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-api","namespace":"'$v_namespace_1'","annotations":{"deployment.kubernetes.io/revision":"1","ves.io/virtual-sites":"'$v_namespace_1'/'$s_aws1_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-api"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-api"}},"spec":{"containers":[{"name":"brews-api","image":"f5demos.azurecr.io/api","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-api-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-api","namespace":"'$v_namespace_1'","annotations":{"deployment.kubernetes.io/revision":"1","ves.io/virtual-sites":"'$v_namespace_1'/'$s_aws1_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-api"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-api"}},"spec":{"containers":[{"name":"brews-api","image":"f5demos.azurecr.io/api","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-api-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
 }
 
 f_mc_mcdp9()
 {
+s_app_vk8s_name=$v_app_name_1-vk8s
 s_azure1_name=$v_azure1_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-inv","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_azure1_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-inv"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-inv"}},"spec":{"containers":[{"name":"brews-inv","image":"f5demos.azurecr.io/inv","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-inv-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-inv","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_azure1_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-inv"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-inv"}},"spec":{"containers":[{"name":"brews-inv","image":"f5demos.azurecr.io/inv","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-inv-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
 }
 
 f_mc_mcdp10()
 {
+s_app_vk8s_name=$v_app_name_1-vk8s
 s_re_name=$v_namespace_1-re-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-recs","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_re_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-recs"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-recs"}},"spec":{"containers":[{"name":"brews-recs","image":"f5demos.azurecr.io/recs","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-recs-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-recs","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_re_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-recs"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-recs"}},"spec":{"containers":[{"name":"brews-recs","image":"f5demos.azurecr.io/recs","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-recs-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
+}
+
+f_mc_mclb1()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-mongodb-hc","labels":{}},"spec":{"tcp_health_check":{"send_payload":"abc123"},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30},"resource_version":"512132692"}}'
+}
+
+f_mc_mclb2()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-api-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/api/stats","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}
+}'
+}
+
+f_mc_mclb3()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-spa-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/products","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}}'
+}
+
+f_mc_mclb4()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-inv-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/api/stats","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}}'
 }
 
 ### main
@@ -477,6 +501,62 @@ while [ $# -gt 0 ]; do
    -s34 | -mcdp10)
    f_echo "Deploy Recommendations ..."
    f_mc_mcdp10
+   ;;
+   -s35 | -mclb1)
+   f_echo "Create Mongodb healthcheck ..."
+   f_mc_mcdp1
+   ;;
+   -s36 | -mclb2)
+   f_echo "Create API healthcheck ..."
+   f_mc_mcdp2
+   ;;
+   -s37 | -mclb3)
+   f_echo "Create SPA healthcheck ..."
+   f_mc_mcdp3
+   ;;
+   -s38 | -mclb4)
+   f_echo "Create INV healthcheck ..."
+   f_mc_mcdp4
+   ;;
+   -s39 | -mclb5)
+   f_echo "Create Mongodb origin pool ..."
+   f_mc_mcdp5
+   ;;
+   -s40 | -mclb6)
+   f_echo "Create API origin pool ..."
+   f_mc_mcdp6
+   ;;
+   -s41 | -mclb7)
+   f_echo "Create SPA origin pool ..."
+   f_mc_mcdp7
+   ;;
+   -s42 | -mclb8)
+   f_echo "Create INV origin pool ..."
+   f_mc_mcdp8
+   ;;
+   -s43 | -mclb9)
+   f_echo "Create Mongodb TCP load balancer (internal) ..."
+   f_mc_mcdp9
+   ;;
+   -s44 | -mclb10)
+   f_echo "Create INV HTTP load balancer (internal) ..."
+   f_mc_mcdp10
+   ;;
+   -s45 | -mclb11)
+   f_echo "Create SPA-API HTTPS lb (public manual cert cleartext) ..."
+   f_mc_mcdp11
+   ;;
+   -s46 | -mclb12)
+   f_echo "Create SPA-API HTTPS lb (public manual cert blindfold) ..."
+   f_mc_mcdp12
+   ;;
+   -s47 | -mclb13)
+   f_echo "Create SPA-API HTTPS lb (public autocert) ..."
+   f_mc_mcdp13
+   ;;
+   -s48 | -mclb14)
+   f_echo "Create SPA-API HTTPS lb (public) ..."
+   f_mc_mcdp14
    ;;
    *)
    ;;
