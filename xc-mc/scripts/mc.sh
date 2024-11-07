@@ -14,7 +14,7 @@ v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
 
-v_token="oGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="reTuoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws1_site_name="student99-vpc1"
 v_aws2_site_name="student99-vpc2"
