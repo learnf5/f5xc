@@ -353,6 +353,30 @@ f_mc_mclb4()
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-inv-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/api/stats","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}}'
 }
 
+f_mc_mclb5()
+{
+s_aws2_name=$v_aws2_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{{"metadata":{"name":"brews-mongodb-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-mongodb.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":27017,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-mongodb-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}}'
+}
+
+f_mc_mclb6()
+{
+s_aws1_name=$v_aws1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{{"metadata":{"name":"brews-api-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-api.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws1_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":8000,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-api-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}}'
+}
+
+f_mc_mclb7()
+{
+s_mcn_name=$v_namespace1-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{{"metadata":{"name":"brews-spa-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-spa.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":8081,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-spa-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}}'
+}
+
+f_mc_mclb8()
+{
+s_azure1_name=$v_azure1_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{{"metadata":{"name":"brews-inv-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-inv.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_azure1_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":8002,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-inv-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}}'
+}
+
 ### main
 
 f_echo "F5 Training $product_name script Version $script_ver"
