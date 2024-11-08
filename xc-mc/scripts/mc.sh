@@ -387,14 +387,42 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 
 f_mc_mclb10()
 {
-v_brews_spa_domain="brews99.aws.learnf5.cloud"
-v_brews_recs_domain="recs99.aws.learnf5.cloud"
-v_brews_inv_domain="inventory99.brews.local"
-v_brews_mongodb_domain="mongodb99.brews.local"
 s_aws1_name=$v_aws1_site_name-vsite
 s_aws2_name=$v_aws2_site_name-vsite
 s_azure1_name=$v_azure1_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/tcp_loadbalancers" -d '{"metadata":{"name":"brews-mongodb-tcp-lb","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"domains":["'$v_brews_mondodb_domain'"],"listen_port":27017,"no_sni":{},"dns_volterra_managed":false,"origin_pools":[],"origin_pools_weights":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-mongodb-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"advertise_custom":{"advertise_where":[{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws1_site_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'}","name":"'$s_azure1_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'","kind":"virtual_site"}},"use_default_port":{}}]},"hash_policy_choice_round_robin":{},"idle_timeout":3600000,"retract_cluster":{},"tcp":{},"dns_info":[],"downstream_tls_certificate_expiration_timestamps":[]}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-inv-http-lb","labels":{},"description":"Brews PoC MCN"},"spec":{"domains":["'$v_brews_inc_domain'"],"http":{"dns_volterra_managed":false,"port":80},"advertise_custom":{"advertise_where":[{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws1_site_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_azure1_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'","kind":"virtual_site"}},"use_default_port":{}}]},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-inv-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[],"disable_waf":{},"add_location":false,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"cookie_stickiness":{"name":"brews-inv"},"multi_lb_app":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
+}
+
+f_mc_mclb11()
+{
+s_aws1_name=$v_aws1_site_name-vsite
+s_aws2_name=$v_aws2_site_name-vsite
+s_azure1_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["{{brews-spa-domain}}"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"clear_secret_info":{"url":"string:///{{base64EncodedKey}}","provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":"EncodingNone"},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"{{namespace_1}}","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"{{namespace_1}}","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"{{namespace_1}}","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"{{namespace_1}}","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
+}
+
+f_mc_mclb12()
+{
+s_aws1_name=$v_aws1_site_name-vsite
+s_aws2_name=$v_aws2_site_name-vsite
+s_azure1_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{}'
+}
+
+f_mc_mclb13()
+{
+s_aws1_name=$v_aws1_site_name-vsite
+s_aws2_name=$v_aws2_site_name-vsite
+s_azure1_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{}'
+}
+
+f_mc_mclb14()
+{
+s_aws1_name=$v_aws1_site_name-vsite
+s_aws2_name=$v_aws2_site_name-vsite
+s_azure1_name=$v_azure1_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{}'
 }
 
 ### main
