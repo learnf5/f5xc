@@ -8,12 +8,14 @@ script_name="mc.sh"
 student_name=$2
 
 ### Adjust to whatever tenant and DNS domain in use
+### Default values
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
-v_token="GTreoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="TREfoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
+### Default student number values
 v_aws1_site_name="student99-vpc1"
 v_aws2_site_name="student99-vpc2"
 v_azure1_site_name="student99-vnet1"
@@ -56,6 +58,7 @@ echo ""
 echo "Options:"
 echo ""
 echo "-sa -tok                       Test token"
+echo "-sb -vars                      Print variables"
 echo ""
 echo "Cloud Site Status"
 echo ""
@@ -130,6 +133,16 @@ f_test_token()
 {
 curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 }
+
+f_print_vars()
+{
+echo ""
+echo "Variables set to:"
+echo ""
+echo $v_namespace_1, $v_aws1_site_name, $v_aws2_site_name, $v_azure1_site_name, $v_namespace_1, $v_app_name_1, $v_brews_spa_domain, $v_brews_recs_domain, $v_brews_inv_domain, $v_brews_mongodb_domain
+echo ""
+}
+
 
 f_mc_mcs1()
 {
@@ -420,10 +433,39 @@ if [ $# -eq 0 ]; then
 f_usage
 fi
 
+if [ "$#" != 2 ]; then
+ f_echo "Missing student name ... "
+ exit 1
+fi
+
+snumdigits=`echo $2 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $2 | tail -c 3`
+elif
+ [ $snumdigits -eq 10 ]; then
+ snum=`echo -n $2 | tail -c 2`
+else
+ snum=`echo -n $2 | tail -c 1`
+fi
+
+v_namespace_1="$2-brews"
+v_aws1_site_name="$2-vpc1"
+v_aws2_site_name="$2-vpc2"
+v_azure1_site_name="$2-vnet1"
+v_namespace_1="$2-brews"
+v_app_name_1="brews$snum"
+v_brews_spa_domain="brews$snum.aws.learnf5.cloud"
+v_brews_recs_domain="recs$snum.aws.learnf5.cloud"
+v_brews_inv_domain="inventory$snum.brews.local"
+v_brews_mongodb_domain="mongodb$snum.brews.local"
+
 while [ $# -gt 0 ]; do
  case "$1" in
    -sa | -tok)
    f_test_token
+   ;;
+   -sb | -vars)
+   f_print_vars
    ;;
    -s1 | -mcs1)
    f_echo "Checking AWS1 cloud site status ..."
