@@ -1,7 +1,5 @@
 #!/bin/bash
 
-### set -e
-
 ### variables
 
 product_name="F5 Distributed Cloud"
@@ -10,15 +8,13 @@ script_name="class2.sh"
 student_name=$2
 
 ### Comment out variables to switch between them
-
 ### Points to classroom 2
 
-v_token="TTrexgfrRwnm8mg83l8C+cGJlwPCSLQPt3w="
-v_debug_token="rK0FYCLzxaMtRSh7TfzEUTi/DJQ="
+v_token="TREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
-v_tenant="training-ytfhxsmw"
-v_dom="aws.learnf5.cloud"
-v_aws_creds_name="learnf5-aws"
+v_tenant="training2-haiyaqtr"
+v_dom="f5training2.cloud"
+v_aws_creds_name="creds-aws1211gst02"
 
 ### functions
 
@@ -30,6 +26,8 @@ echo -e $1
 f_usage()
 {
 echo "Classroom 2 setup script for Admin and WAAP"
+echo ""
+echo "Student numbers run from 201 to 212"
 echo ""
 echo "Usage: ./${script_name} -option"
 echo ""
@@ -126,7 +124,7 @@ f_enadis_student()
 {
 ### assumes each student has e-mail of studentX@f5.com
 action=$1
-for i in {1..12}
+for i in {201..212}
 do
  student_name=student$i@f5.com
  echo "$action student$i"
@@ -287,29 +285,23 @@ curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_debug_
 
 f_admin_list_single_student_aws_vpc()
 {
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
- snum=`echo -n $1 | tail -c 2`
- pnum="10$snum"
-else
- snum=`echo -n $1 | tail -c 1`
- pnum="100$snum"
-fi
 s_aws_vpc_name="$1-vpc"
-### aws vpc objects are created tn the system namesapce, not shared, not student
-### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$s_aws_vpc_name"
 }
 
 f_admin_create_single_student_objects_labs23()
 {
 ### Create labs 2-3 for a student
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
- snum=`echo -n $1 | tail -c 2`
+snumdigits=`echo $2 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $2 | tail -c 3`
+ pnum="1$snum"
+elif
+ [ $snumdigits -eq 10 ]; then
+ snum=`echo -n $2 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $1 | tail -c 1`
+ snum=`echo -n $2 | tail -c 1`
  pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
@@ -334,12 +326,16 @@ echo "The AWS VPC Site needs to be created manually in Lab 4 for $1 ..."
 f_admin_create_single_student_objects_labs234()
 {
 ### Create labs 2-4 for a student
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
- snum=`echo -n $1 | tail -c 2`
+snumdigits=`echo $2 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $2 | tail -c 3`
+ pnum="1$snum"
+elif
+ [ $snumdigits -eq 10 ]; then
+ snum=`echo -n $2 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $1 | tail -c 1`
+ snum=`echo -n $2 | tail -c 1`
  pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
@@ -358,11 +354,6 @@ echo "Creating Virtual Site of type CE for $1 ..."
 sleep 1
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/virtual_sites" -d '{"metadata":{"name":"'$s_vsite_name'","namespace":"'$1'"},"spec":{"site_selector":{"expressions":["'$s_key' in ('$s_value')"]},"site_type":"CUSTOMER_EDGE"}}'
 sleep 1
-### The API call pukes with an unexpected EOF if we directly refer to the SSH key variable, its reading the spaces as
-### a newline or carraige return. If you manually cut the contents into the API it works but thats cumbersome
-### ns_ssh_key=`echo -n -E $s_ssh_key`
-### ns_ssh_key=`echo $s_ssh_key`
-### Could not find a away around this problem
 echo "Creating AWS VPC Site configuration for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/aws_vpc_sites" -d '{"metadata":{"name":"'$s_aws_vpc_name'","namespace":"system","labels":{"'$s_key'":"'$s_value'"}},"spec":{"vpc":{"new_vpc":{"autogenerate":{},"primary_ipv4":"172.31.0.0/16","allocate_ipv6":false}},"ingress_gw":{"az_nodes":[{"aws_az_name":"us-east-1a","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24"}},"disk_size":0}],"aws_certified_hw":"aws-byol-voltmesh","allowed_vip_port":{"use_http_https_port":{}},"performance_enhancement_mode":{"perf_mode_l7_enhanced":{}}},"aws_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_aws_creds_name'"},"instance_type":"m5.4xlarge","disk_size":0,"volterra_software_version":"","operating_system_version":"","aws_region":"us-east-1","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","address":"","logs_streaming_disabled":{},"vip_params_per_az":[],"no_worker_nodes": {},"default_blocked_services":{},"direct_connect_disabled":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"enable_internet_vip":{},"egress_gateway_default":{},"suggested_action":"","error_description":"", "f5xc_security_group":{},"direct_connect_info":null}}'
 sleep 1
@@ -373,12 +364,16 @@ echo "The AWS VPC Site configuration needs to be APPLYied using the -adapp4 opti
 f_admin_apply_single_student_objects_labs4()
 {
 ### Apply labs 4 for a student
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
- snum=`echo -n $1 | tail -c 2`
+snumdigits=`echo $2 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $2 | tail -c 3`
+ pnum="1$snum"
+elif
+ [ $snumdigits -eq 10 ]; then
+ snum=`echo -n $2 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $1 | tail -c 1`
+ snum=`echo -n $2 | tail -c 1`
  pnum="100$snum"
 fi
 s_aws_vpc_name="$1-vpc"
@@ -538,18 +533,21 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/syst
 f_waap_create_single_student_objects()
 {
 ### Create labs 1-3 for a student
-### Create the port number for the origin pool range is 1001 to 1012
+### Create the port number for the origin pool range is 1201 to 1212
 ### Tenant matters for JuiceShop check which tenant environment we are using
 ### WAAP Lab 3 uses either studentX-juice.aws.learnf5.cloud or studentX-juice.dev.learnf5.cloud
 ####fqdn="$1-juice.dev.learnf5.cloud"
 fqdn="$1-juice.aws.learnf5.cloud"
-### Handle student names between 1-12 studentX has 9 chars, studentXX has 10
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
- snum=`echo -n $1 | tail -c 2`
+snumdigits=`echo $2 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $2 | tail -c 3`
+ pnum="1$snum"
+elif
+ [ $snumdigits -eq 10 ]; then
+ snum=`echo -n $2 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $1 | tail -c 1`
+ snum=`echo -n $2 | tail -c 1`
  pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
