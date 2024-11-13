@@ -292,16 +292,16 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/s
 f_admin_create_single_student_objects_labs23()
 {
 ### Create labs 2-3 for a student
-snumdigits=`echo $2 | wc -m`
+snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
- snum=`echo -n $2 | tail -c 3`
+ snum=`echo -n $1 | tail -c 3`
  pnum="1$snum"
 elif
  [ $snumdigits -eq 10 ]; then
- snum=`echo -n $2 | tail -c 2`
+ snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $2 | tail -c 1`
+ snum=`echo -n $1 | tail -c 1`
  pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
@@ -326,16 +326,16 @@ echo "The AWS VPC Site needs to be created manually in Lab 4 for $1 ..."
 f_admin_create_single_student_objects_labs234()
 {
 ### Create labs 2-4 for a student
-snumdigits=`echo $2 | wc -m`
+snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
- snum=`echo -n $2 | tail -c 3`
+ snum=`echo -n $1 | tail -c 3`
  pnum="1$snum"
 elif
  [ $snumdigits -eq 10 ]; then
- snum=`echo -n $2 | tail -c 2`
+ snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $2 | tail -c 1`
+ snum=`echo -n $1 | tail -c 1`
  pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
@@ -364,16 +364,16 @@ echo "The AWS VPC Site configuration needs to be APPLYied using the -adapp4 opti
 f_admin_apply_single_student_objects_labs4()
 {
 ### Apply labs 4 for a student
-snumdigits=`echo $2 | wc -m`
+snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
- snum=`echo -n $2 | tail -c 3`
+ snum=`echo -n $1 | tail -c 3`
  pnum="1$snum"
 elif
  [ $snumdigits -eq 10 ]; then
- snum=`echo -n $2 | tail -c 2`
+ snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $2 | tail -c 1`
+ snum=`echo -n $1 | tail -c 1`
  pnum="100$snum"
 fi
 s_aws_vpc_name="$1-vpc"
@@ -538,16 +538,16 @@ f_waap_create_single_student_objects()
 ### WAAP Lab 3 uses either studentX-juice.aws.learnf5.cloud or studentX-juice.dev.learnf5.cloud
 ####fqdn="$1-juice.dev.learnf5.cloud"
 fqdn="$1-juice.aws.learnf5.cloud"
-snumdigits=`echo $2 | wc -m`
+snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
- snum=`echo -n $2 | tail -c 3`
+ snum=`echo -n $1 | tail -c 3`
  pnum="1$snum"
 elif
  [ $snumdigits -eq 10 ]; then
- snum=`echo -n $2 | tail -c 2`
+ snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
 else
- snum=`echo -n $2 | tail -c 1`
+ snum=`echo -n $1 | tail -c 1`
  pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
@@ -621,7 +621,8 @@ while [ $# -gt 0 ]; do
     exit 1
    fi
    f_echo "testing with $2 ..."
-   f_test $2
+   f_admin_create_single_student_objects_labs234 $2
+   ### f_test $2
    ;;
    -tok)
    f_test_token
