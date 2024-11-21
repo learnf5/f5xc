@@ -222,13 +222,14 @@ sleep 2
 echo "Deleting HTTP load balancer ..."
 sleep 2
 curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/http_loadbalancers/$1-https-lb" | jq
-echo "Deleting Origin pools  ..."
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-tcp" | jq
 sleep 2
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-k8s" | jq
+echo "Deleting Origin pools  ..."
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-op" | jq
+sleep 2
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-op2" | jq
 sleep 2
 echo "Deleting Health checks  ..."
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/healthchecks/$1-healthcheck" | jq
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/healthchecks/$1-hc" | jq
 sleep 2
 echo "Deleting Known label ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/delete" -d '{"namespace":"shared","value":"'$1'-value","key":"'$1'-key"}'
@@ -434,23 +435,23 @@ f_admin_create_single_student_objects_labs9()
 {
 ### Have to create the healthcheck beforehand
 echo "Creating Health check for Origin Pool for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-healthcheck"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
-s_op="$1-k8s"
+s_op="$1-op"
 echo "Creating Origin Pool for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"boutique-frontend.'$1'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":80,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"boutique-frontend.'$1'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":80,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
 }
 
 f_admin_create_single_student_objects_labs10()
 {
-s_op="$1-k8s"
+s_op="$1-op"
 s_lb="$1-https-lb"
 s_dom="$1.$v_dom"
 echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://studentX.aws.learnf5.cloud"
+echo "Now make a browser connection to http://studentX.f5training2.cloud"
 echo ""
 }
 
@@ -521,7 +522,7 @@ echo "HTTP load balancers ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/http_loadbalancers?report_fields" | jq
 sleep 2
 echo "Origin pools ..."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/origin_pools/$1-juice-originpool?report_fields" | jq
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/origin_pools/$1-juice-op?report_fields" | jq
 sleep 2
 echo "Health checks ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/healthchecks?report_fields" | jq
@@ -558,10 +559,10 @@ echo "Creating Health check for HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 echo "Creating Origin Pool and Origin Server for HTTP Load Balancer for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-originpool"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"23.22.60.254"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-hc"}]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"23.22.60.254"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-hc"}]}}' | jq
 sleep 1
 echo "Creating HTTP Load Balancer for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$1'-juice-lb","namespace":"'$1'"},"spec":{"domains":["'$fqdn'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$1'-juice-originpool"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$1'-juice-lb","namespace":"'$1'"},"spec":{"domains":["'$fqdn'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$1'-juice-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
 }
 
 f_test()
@@ -597,7 +598,6 @@ s_vk8s="$1-vk8s"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/virtual_k8ss/student14-vk8s"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials"
-echo "hhhhhhhhhhhhhhhhhhhhhhhhhhhh"
 ### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' | base64 --decode 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"student14-vk8s","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"student14-vk8s","virtual_k8s_namespace":"'$1'"}}'
 cat ves_$1_$1-vk8s.yaml
