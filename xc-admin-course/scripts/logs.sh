@@ -5,7 +5,6 @@
 product_name="F5 Distributed Cloud"
 script_ver="1.0"
 script_name="logs.sh"
-student_name=$2
 
 ### Points to the Training Development F5XC console which points to the Internal Training AWS instance
 ### v_token="CfxhI08CzaktknCrXwsrCmOPibI="
@@ -18,8 +17,6 @@ student_name=$2
 v_token="TREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
-v_dom="aws.learnf5.cloud"
-v_aws_creds_name="learnf5-aws"
 
 ### functions
 
@@ -37,7 +34,10 @@ echo ""
 echo "Options:"
 echo ""
 echo "-tok                       Test token"
-echo "-adlogs                    ADMIN - Get logs"
+echo "-adcheck <sitename>        ADMIN Check if logs exist for sitename"
+echo "-adlogs <sitename>         ADMIN Get logs for sitename"
+echo ""
+echo "sitename is the name of the F5XC vpc object, studentX-vpc for example"
 echo ""
 exit 0
 }
@@ -47,14 +47,17 @@ f_test_token()
 curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 }
 
+f_admin_check_logs()
+{
+s_sitename="$1-vpc"
+curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/global/check-debug-info-collection?site=$s_sitename" | jq
+}
+
 f_admin_get_logs()
 {
 s_cename="$1-vpc"
 s_nodename="$1"
-s_sitename="$1-vpc"
 curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_cename/vpm/debug/$s_nodename/vpm/log"
-sleep 1
-curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_debug_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/global/check-debug-info-collection"
 }
 
 ### main
@@ -67,6 +70,14 @@ fi
 
 while [ $# -gt 0 ]; do
  case "$1" in
+   -adcheck)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Checking CE logs for $2 ..."
+   f_admin_check_logs $2
+   ;;
    -adlogs)
    if [ "$#" != 2 ]; then
     f_echo "Missing student name ... "
