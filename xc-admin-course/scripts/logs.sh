@@ -35,9 +35,17 @@ echo "Options:"
 echo ""
 echo "-tok                       Test token"
 echo "-adcheck <sitename>        ADMIN Check if logs exist for sitename"
+echo "-adstart <sitename>        ADMIN Start log collection on site"
 echo "-adlogs <sitename>         ADMIN Get logs for sitename"
 echo ""
+echo "See https://docs.cloud.f5.com/docs-v2/api/operate-debug"
+echo ""
+echo "Unfortunately the APIs mix sitename and node and are not clear what they refer to"
+echo ""
 echo "sitename is the name of the F5XC vpc object, studentX-vpc for example"
+echo "nodename is NOT the CE cluster kubernetes nodename, its the XC nodename, found inside"
+echo "Multi-Cloud Network Connect > Overview > Infrastructure > Sites > student3-vpc > Metrics > Nodes"
+echo "For student3 that name is ip-172-31-3-5"
 echo ""
 exit 0
 }
@@ -53,11 +61,18 @@ s_sitename="$1-vpc"
 curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/global/check-debug-info-collection?site=$s_sitename" | jq
 }
 
+f_admin_start_logs()
+{
+s_sitename="$1-vpc"
+s_nodename="ip-172-31-3-54"
+curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/$s_nodename/start-debug-info-collection" | jq
+}
+
 f_admin_get_logs()
 {
 s_cename="$1-vpc"
-s_nodename="$1"
-curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_cename/vpm/debug/$s_nodename/vpm/log"
+s_nodename="ip-172-31-3-54"
+curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_cename/vpm/debug/$s_nodename/vpm/log" | jq
 }
 
 ### main
@@ -77,6 +92,14 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "Checking CE logs for $2 ..."
    f_admin_check_logs $2
+   ;;
+   -adstart)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Starting log collection for $2 ..."
+   f_admin_start_logs $2
    ;;
    -adlogs)
    if [ "$#" != 2 ]; then
