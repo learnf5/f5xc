@@ -1,15 +1,11 @@
 #!/bin/bash
 
-### set -e
-
 ### variables
 
 product_name="F5 Distributed Cloud"
 script_ver="1.1"
 script_name="class.sh"
 student_name=$2
-
-### Comment out variables to switch between them
 
 ### Points to the Training Development F5XC console which points to the Internal Training AWS instance
 ### v_token="CfxhI08CzaktknCrXwsrCmOPibI="
@@ -53,7 +49,6 @@ echo "-dis                       Disable all student accounts (20 secs per stude
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
 echo "-del                       Delete all student objects"
-echo "-adlogs                    ** Under Construction ** ADMIN - Get logs"
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
@@ -279,21 +274,6 @@ f_delete_all_student_objects()
 {
 echo "Not built yet ... Exiting ..."
 exit 0
-}
-
-f_admin_get_logs()
-{
-s_cename="$1-vpc"
-### s_nodename="ip-172.31.1.189"
-s_nodename="ip-172.31.3.54"
-s_nodename="ip-172-31-1-189.ec2.internal"
-s_nodename="ip-172-31-3.54.ec2.internal"
-echo "Retrieve logs"
-curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_cename/vpm/debug/$s_nodename/vpm/log"
-sleep 2
-s_sitename="$1-vpc"
-echo "Check if any debug logs"
-curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/global/check-debug-info-collection"
 }
 
 f_admin_list_single_student_aws_vpc()
@@ -702,14 +682,6 @@ while [ $# -gt 0 ]; do
     echo "Exiting ..."
     exit 0
    fi
-   ;;
-   -adlogs)
-   if [ "$#" != 2 ]; then
-    f_echo "Missing student name ... "
-    exit 1
-   fi
-   f_echo "Getting CE logs for $2 ..."
-   f_admin_get_logs $2
    ;;
    -adlst)
    if [ "$#" != 2 ]; then
