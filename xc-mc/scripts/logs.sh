@@ -27,6 +27,7 @@ echo ""
 echo "Options:"
 echo ""
 echo "-tok                                   Test token"
+echo "-site <studentname>                    Find the nodename per sitename"
 echo "-adcheck <studentname>                 ADMIN Check if logs exist for sitename"
 echo "-adstart <nodename> <studentname>      ADMIN Start log collection on site"
 echo "-adlog <nodename> <studentname>        ADMIN Get (a) log for sitename"
@@ -40,10 +41,11 @@ echo "sitename is the name of the F5XC vpc object, studentX-vpc for example"
 echo "nodename is NOT the CE cluster kubernetes nodename, its the XC nodename, found inside"
 echo "Multi-Cloud Network Connect > Overview > Infrastructure > Sites > student3-vpc > Metrics > Nodes"
 echo "For student3 that name is ip-172-31-3-5 which is a form of the private IPv4 AWS address"
+echo "Nodename IP address is random so have to read the GUI each time a VPC is created"
+echo ""
+echo "Or ... run the -site option to list it and copy and paste into command line"
 echo ""
 echo "Logs have to be first started, then collected. Old logs won't be collected after an hour"
-echo ""
-echo "Nodename IP address is random so have to read GUI each time a VPC is created"
 echo ""
 exit 0
 }
@@ -102,6 +104,14 @@ s_vesnamespace="$1"
 ### s_vesnamespace="ves-io-AWS"
 ### s_vesnamespace="ip-172-31-3-54"
 curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/$1/sites/$s_sitename/vpm/debug/$s_vesnamespace/status"
+}
+
+f_site()
+{
+### echo "Listing all sites ..."
+### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites"
+echo "Listing virtual site $1-vpc ..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites/$1-vpc"
 }
 
 ### main
@@ -164,6 +174,14 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "Get sitename status for $2 ..."
    f_admin_get_status $2 $3
+   ;;
+   -site)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Searching for the nodename for $2-vpc ..."
+   f_site $2
    ;;
    *)
    ;;
