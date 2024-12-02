@@ -28,10 +28,11 @@ echo "Options:"
 echo ""
 echo "-tok                                   Test token"
 echo "-adcheck <studentname>                 ADMIN Check if logs exist for sitename"
-echo "-adstart <studentname> <nodename>      ADMIN Start log collection on site"
-echo "-adlog <studentname> <nodename>        ADMIN Get (a) log for sitename"
+echo "-adstart <nodename> <studentname>      ADMIN Start log collection on site"
+echo "-adlog <nodename> <studentname>        ADMIN Get (a) log for sitename"
 echo "-adzip <studentname>                   ** does not work ** ADMIN Get the zip file of all logs for sitename"
 echo "-adsrv <studentname>                   ADMIN List services"
+echo "-adsta <nodename> <studentname>        ADMIN Get sitename status"
 echo ""
 echo "See https://docs.cloud.f5.com/docs-v2/api/operate-debug"
 echo ""
@@ -63,6 +64,10 @@ f_admin_start_logs()
 s_sitename="$2-vpc"
 ### s_nodename="ip-172-31-3-54"
 s_nodename="$1"
+echo $2
+echo $s_sitename
+echo $1
+echo $s_nodename
 curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/system/sites/$s_sitename/vpm/debug/$s_nodename/start-debug-info-collection" | jq
 }
 
@@ -84,6 +89,19 @@ f_admin_list_services()
 {
 s_sitename="$1-vpc"
 curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/$1/sites/$s_sitename/vpm/debug/global/list-service"
+}
+
+f_admin_get_status()
+{
+s_sitename="$2-vpc"
+s_vesnamespace="$1"
+### s_vesnamespace="ves-system"
+### s_vesnamespace="ves-io-ce"
+### s_vesnamespace="ves-vpc-auto-$1-vpc"
+### Appears not implemented for next two variables. Ves namespace seems to be nodename
+### s_vesnamespace="ves-io-AWS"
+### s_vesnamespace="ip-172-31-3-54"
+curl -s -H "Content-Type:application/json" -H "Authorization: APIToken $v_token" -X GET "$v_url/operate/namespaces/$1/sites/$s_sitename/vpm/debug/$s_vesnamespace/status"
 }
 
 ### main
@@ -138,6 +156,14 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "List services for $2 ..."
    f_admin_list_services $2
+   ;;
+   -adsta)
+   if [ "$#" != 3 ]; then
+    f_echo "Missing nodename or student name ... "
+    exit 1
+   fi
+   f_echo "Get sitename status for $2 ..."
+   f_admin_get_status $2 $3
    ;;
    *)
    ;;
