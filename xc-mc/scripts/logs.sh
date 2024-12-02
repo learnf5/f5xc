@@ -44,6 +44,7 @@ echo "For student3 that name is ip-172-31-3-5 which is a form of the private IPv
 echo "Nodename IP address is random so have to read the GUI each time a VPC is created"
 echo ""
 echo "Or ... run the -site option to list it and copy and paste into command line"
+echo "Its listed as main_nodes.name or node_info.hostname or verNodeName"
 echo ""
 echo "Logs have to be first started, then collected. Old logs won't be collected after an hour"
 echo ""
@@ -112,6 +113,12 @@ f_site()
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites"
 echo "Listing virtual site $1-vpc ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites/$1-vpc"
+sleep 1
+echo "Searching for verNodeName which equals nodename ..."
+### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites/$1-vpc" | jq -r .[][].name
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites/$1-vpc" | jq | grep -E 'verNodeName'
+echo "Searching for hostname which equals nodename ..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites/$1-vpc" | jq | grep -E 'hostname'
 }
 
 ### main
