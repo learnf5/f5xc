@@ -1,4 +1,5 @@
-"""Juice Shop Bot defense test v1.1 P.Kuligowski 9/9/2022"""
+"""Juice Shop Bot defense test v1.2 E.Novak 12/6/2024"""
+# Line 37 added to account for differences in pure Linux vs. Linux subsystem for Windows
 import sys
 import time
 from selenium import webdriver
@@ -33,6 +34,7 @@ def main(credentials):
             print('Login: ' + login)
             print('Password: ' + password)
             browser.get(url)
+            browser.refresh()
             """Fix to accept cookies and remove Welcome Page"""
             if a == 1:
                 """Accept Cookies only once"""
