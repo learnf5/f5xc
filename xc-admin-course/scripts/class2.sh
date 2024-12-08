@@ -525,9 +525,8 @@ f_waap_create_single_student_objects()
 ### Create labs 1-3 for a student
 ### Create the port number for the origin pool range is 1201 to 1212
 ### Tenant matters for JuiceShop check which tenant environment we are using
-### WAAP Lab 3 uses either studentX-juice.aws.learnf5.cloud or studentX-juice.dev.learnf5.cloud
-####fqdn="$1-juice.dev.learnf5.cloud"
-fqdn="$1-juice.aws.learnf5.cloud"
+### WAAP Lab 3 uses either studentX-juice.f5training2.cloud
+fqdn="$1-juice.f5training2.cloud"
 snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
  snum=`echo -n $1 | tail -c 3`
