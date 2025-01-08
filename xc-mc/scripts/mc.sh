@@ -13,7 +13,7 @@ v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
-v_token="TREfoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="oGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 ### Default student number values
 v_aws1_site_name="student99-vpc1"
@@ -21,6 +21,7 @@ v_aws2_site_name="student99-vpc2"
 v_azure1_site_name="student99-vnet1"
 v_namespace_1="student99-brews"
 v_app_name_1="brews99"
+v_app_name_1="fucku"
 v_brews_spa_domain="brews99.aws.learnf5.cloud"
 v_brews_recs_domain="recs99.aws.learnf5.cloud"
 v_brews_inv_domain="inventory99.brews.local"
@@ -53,12 +54,12 @@ f_usage()
 {
 echo "Class setup script for Multi Cloud Brews Distributed Application"
 echo ""
-echo "Usage: ./${script_name} -option"
+echo "Usage: ./${script_name} -option <studentname>"
 echo ""
 echo "Options:"
 echo ""
-echo "-sa -tok                       Test token"
-echo "-sb -vars                      Print variables"
+echo "-sa                            Test token"
+echo "-sb                            Print variables"
 echo ""
 echo "Cloud Site Status"
 echo ""
@@ -461,10 +462,10 @@ v_brews_mongodb_domain="mongodb$snum.brews.local"
 
 while [ $# -gt 0 ]; do
  case "$1" in
-   -sa | -tok)
+   -sa)
    f_test_token
    ;;
-   -sb | -vars)
+   -sb)
    f_print_vars
    ;;
    -s1 | -mcs1)
