@@ -13,7 +13,7 @@ v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
-v_token="oGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="FREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 ### Default student number values
 v_aws1_site_name="student99-vpc1"
@@ -63,9 +63,9 @@ echo "-sb                            Print variables"
 echo ""
 echo "Cloud Site Status"
 echo ""
-echo "-s1 -mcs1                      AWS site 1 status"
-echo "-s2 -mcs2                      AWS site 2 status"
-echo "-s3 -mcs3                      Azure site 1 status"
+echo "-s1                            AWS site 1 status"
+echo "-s2                            AWS site 2 status"
+echo "-s3                            Azure site 1 status"
 echo ""
 echo "Base Configuration"
 echo ""
@@ -145,19 +145,19 @@ echo ""
 }
 
 
-f_mc_mcs1()
+f_mc_s1()
 {
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws1_site_name" | jq
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$v_aws1_site_name" | jq
 }
 
-f_mc_mcs2()
+f_mc_s2()
 {
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$aws2_site_name" | jq
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$v_aws2_site_name" | jq
 }
 
-f_mc_mcs3()
+f_mc_s3()
 {
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$azure1_site_name" | jq
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$v_azure1_site_name" | jq
 }
 
 f_mc_mccn()
@@ -449,6 +449,9 @@ else
  snum=`echo -n $2 | tail -c 1`
 fi
 
+echo $2
+echo $snum
+
 v_namespace_1="$2-brews"
 v_aws1_site_name="$2-vpc1"
 v_aws2_site_name="$2-vpc2"
@@ -468,17 +471,18 @@ while [ $# -gt 0 ]; do
    -sb)
    f_print_vars
    ;;
-   -s1 | -mcs1)
+   -s1)
    f_echo "Checking AWS1 cloud site status ..."
-   f_mc_mcs1
+   echo $v_aws1_site_name
+   f_mc_s1
    ;;
-   -s2 | -mcs2)
+   -s2)
    f_echo "Checking AWS2 cloud site status ..."
-   f_mc_mcs2
+   f_mc_s2
    ;;
-   -s3 | -mcs3)
+   -s3)
    f_echo "Checking Azure1 cloud site status ..."
-   f_mc_mcs3
+   f_mc_s3
    ;;
    -s4 | -mccn)
    f_echo "Creating namespace 1 ..."
