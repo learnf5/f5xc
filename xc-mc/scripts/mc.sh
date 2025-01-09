@@ -72,8 +72,8 @@ echo ""
 echo "-s4                            Create namespace 1"
 echo "-s5                            Create MCN label key"
 echo "-s6                            Create MCN label"
-echo "-s7 -mcwlk                     Create Brews workload"
-echo "-s8 -mcwaf                     Create SPA WAF"
+echo "-s7                            Create Brews workload"
+echo "-s8                            Create SPA WAF"
 echo ""
 echo "vK8s and vsites"
 echo ""
@@ -179,13 +179,13 @@ s_value="all-sites"
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/create" -d '{"key":"'$s_key'","namespace":"shared","value":"'$s_value'"}'
 }
 
-f_mc_mcwlk()
+f_mc_s7()
 {
 s_wl_flavor=$v_namespace_1-large-flavor
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/workload_flavors" -d '{"metadata":{"name":"'$s_wl_flavor'","namespace":"shared"},"spec":{"memory":"512","vcpus":0.25,"ephemeral_storage":"0"}}'
 }
 
-f_mc_mcwaf()
+f_mc_s8()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/app_firewalls" -d '{"metadata":{"name":"'$v_brews_spa_api_waf'","namespace":"'$v_namespace_1'"},"spec":{}}'
 }
@@ -451,8 +451,9 @@ fi
 
 ### Adjusting vars depending on command lne inputs
 
-echo $2
-echo $snum
+echo "Setting variables from input ..."
+echo "Student name: $2"
+echo "Student number: $snum"
 
 v_namespace_1="$2-brews"
 v_aws1_site_name="$2-vpc1"
@@ -498,13 +499,13 @@ while [ $# -gt 0 ]; do
    f_echo "Creating MCN label ..."
    f_mc_s6
    ;;
-   -s7 | -mcwlk)
+   -s7)
    f_echo "Creating Brews workload ..."
-   f_mc_mcwlk
+   f_mc_s7
    ;;
-   -s8 | -mcwaf)
+   -s8)
    f_echo "Creating SPA WAF ..."
-   f_mc_mcwaf
+   f_mc_s8
    ;;
    -s9 | -mccvs)
    f_echo "Creating MCN vsite ..."
