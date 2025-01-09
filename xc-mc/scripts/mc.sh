@@ -3,25 +3,25 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.0"
+script_ver="1.1"
 script_name="mc.sh"
 student_name=$2
 
+### default values
 ### Adjust to whatever tenant and DNS domain in use
-### Default values
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
 v_azu_creds_name="all-students-credentials"
 v_token="FREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
-### Default student number values
 v_aws1_site_name="student99-vpc1"
 v_aws2_site_name="student99-vpc2"
 v_azure1_site_name="student99-vnet1"
 v_namespace_1="student99-brews"
+v_namespace_1_cert="abcd"
+v_namespace_1_key="bcd"
 v_app_name_1="brews99"
-v_app_name_1="fucku"
 v_brews_spa_domain="brews99.aws.learnf5.cloud"
 v_brews_recs_domain="recs99.aws.learnf5.cloud"
 v_brews_inv_domain="inventory99.brews.local"
@@ -69,9 +69,9 @@ echo "-s3                            Azure site 1 status"
 echo ""
 echo "Base Configuration"
 echo ""
-echo "-s4 -mccn                      Create namespace 1"
-echo "-s5 -mcke                      Create MCN label key"
-echo "-s6 -mcla                      Create MCN label"
+echo "-s4                            Create namespace 1"
+echo "-s5                            Create MCN label key"
+echo "-s6                            Create MCN label"
 echo "-s7 -mcwlk                     Create Brews workload"
 echo "-s8 -mcwaf                     Create SPA WAF"
 echo ""
@@ -160,19 +160,19 @@ f_mc_s3()
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$v_azure1_site_name" | jq
 }
 
-f_mc_mccn()
+f_mc_s4()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$v_namespace_1'"},"spec":{}}' | jq
 sleep 1
 }
 
-f_mc_mcke()
+f_mc_s5()
 {
 s_key=$v_app_name_1-sites
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label_key/create" -d '{"key":"'$s_key'","namespace":"shared"}'
 }
 
-f_mc_mcla()
+f_mc_s6()
 {
 s_key=$v_app_name_1-sites
 s_value="all-sites"
@@ -449,6 +449,8 @@ else
  snum=`echo -n $2 | tail -c 1`
 fi
 
+### Adjusting vars depending on command lne inputs
+
 echo $2
 echo $snum
 
@@ -484,17 +486,17 @@ while [ $# -gt 0 ]; do
    f_echo "Checking Azure1 cloud site status ..."
    f_mc_s3
    ;;
-   -s4 | -mccn)
+   -s4)
    f_echo "Creating namespace 1 ..."
-   f_mc_mcs3
+   f_mc_s4
    ;;
-   -s5 | -mcke)
+   -s5)
    f_echo "Creating MCN label key ..."
-   f_mc_mcke
+   f_mc_s5
    ;;
-   -s6 | -mcla)
+   -s6)
    f_echo "Creating MCN label ..."
-   f_mc_mcke
+   f_mc_s6
    ;;
    -s7 | -mcwlk)
    f_echo "Creating Brews workload ..."
