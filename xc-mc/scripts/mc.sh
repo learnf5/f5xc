@@ -60,6 +60,9 @@ echo "Options:"
 echo ""
 echo "-sa                            Test token"
 echo "-sb                            Print variables"
+echo "-a1                            Create VPC site 1"
+echo "-a2                            Create VPC site 2"
+echo "-a3                            Create VNET site 1"
 echo ""
 echo "Cloud Site Status"
 echo ""
@@ -144,6 +147,40 @@ echo $v_namespace_1, $v_aws1_site_name, $v_aws2_site_name, $v_azure1_site_name, 
 echo ""
 }
 
+f_mc_a1()
+{
+s_key1="$1-key"
+s_value1="$1-value"
+s_key2="$1brews-sites"
+s_value2="all-sites"
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/aws_vpc_sites" -d '{"metadata":{"name":"'$v_aws1_site_name'","namespace":"system","labels":{"'$s_key1'":"'$s_value1'","'$s_key2'":"'$s_value2'"}},"spec":{"vpc":{"new_vpc":{"autogenerate":{},"primary_ipv4":"172.31.0.0/16","allocate_ipv6":false}},"ingress_gw":{"az_nodes":[{"aws_az_name":"us-east-1a","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24"}},"disk_size":0}],"aws_certified_hw":"aws-byol-voltmesh","allowed_vip_port":{"use_http_https_port":{}},"performance_enhancement_mode":{"perf_mode_l7_enhanced":{}}},"aws_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_aws_creds_name'"},"instance_type":"m5.4xlarge","disk_size":0,"volterra_software_version":"","operating_system_version":"","aws_region":"us-east-1","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","address":"","logs_streaming_disabled":{},"vip_params_per_az":[],"no_worker_nodes": {},"default_blocked_services":{},"direct_connect_disabled":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"enable_internet_vip":{},"egress_gateway_default":{},"suggested_action":"","error_description":"", "f5xc_security_group":{},"direct_connect_info":null}}'
+sleep 4
+echo "Checking status of Terraform Plan for AWS VPC site 1..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/aws_vpc_site/$v_aws1_site_name/status" | jq
+sleep 2
+echo "Applying Terraform Plan for AWS VPC site 1..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/aws_vpc_site/$v_aws1_site_name/run" -d '{"action":"APPLY"}'
+}
+
+f_mc_a2()
+{
+s_key1="$1-key"
+s_value1="$1-value"
+s_key2="$1brews-sites"
+s_value2="all-sites"
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/aws_vpc_sites" -d '{"metadata":{"name":"'$v_aws2_site_name'","namespace":"system","labels":{"'$s_key1'":"'$s_value1'","'$s_key2'":"'$s_value2'"}},"spec":{"vpc":{"new_vpc":{"autogenerate":{},"primary_ipv4":"172.31.0.0/16","allocate_ipv6":false}},"ingress_gw":{"az_nodes":[{"aws_az_name":"us-east-1a","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24"}},"disk_size":0}],"aws_certified_hw":"aws-byol-voltmesh","allowed_vip_port":{"use_http_https_port":{}},"performance_enhancement_mode":{"perf_mode_l7_enhanced":{}}},"aws_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_aws_creds_name'"},"instance_type":"m5.4xlarge","disk_size":0,"volterra_software_version":"","operating_system_version":"","aws_region":"us-east-1","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","address":"","logs_streaming_disabled":{},"vip_params_per_az":[],"no_worker_nodes": {},"default_blocked_services":{},"direct_connect_disabled":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"enable_internet_vip":{},"egress_gateway_default":{},"suggested_action":"","error_description":"", "f5xc_security_group":{},"direct_connect_info":null}}'
+sleep 4
+echo "Checking status of Terraform Plan for AWS VPC site 1..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/aws_vpc_site/$v_aws2_site_name/status" | jq
+sleep 2
+echo "Applying Terraform Plan for AWS VPC site 1..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/aws_vpc_site/$v_aws2_site_name/run" -d '{"action":"APPLY"}'
+}
+
+f_mc_a3()
+{
+echo ""
+}
 
 f_mc_s1()
 {
@@ -163,7 +200,6 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/s
 f_mc_s4()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$v_namespace_1'"},"spec":{}}' | jq
-sleep 1
 }
 
 f_mc_s5()
@@ -469,10 +505,24 @@ v_brews_mongodb_domain="mongodb$snum.brews.local"
 while [ $# -gt 0 ]; do
  case "$1" in
    -sa)
+   f_echo "Testing F5XC API token ..."
    f_test_token
    ;;
    -sb)
+   f_echo "Printing variables ..."
    f_print_vars
+   ;;
+   -a1)
+   f_echo "Creating AWS VPC site 1 called $v_aws1_site_name ..."
+   f_mc_a1
+   ;;
+   -a2)
+   f_echo "Creating AWS VPC site 2 called $v_aws2_site_name ..."
+   f_mc_a2
+   ;;
+   -a3)
+   f_echo "Creating Azure VNET site 1 called $v_azure1_site_name ..."
+   f_mc_a2
    ;;
    -s1)
    f_echo "Checking AWS1 cloud site status ..."
@@ -488,7 +538,7 @@ while [ $# -gt 0 ]; do
    f_mc_s3
    ;;
    -s4)
-   f_echo "Creating namespace 1 ..."
+   f_echo "Creating namespace 1 called $v_namespace_1 ..."
    f_mc_s4
    ;;
    -s5)
