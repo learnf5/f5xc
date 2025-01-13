@@ -7,9 +7,9 @@ script_ver="1.1"
 script_name="mc.sh"
 student_name=$2
 
-### training-dev tenant
 ### default values
-### Adjust to whatever tenant and DNS domain in use
+
+### training-dev tenant
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
 v_token="FREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
@@ -17,12 +17,14 @@ v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws_creds_name="learnf5-aws"
 ### v_azure_creds_name="all-students-credentials"
 v_azure_creds_name="f5xc-training-azure-deploy"
+
 ### tenant 1
-### v_token="u7Yp55Pfvon+MmLXpavWV7uAYXw="
+### v_token="PREzu7Yp55Pfvon+MmLXpavWV7uAYXw="
 ### v_url="https://training.console.ves.volterra.io/api"
 ### v_tenant="training-ytfhxsmw"
 ### v_dom="aws.learnf5.cloud"
 ### v_azure_creds_name="all-students-credentials"
+
 v_aws1_site_name="student99-vpc1"
 v_aws2_site_name="student99-vpc2"
 v_azure1_site_name="student99-vnet1"
@@ -69,9 +71,10 @@ echo "Options:"
 echo ""
 echo "-sa                            Test token"
 echo "-sb                            Print variables"
-echo "-a1                            Create VPC site 1"
-echo "-a2                            Create VPC site 2"
+echo "-a1                            Create and Apply VPC site 1"
+echo "-a2                            Create and Apply VPC site 2"
 echo "-a3                            Create VNET site 1"
+echo "-a4                            Apply VNET site 1"
 echo ""
 echo "Cloud Site Status"
 echo ""
@@ -162,7 +165,7 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 sleep 4
 echo "Checking status of Terraform Plan for AWS VPC site 1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/aws_vpc_site/$v_aws1_site_name/status" | jq
-sleep 2
+sleep 4
 echo "Applying Terraform Plan for AWS VPC site 1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/aws_vpc_site/$v_aws1_site_name/run" -d '{"action":"APPLY"}'
 }
@@ -173,18 +176,26 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 sleep 4
 echo "Checking status of Terraform Plan for AWS VPC site 2 ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/aws_vpc_site/$v_aws2_site_name/status" | jq
-sleep 2
+sleep 4
 echo "Applying Terraform Plan for AWS VPC site 2 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/aws_vpc_site/$v_aws2_site_name/run" -d '{"action":"APPLY"}'
 }
 
 f_mc_a3()
 {
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/azure_vnet_sites" -d '{"metadata":{"name":"'$v_azure1_site_name'","namespace":"system","labels":{"'$v_azure1_key1'":"'$v_azure1_key1_value'","'$v_key2'":"'$v_key2_value'","'$v_azure1_key3'":"'$v_azure1_key3_value'"}},"spec":{"resource_group":"student99-rg","azure_region":"eastus","vnet":{"new_vnet":{"name":"student99-azure-vnet","primary_ipv4":"172.31.0.0/16"}},"ingress_gw":{"az_nodes":[{"azure_az":"1","local_subnet":{"subnet_param":{"ipv4":"172.31.99.0/24","ipv6":""}},"disk_size":0}],"azure_certified_hw":"azure-byol-voltmesh","performance_enhancement_mode":{"perf_mode_l7_enhanced":{}},"accelerated_networking":{"enable":{}}},"azure_cred":{"tenant":"training-dev-fcphvhww","namespace":"system","name":"f5xc-training-azure-deploy"},"machine_type":"Standard_D3_v2","disk_size":0,"volterra_software_version":"crt-20241206-3066","operating_system_version":"9.2024.6","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","admin_password":null,"address":"","coordinates":{"latitude":37.3719,"longitude":-79.8164},"logs_streaming_disabled":{},"tags":{},"site_state":"ONLINE","vip_params_per_az":[{"inside_vip":[],"outside_vip":["172.31.99.4"],"inside_vip_v6":[],"outside_vip_v6":[],"outside_vip_cname":"","inside_vip_cname":"","az_name":"1"}],"no_worker_nodes":{},"default_blocked_services":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"user_modification_timestamp":"2025-01-13T13:03:46.610035851Z","suggested_action":"","error_description":"","site_errors":[{"error_description":"","suggested_action":""}],"validation_state":"VALIDATION_SUCCEEDED","custom_dns":null,"kubernetes_upgrade_drain":{"enable_upgrade_drain":{"drain_node_timeout":300,"drain_max_unavailable_node_count":1,"disable_vega_upgrade_mode":{}}},"cloud_site_info":{"public_ips":["172.174.131.140"],"private_ips":["172.31.99.4"],"spoke_vnet_prefix_info":[],"express_route_info":{"route_server_ips":[],"route_server_asn":65515},"node_info":[],"vnet":{"vnet_name":"student99-azure-vnet","resource_id":"/subscriptions/30ea8978-d9a7-4ff9-9c3f-2fd126141751/resourceGroups/student99-rg/providers/Microsoft.Network/virtualNetworks/student99-azure-vnet"}}}'
+### Azure of course is a special case. It takes far longer to validate than AWS so have to wait much
+### longer before you try to apply. Six seconds is not enough, it can take far longer but we dont know
+### so we have to put it in its own function
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/azure_vnet_sites" -d '{"metadata":{"name":"'$v_azure1_site_name'","namespace":"system","labels":{"'$v_azure1_key1'":"'$v_azure1_key1_value'","'$v_key2'":"'$v_key2_value'","'$v_azure1_key3'":"'$v_azure1_key3_value'"}},"spec":{"resource_group":"'$v_azure1_resource_group'","azure_region":"'$v_azure1_region'","vnet":{"new_vnet":{"name":"'$v_azure1_site_name'","primary_ipv4":"172.31.0.0/16"}},"ingress_gw":{"az_nodes":[{"azure_az":"1","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24","ipv6":""}},"disk_size":0}],"azure_certified_hw":"azure-byol-voltmesh","performance_enhancement_mode":{"perf_mode_l7_enhanced":{}},"accelerated_networking":{"enable":{}}},"azure_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"f5xc-training-azure-deploy"},"machine_type":"Standard_D3_v2","disk_size":0,"ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","logs_streaming_disabled":{},"no_worker_nodes":{},"default_blocked_services":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}}}}'
 sleep 4
+echo "Now since Azure site verification is so slow, run apply in a separate step ..."
+}
+
+f_mc_a4()
+{
 echo "Checking status of Terraform Plan for Azure VNET site 1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/azure_vnet_site/$v_azure1_site_name/status" | jq
-sleep 2
+sleep 4
 echo "Applying Terraform Plan for Azure VNET site 1..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/azure_vnet_site/$v_azure1_site_name/run" -d '{"action":"APPLY"}'
 }
@@ -500,8 +511,6 @@ echo "Student number: $snum"
 
 v_aws1_site_name="$2-vpc1"
 v_aws2_site_name="$2-vpc2"
-v_azure1_site_name="$2-vnet1"
-v_azure1_resource_group="$2-rg"
 v_aws1_key1="$2-key"
 v_aws1_key1_value="$2-value1"
 v_aws2_key1="$2-key"
@@ -512,10 +521,13 @@ v_aws1_key3="ves.io/siteName"
 v_aws2_key3="ves.io/siteName"
 v_aws2_key3_value="$2-vpc1"
 v_aws2_key3_value="$2-vpc2"
+v_azure1_site_name="$2-vnet1"
+v_azure1_resource_group="$2-rg"
 v_azure1_key1="$2-key"
 v_azure1_key1_value="$2-value1"
 v_azure1_key3="ves.io/siteName"
 v_azure1_key3_value="$2-vpc2"
+v_azure1_region="eastus"
 v_namespace_1="$2-brews"
 v_app_name_1="brews$snum"
 v_brews_spa_domain="brews$snum.aws.learnf5.cloud"
@@ -534,20 +546,23 @@ while [ $# -gt 0 ]; do
    f_print_vars
    ;;
    -a1)
-   f_echo "Creating AWS VPC site 1 called $v_aws1_site_name ..."
+   f_echo "Creating and Applying AWS VPC site 1 called $v_aws1_site_name ..."
    f_mc_a1
    ;;
    -a2)
-   f_echo "Creating AWS VPC site 2 called $v_aws2_site_name ..."
+   f_echo "Creating and Applying AWS VPC site 2 called $v_aws2_site_name ..."
    f_mc_a2
    ;;
    -a3)
    f_echo "Creating Azure VNET site 1 called $v_azure1_site_name ..."
    f_mc_a3
    ;;
+   -a4)
+   f_echo "Applying Azure VNET site 1 called $v_azure1_site_name ..."
+   f_mc_a4
+   ;;
    -s1)
    f_echo "Checking AWS1 cloud site status ..."
-   echo $v_aws1_site_name
    f_mc_s1
    ;;
    -s2)
