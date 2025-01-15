@@ -12,14 +12,14 @@ student_name=$2
 ### training-dev tenant
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
-v_token="FREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="PREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws_creds_name="learnf5-aws"
 ### v_azure_creds_name="all-students-credentials"
 v_azure_creds_name="f5xc-training-azure-deploy"
 
 ### tenant 1
-### v_token="PREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
+### v_token="FREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
 ### v_url="https://training.console.ves.volterra.io/api"
 ### v_tenant="training-ytfhxsmw"
 ### v_dom="aws.learnf5.cloud"
@@ -39,7 +39,7 @@ v_key2="student99brews-sites"
 v_key2_value="all-sites"
 v_aws1_key3="ves.io/siteName"
 v_aws2_key3="ves.io/siteName"
-v_aws2_key3_value="student99-vpc1"
+v_aws1_key3_value="student99-vpc1"
 v_aws2_key3_value="student99-vpc2"
 v_azure1_site_name="student99-vnet1"
 v_azure1_resource_group="student99-rg"
@@ -271,31 +271,31 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 f_mc_s9()
 {
 s_mcn_name=$v_namespace_1-mcn-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_mcn_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["'$v_app_name_1'"-sites in (all-sites)"]}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_mcn_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["'$v_app_name_1'-sites in (all-sites)"]}}}'
 }
 
 f_mc_s10()
 {
 s_re_name=$v_namespace_1-re-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_re_name'"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":[ves.io/siteName in (ves-io-wes-sea,ves-io-ny8-nyc)]}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_re_name'"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":["ves.io/siteName in (ves-io-wes-sea,ves-io-ny8-nyc)"]}}}'
 }
 
 f_mc_s11()
 {
 s_az_name=$v_azure1_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_az_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_azure1_site_name'")]}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_az_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ('$v_azure1_site_name')"]}}}'
 }
 
 f_mc_s12()
 {
 s_aws1_name=$v_aws1_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws1_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_aws1_site_name'")]}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws1_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ('$v_aws1_site_name')"]}}}'
 }
 
 f_mc_s13()
 {
-s_aws2_name=$v_aws1_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws2_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":[ves.io/siteName in ("'$v_aws2_site_name'")]}}}'
+s_aws2_name=$v_aws2_site_name-vsite
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws2_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ('$v_aws2_site_name')"]}}}'
 }
 
 f_mc_s14()
@@ -303,7 +303,7 @@ f_mc_s14()
 s_vk8s_name=$v_app_name_1-vk8s
 s_mcn_name=$v_namespace_1-mcn-vsite
 s_wl_flavor=$v_namespace_1-large-flavor
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s_name'","namespace":"'$v_namespace_1'","disable":"false"},"spec":{"vsite_refs":[{"namespace":"'$v_namespace_1'"","name":"'$s_mcn_name'","kind":"virtual_site"}],"disabled":{},"default_flavor_ref":{"namespace":"shared","name":"'$s_wl_flavour'","kind":"workload_flavor"}}}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s_name'","namespace":"'$v_namespace_1'","labels":{},"annotations":"disable":"false"},"spec":{"vsite_refs":[{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'","kind":"virtual_site"}],"disabled":{},"default_flavor_ref":{"namespace":"shared","name":"'$s_wl_flavour'","kind":"workload_flavor"}}}'
 }
 
 f_mc_s15()
@@ -543,7 +543,7 @@ v_key2="$2brews-sites"
 v_key2_value="all-sites"
 v_aws1_key3="ves.io/siteName"
 v_aws2_key3="ves.io/siteName"
-v_aws2_key3_value="$2-vpc1"
+v_aws1_key3_value="$2-vpc1"
 v_aws2_key3_value="$2-vpc2"
 v_azure1_site_name="$2-vnet1"
 v_azure1_resource_group="$2-rg"
