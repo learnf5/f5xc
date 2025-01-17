@@ -19,7 +19,7 @@ v_aws_creds_name="learnf5-aws"
 v_azure_creds_name="f5xc-training-azure-deploy"
 
 ### tenant 1
-### v_token="FREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
+### v_token="PREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
 ### v_url="https://training.console.ves.volterra.io/api"
 ### v_tenant="training-ytfhxsmw"
 ### v_dom="aws.learnf5.cloud"
@@ -91,48 +91,48 @@ echo "-sb                            Print variables"
 echo ""
 echo "Create keys, labels and cloud sites"
 echo ""
-echo "-s4                            Create namespace 1"
-echo "-s5                            Create MCN key"
-echo "-s6                            Create MCN key value"
-echo "-a1                            Create and Apply VPC site 1"
-echo "-a2                            Create and Apply VPC site 2"
-echo "-a3                            Create VNET site 1"
-echo "-a4                            Apply VNET site 1"
+echo "-s1                            Create namespace 1"
+echo "-s2                            Create MCN key"
+echo "-s3                            Create MCN key value"
+echo "-s4                            Create and Apply VPC site 1"
+echo "-s5                            Create and Apply VPC site 2"
+echo "-s6                            Create VNET site 1"
+echo "-s7                            Apply VNET site 1"
 echo ""
 echo "Check Cloud Site Status"
 echo ""
-echo "-s1                            AWS VPC site 1 status"
-echo "-s2                            AWS VPC site 2 status"
-echo "-s3                            Azure VNET site 1 status"
+echo "-s8                            AWS VPC site 1 status"
+echo "-s9                            AWS VPC site 2 status"
+echo "-s10                           Azure VNET site 1 status"
 echo ""
 echo "Create workloads and WAF policy"
 echo ""
-echo "-s7                            Create Brews workload"
-echo "-s8                            Create SPA WAF"
+echo "-s11                            Create Brews workload"
+echo "-s12                            Create SPA WAF"
 echo ""
 echo "Create vK8s and vsites"
 echo ""
-echo "-s9                            Create MCN vsite"
-echo "-s10                           Create RE vsite"
-echo "-s11                           Create Azure 1 vsite"
-echo "-s12                           Create AWS 1 vsite"
-echo "-s13                           Create AWS 2 vsite"
-echo "-s14                           Create vK8s cluster"
-echo "-s15                           Get vK8s cluster status"
-echo ""
-echo "Create more workloads"
-echo ""
-echo "-s16 -mcwl1                    Create Container Registry"
-echo "-s17 -mcwl2                    Deploy Mongodb"
-echo "-s18 -mcwl3                    Deploy SPA"
-echo "-s19 -mcwl4                    Deploy API"
-echo "-s20 -mcwl5                    Deploy Inventory"
-echo "-s21 -mcwl6                    Deploy Recommendations HTTPS LB manual cert cleartext"
-echo "-s22 -mcwl7                    Deploy Recommendations HTTPS LB manual cert blindfold"
-echo "-s23 -mcwl8                    Deploy Recommendations HTTPS LB autocert"
-echo "-s24 -mcwl9                    Deploy Recommendations HTTPS LB"
+echo "-s13                           Create MCN vsite"
+echo "-s14                           Create RE vsite"
+echo "-s15                           Create Azure 1 vsite"
+echo "-s16                           Create AWS 1 vsite"
+echo "-s17                           Create AWS 2 vsite"
+echo "-s18                           Create vK8s cluster"
+echo "-s19                           Get vK8s cluster status"
 echo ""
 echo "Deployments"
+echo ""
+echo "-s20                           Create Container Registry"
+echo "-s21                           Deploy Mongodb"
+echo "-s22                           Deploy SPA"
+echo "-s23                           Deploy API"
+echo "-s24                           Deploy Inventory"
+echo "-s25                           Deploy Recommendations HTTPS LB manual cert cleartext"
+echo "-s26                           Deploy Recommendations HTTPS LB manual cert blindfold"
+echo "-s27                           Deploy Recommendations HTTPS LB autocert"
+echo "-s28                           Deploy Recommendations HTTPS LB"
+echo ""
+echo "More deployments"
 echo ""
 echo "-s25 -mcdp1                    Delete Recommendations deployment "
 echo "-s26 -mcdp2                    Delete Inventory deployment "
@@ -179,7 +179,25 @@ echo $v_namespace_1, $v_aws1_site_name, $v_aws2_site_name, $v_azure1_site_name, 
 echo ""
 }
 
-f_mc_a1()
+f_mc_s1()
+{
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$v_namespace_1'"},"spec":{}}' | jq
+}
+
+f_mc_s2()
+{
+s_key=$v_app_name_1-sites
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label_key/create" -d '{"key":"'$s_key'","namespace":"shared"}'
+}
+
+f_mc_s3()
+{
+s_key=$v_app_name_1-sites
+s_value="all-sites"
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/create" -d '{"key":"'$s_key'","namespace":"shared","value":"'$s_value'"}'
+}
+
+f_mc_s4()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/aws_vpc_sites" -d '{"metadata":{"name":"'$v_aws1_site_name'","namespace":"system","labels":{"'$v_aws1_key1'":"'$v_aws1_key1_value'","'$v_key2'":"'$v_key2_value'","'$v_aws1_key3'":"'$v_aws1_key3_value'"}},"spec":{"vpc":{"new_vpc":{"autogenerate":{},"primary_ipv4":"172.31.0.0/16","allocate_ipv6":false}},"ingress_gw":{"az_nodes":[{"aws_az_name":"us-east-1a","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24"}},"disk_size":0}],"aws_certified_hw":"aws-byol-voltmesh","allowed_vip_port":{"use_http_https_port":{}},"performance_enhancement_mode":{"perf_mode_l7_enhanced":{}}},"aws_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_aws_creds_name'"},"instance_type":"m5.4xlarge","disk_size":0,"volterra_software_version":"","operating_system_version":"","aws_region":"us-east-1","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","address":"","logs_streaming_disabled":{},"vip_params_per_az":[],"no_worker_nodes": {},"default_blocked_services":{},"direct_connect_disabled":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"enable_internet_vip":{},"egress_gateway_default":{},"suggested_action":"","error_description":"","f5xc_security_group":{},"direct_connect_info":null}}'
 sleep 6
@@ -190,7 +208,7 @@ echo "Applying Terraform Plan for AWS VPC site 1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/aws_vpc_site/$v_aws1_site_name/run" -d '{"action":"APPLY"}'
 }
 
-f_mc_a2()
+f_mc_s5()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/aws_vpc_sites" -d '{"metadata":{"name":"'$v_aws2_site_name'","namespace":"system","labels":{"'$v_aws2_key1'":"'$v_aws2_key1_value'","'$v_key2'":"'$v_key2_value'","'$v_aws2_key3'":"'$v_aws2_key3_value'"}},"spec":{"vpc":{"new_vpc":{"autogenerate":{},"primary_ipv4":"172.31.0.0/16","allocate_ipv6":false}},"ingress_gw":{"az_nodes":[{"aws_az_name":"us-east-1a","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24"}},"disk_size":0}],"aws_certified_hw":"aws-byol-voltmesh","allowed_vip_port":{"use_http_https_port":{}},"performance_enhancement_mode":{"perf_mode_l7_enhanced":{}}},"aws_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_aws_creds_name'"},"instance_type":"m5.4xlarge","disk_size":0,"volterra_software_version":"","operating_system_version":"","aws_region":"us-east-1","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","address":"","logs_streaming_disabled":{},"vip_params_per_az":[],"no_worker_nodes": {},"default_blocked_services":{},"direct_connect_disabled":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"enable_internet_vip":{},"egress_gateway_default":{},"suggested_action":"","error_description":"","f5xc_security_group":{},"direct_connect_info":null}}'
 sleep 6
@@ -201,7 +219,7 @@ echo "Applying Terraform Plan for AWS VPC site 2 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/aws_vpc_site/$v_aws2_site_name/run" -d '{"action":"APPLY"}'
 }
 
-f_mc_a3()
+f_mc_s6()
 {
 ### Azure of course is a special case. It takes far longer to validate than AWS so have to wait much
 ### longer before you try to apply. Six seconds is not enough, it can take far longer but we dont know
@@ -215,7 +233,7 @@ echo ""
 echo "First go to the F5XC console and wait for it to indicate Validation Succeeded ..."
 }
 
-f_mc_a4()
+f_mc_s7()
 {
 echo "Checking status of Terraform Plan for Azure VNET site 1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/azure_vnet_site/$v_azure1_site_name/status" | jq
@@ -224,141 +242,123 @@ echo "Applying Terraform Plan for Azure VNET site 1..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/azure_vnet_site/$v_azure1_site_name/run" -d '{"action":"APPLY"}'
 }
 
-f_mc_s1()
+f_mc_s8()
 {
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$v_aws1_site_name" | jq
 }
 
-f_mc_s2()
+f_mc_s9()
 {
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$v_aws2_site_name" | jq
 }
 
-f_mc_s3()
+f_mc_s10()
 {
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/azure_vnet_sites/$v_azure1_site_name" | jq
 }
 
-f_mc_s4()
-{
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$v_namespace_1'"},"spec":{}}' | jq
-}
-
-f_mc_s5()
-{
-s_key=$v_app_name_1-sites
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label_key/create" -d '{"key":"'$s_key'","namespace":"shared"}'
-}
-
-f_mc_s6()
-{
-s_key=$v_app_name_1-sites
-s_value="all-sites"
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/create" -d '{"key":"'$s_key'","namespace":"shared","value":"'$s_value'"}'
-}
-
-f_mc_s7()
+f_mc_s11()
 {
 s_wl_flavor=$v_namespace_1-large-flavor
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/workload_flavors" -d '{"metadata":{"name":"'$s_wl_flavor'","namespace":"shared"},"spec":{"memory":"512","vcpus":0.25,"ephemeral_storage":"0"}}'
 }
 
-f_mc_s8()
+f_mc_s12()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/app_firewalls" -d '{"metadata":{"name":"'$v_brews_spa_api_waf'","namespace":"'$v_namespace_1'"},"spec":{}}'
 }
 
-f_mc_s9()
+f_mc_s13()
 {
 s_mcn_name=$v_namespace_1-mcn-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_mcn_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["'$v_app_name_1'-sites in (all-sites)"]}}}'
 }
 
-f_mc_s10()
+f_mc_s14()
 {
 s_re_name=$v_namespace_1-re-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_re_name'"},"spec":{"site_type":"REGIONAL_EDGE","site_selector":{"expressions":["ves.io/siteName in (ves-io-wes-sea,ves-io-ny8-nyc)"]}}}'
 }
 
-f_mc_s11()
+f_mc_s15()
 {
 s_az_name=$v_azure1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_az_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ('$v_azure1_site_name')"]}}}'
 }
 
-f_mc_s12()
+f_mc_s16()
 {
 s_aws1_name=$v_aws1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws1_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ('$v_aws1_site_name')"]}}}'
 }
 
-f_mc_s13()
+f_mc_s17()
 {
 s_aws2_name=$v_aws2_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_sites" -d '{"metadata":{"name":"'$s_aws2_name'"},"spec":{"site_type":"CUSTOMER_EDGE","site_selector":{"expressions":["ves.io/siteName in ('$v_aws2_site_name')"]}}}'
 }
 
-f_mc_s14()
+f_mc_s18()
 {
 s_vk8s_name=$v_app_name_1-vk8s
 s_mcn_name=$v_namespace_1-mcn-vsite
 s_wl_flavor=$v_namespace_1-large-flavor
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s_name'","namespace":"'$v_namespace_1'","labels":{},"annotations":"disable":"false"},"spec":{"vsite_refs":[{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'","kind":"virtual_site"}],"disabled":{},"default_flavor_ref":{"namespace":"shared","name":"'$s_wl_flavour'","kind":"workload_flavor"}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s_name'","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"disable":false},"spec":{"vsite_refs":[{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'","kind":"virtual_site"}],"disabled":{},"default_flavor_ref":{"namespace":"shared","name":"'$s_wl_flavor'","kind":"workload_flavor"}}}'
 }
 
-f_mc_s15()
+f_mc_s19()
 {
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$v_namespace_1/virtual_k8ss?report_fields"
 }
 
-f_mc_s16()
+f_mc_s20()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/container_registrys" -d '{"metadata":{"name":"'$v_registry_name'"},"spec":{"registry":"f5demos.azurecr.io","user_name":"1e21992e-4283-4afe-9a89-b3b314f1fd55","password":{"clear_secret_info":{"url":"string:///dVUzOFF+SFZwS1RXYWU0eWVXYkxSblVwbHg2ZXprMm9xWmpNS2FWUg=="},"secret_encoding_type":"EncodingNone"}}}'
 }
 
-f_mc_s17()
+f_mc_s21()
 {
 s_aws2_name=$v_aws2_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_brews_mongodb_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_mongodb_container_name'","image":{"name":"public.ecr.aws/o2z6z0t3/friday:demo","public":{},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"SEED_FILE","value":"beerProducts.json"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":27017,"protocol":"PROTOCOL_TCP","same_as_port":}}}}}},"resource_version":null}}'
 }
 
-f_mc_s18()
+f_mc_s22()
 {
 s_mcn_name=$v_namespace_1-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_spa_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_spa_container_name'","image":{"name":"f5demos.azurecr.io/spa","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":8081,"protocol":"PROTOCOL_TCP","target_port":80}}}}}},"resource_version":null}}'
 }
 
-f_mc_s19()
+f_mc_s23()
 {
 s_aws1_name=$v_aws1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_api_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_api_container_name'","image":{"name":"f5demos.azurecr.io/api","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_aws1_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":8000,"protocol":"PROTOCOL_TCP","same_as_port":{}}}}}}},"resource_version":null}}'
 }
 
-f_mc_s20()
+f_mc_s24()
 {
 s_azure1_name=$v_azure1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_inv_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_inv_container_name'","image":{"name":"f5demos.azurecr.io/inv","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_azure1_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":8002,"protocol":"PROTOCOL_TCP","same_as_port":{}}}}}}},"resource_version":null}}'
 }
 
-f_mc_s21()
+f_mc_s25()
 {
 s_re_name=$v_namespace_1-re-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_recs_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_recs_container_name'","image":{"name":"f5demos.azurecr.io/recs","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_re_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_re_name'"}]}},"advertise_options":{"advertise_on_public":{"port":{"info":{"port":8001,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$v_brews_recs_domain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///'$v_base64_cert'","private_key":{"clear_secret_info":{"url":"string:///'$v_base64_key'","provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":"EncodingNone"},"description":null}],"no_mtls":{}},"default_header":{}},"default_route":{"disable_host_rewrite":{}}}}}}},"resource_version":null}}'
 }
 
-f_mc_s22()
+f_mc_s26()
 {
 s_re_name=$v_namespace_1-re-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_recs_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_recs_container_name'","image":{"name":"f5demos.azurecr.io/recs","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_re_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_re_name'"}]}},"advertise_options":{"advertise_on_public":{"port":{"info":{"port":8001,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$v_brews_recs_domain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///'$v_base64_cert'","private_key":{"blindfold_secret_info":{"location":"string:///'$v_namespace_1'-key","decryption_provider":null,"store_provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":null},"description":null}],"no_mtls":{}},"default_header":{}},"default_route":{"disable_host_rewrite":{}}}}}}}},"resource_version":null}}'
 }
 
-f_mc_s23()
+f_mc_s27()
 {
 s_re_name=$v_namespace_1-re-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_recs_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_recs_container_name'","image":{"name":"f5demos.azurecr.io/recs","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_re_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_re_name'"}]}},"advertise_options":{"advertise_on_public":{"port":{"info":{"port":8001,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$v_brews_recs_domain'"],"https_auto_cert":{"http_redirect":null,"add_hsts":null,"port":443,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"non_default_loadbalancer":{}},"default_route":{"disable_host_rewrite":{}}}}}}}},"resource_version":null}}'
 }
 
-f_mc_s24()
+f_mc_s28()
 {
 s_re_name=$v_namespace_1-re-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_recs_container_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_recs_container_name'","image":{"name":"f5demos.azurecr.io/recs","container_registry":{"namespace":"'$v_namespace_1'","name":"f5demos"},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"}},{"env_var":{"name": "INVENTORY_URL","value":"http://'$v_brews_inv_domain'"}},{"env_var":{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}}]},"deploy_options":{"deploy_re_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_re_name'"}]}},"advertise_options":{"advertise_on_public":{"port":{"info":{"port":8001,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$v_brews_recs_domain'"],"http":{"dns_volterra_managed":true,"port":80},"default_route":{"disable_host_rewrite":{}}}}}}}},"resource_version":null}}'
@@ -569,119 +569,119 @@ while [ $# -gt 0 ]; do
    f_echo "Printing variables ..."
    f_print_vars
    ;;
-   -a1)
-   f_echo "Creating and Applying AWS VPC site 1 called $v_aws1_site_name ..."
-   f_mc_a1
-   ;;
-   -a2)
-   f_echo "Creating and Applying AWS VPC site 2 called $v_aws2_site_name ..."
-   f_mc_a2
-   ;;
-   -a3)
-   f_echo "Creating Azure VNET site 1 called $v_azure1_site_name ..."
-   f_mc_a3
-   ;;
-   -a4)
-   f_echo "Applying Azure VNET site 1 called $v_azure1_site_name ..."
-   f_mc_a4
-   ;;
    -s1)
-   f_echo "Checking AWS1 cloud site status ..."
+   f_echo "Creating namespace 1 called $v_namespace_1 ..."
    f_mc_s1
    ;;
    -s2)
-   f_echo "Checking AWS2 cloud site status ..."
+   f_echo "Creating MCN label key ..."
    f_mc_s2
    ;;
    -s3)
-   f_echo "Checking Azure1 cloud site status ..."
+   f_echo "Creating MCN label ..."
    f_mc_s3
    ;;
    -s4)
-   f_echo "Creating namespace 1 called $v_namespace_1 ..."
+   f_echo "Creating and Applying AWS VPC site 1 called $v_aws1_site_name ..."
    f_mc_s4
    ;;
    -s5)
-   f_echo "Creating MCN label key ..."
+   f_echo "Creating and Applying AWS VPC site 2 called $v_aws2_site_name ..."
    f_mc_s5
    ;;
    -s6)
-   f_echo "Creating MCN label ..."
+   f_echo "Creating Azure VNET site 1 called $v_azure1_site_name ..."
    f_mc_s6
    ;;
    -s7)
-   f_echo "Creating Brews workload ..."
+   f_echo "Applying Azure VNET site 1 called $v_azure1_site_name ..."
    f_mc_s7
    ;;
    -s8)
-   f_echo "Creating SPA WAF ..."
+   f_echo "Checking AWS1 cloud site status ..."
    f_mc_s8
    ;;
    -s9)
-   f_echo "Creating MCN vsite ..."
+   f_echo "Checking AWS2 cloud site status ..."
    f_mc_s9
    ;;
    -s10)
-   f_echo "Creating RE only vsite ..."
+   f_echo "Checking Azure1 cloud site status ..."
    f_mc_s10
    ;;
    -s11)
-   f_echo "Creating Azure 1 vsite ..."
+   f_echo "Creating Brews workload ..."
    f_mc_s11
    ;;
    -s12)
-   f_echo "Creating AWS 1 vsite ..."
+   f_echo "Creating SPA WAF ..."
    f_mc_s12
    ;;
    -s13)
-   f_echo "Creating AWS 2 vsite ..."
+   f_echo "Creating MCN vsite ..."
    f_mc_s13
    ;;
    -s14)
-   f_echo "Creating vK8s cluster ..."
+   f_echo "Creating RE only vsite ..."
    f_mc_s14
    ;;
    -s15)
-   f_echo "Geting vK8s cluster status ..."
+   f_echo "Creating Azure 1 vsite ..."
    f_mc_s15
    ;;
    -s16)
-   f_echo "Creating container registry ..."
+   f_echo "Creating AWS 1 vsite ..."
    f_mc_s16
    ;;
    -s17)
-   f_echo "Deploy Mongodb ..."
+   f_echo "Creating AWS 2 vsite ..."
    f_mc_s17
    ;;
    -s18)
-   f_echo "Deploy SPA ..."
+   f_echo "Creating vK8s cluster ..."
    f_mc_s18
    ;;
    -s19)
-   f_echo "Deploy API ..."
+   f_echo "Geting vK8s cluster status ..."
    f_mc_s19
    ;;
    -s20)
-   f_echo "Deploy Inventory ..."
+   f_echo "Creating container registry ..."
    f_mc_s20
    ;;
    -s21)
-   f_echo "Deploy Recommendations HTTP LB manual cert cleartext ..."
+   f_echo "Deploy Mongodb ..."
    f_mc_s21
    ;;
    -s22)
-   f_echo "Deploy Recommendations HTTP LB manual cert blindfold ..."
+   f_echo "Deploy SPA ..."
    f_mc_s22
    ;;
    -s23)
-   f_echo "Deploy Recommendations HTTP LB auto cert ..."
+   f_echo "Deploy API ..."
    f_mc_s23
    ;;
    -s24)
-   f_echo "Deploy Recommendations HTTP LB ..."
+   f_echo "Deploy Inventory ..."
    f_mc_s24
    ;;
-   -s25 | -mcdp1)
+   -s25)
+   f_echo "Deploy Recommendations HTTP LB manual cert cleartext ..."
+   f_mc_s25
+   ;;
+   -s26)
+   f_echo "Deploy Recommendations HTTP LB manual cert blindfold ..."
+   f_mc_s26
+   ;;
+   -s27)
+   f_echo "Deploy Recommendations HTTP LB auto cert ..."
+   f_mc_s27
+   ;;
+   -s28)
+   f_echo "Deploy Recommendations HTTP LB ..."
+   f_mc_s28
+   ;;
+   -s25)
    f_echo "Delete Recommendations ..."
    f_mc_mcdp1
    ;;
