@@ -19,7 +19,7 @@ v_aws_creds_name="learnf5-aws"
 v_azure_creds_name="f5xc-training-azure-deploy"
 
 ### tenant 1
-### v_token="PREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
+### v_token="GRTdu7Yp55Pfvon+MmLXpavWV7uAYXw="
 ### v_url="https://training.console.ves.volterra.io/api"
 ### v_tenant="training-ytfhxsmw"
 ### v_dom="aws.learnf5.cloud"
@@ -105,62 +105,62 @@ echo "-s8                            AWS VPC site 1 status"
 echo "-s9                            AWS VPC site 2 status"
 echo "-s10                           Azure VNET site 1 status"
 echo ""
-echo "Create workloads and WAF policy"
+echo "Create workload and WAF policy"
 echo ""
-echo "-s11                            Create Brews workload"
-echo "-s12                            Create SPA WAF"
+echo "-s11                           Create Brews workload"
+echo "-s12                           Create SPA WAF"
 echo ""
 echo "Create vK8s and vsites"
 echo ""
 echo "-s13                           Create MCN vsite"
-echo "-s14                           Create RE vsite"
+echo "NO -s14                           Create RE vsite"
 echo "-s15                           Create Azure 1 vsite"
 echo "-s16                           Create AWS 1 vsite"
 echo "-s17                           Create AWS 2 vsite"
-echo "-s18                           Create vK8s cluster"
-echo "-s19                           Get vK8s cluster status"
+echo "-s18                           Create MCN vK8s"
+echo "-s19                           Get vK8s status"
 echo ""
 echo "Deployments"
 echo ""
 echo "-s20                           Create Container Registry"
-echo "-s21                           Deploy Mongodb"
-echo "-s22                           Deploy SPA"
-echo "-s23                           Deploy API"
-echo "-s24                           Deploy Inventory"
-echo "-s25                           Deploy Recommendations HTTPS LB manual cert cleartext"
-echo "-s26                           Deploy Recommendations HTTPS LB manual cert blindfold"
-echo "-s27                           Deploy Recommendations HTTPS LB autocert"
-echo "-s28                           Deploy Recommendations HTTPS LB"
+echo "-s21                           Deploy MongoDB workload to AWS site 2"
+echo "-s22                           Deploy SPA workload to MCN site"
+echo "-s23                           Deploy API workload to AWS site 1"
+echo "-s24                           Deploy INV workload to Azure site 1"
+echo "NO -s25                           Deploy Recommendations HTTPS LB manual cert cleartext"
+echo "NO -s26                           Deploy Recommendations HTTPS LB manual cert blindfold"
+echo "NO -s27                           Deploy Recommendations HTTPS LB autocert"
+echo "NO -s28                           Deploy Recommendations HTTPS LB"
 echo ""
 echo "More deployments"
 echo ""
-echo "-s25 -mcdp1                    Delete Recommendations deployment "
-echo "-s26 -mcdp2                    Delete Inventory deployment "
-echo "-s27 -mcdp3                    Delete API deployment "
-echo "-s28 -mcdp4                    Delete SPA deployment "
-echo "-s29 -mcdp5                    Delete Mongodb deployment "
-echo "-s30 -mcdp6                    Deploy Mongodb"
-echo "-s31 -mcdp7                    Deploy SPA"
-echo "-s32 -mcdp8                    Deploy API"
-echo "-s33 -mcdp9                    Deploy Inventory"
-echo "-s34 -mcdp10                   Deploy Recommendations"
+echo "NO -s25 -mcdp1                    Delete Recommendations deployment "
+echo "NO -s26 -mcdp2                    Delete Inventory deployment "
+echo "NO -s27 -mcdp3                    Delete API deployment "
+echo "NO -s28 -mcdp4                    Delete SPA deployment "
+echo "NO -s29 -mcdp5                    Delete Mongodb deployment "
+echo "-s30 -mcdp6                    Deploy Mongodb via vk8s to AWS site 2"
+echo "-s31 -mcdp7                    Deploy SPA via vk8s to MCN site"
+echo "-s32 -mcdp8                    Deploy API via vk8s to AWS site 1"
+echo "-s33 -mcdp9                    Deploy Inventory via vk8s to Azure site 1"
+echo "NO -s34 -mcdp10                   Deploy Recommendations via vk8s to RE site"
 echo ""
-echo "Load Balancing and WAAP"
+echo "Create load balancers and WAAP"
 echo ""
-echo "-s35 -mclb1                    Create Mongodb healthcheck"
-echo "-s36 -mclb2                    Create API healthcheck"
-echo "-s37 -mclb3                    Create SPA healthcheck"
-echo "-s38 -mclb4                    Create INV healthcheck"
-echo "-s39 -mclb5                    Create Mongodb origin pool"
-echo "-s40 -mclb6                    Create API origin pool"
-echo "-s41 -mclb7                    Create SPA origin pool"
-echo "-s42 -mclb8                    Create INV origin pool"
-echo "-s43 -mclb9                    Create Mongodb TCP load balancer (internal)"
-echo "-s44 -mclb10                   Create INV HTTP load balancer (internal)"
-echo "-s45 -mclb11                   Create SPA-API HTTPS lb (public manual cert cleartext)"
-echo "-s46 -mclb12                   Create SPA-API HTTPS lb (public manual cert blindfold)"
-echo "-s47 -mclb13                   Create SPA-API HTTPS lb (public autocert)"
-echo "-s48 -mclb14                   Create SPA-API HTTPS lb (public)"
+echo "-s35                           Create Mongodb healthcheck"
+echo "-s36                           Create API healthcheck"
+echo "-s37                           Create SPA healthcheck"
+echo "-s38                           Create INV healthcheck"
+echo "-s39                           Create Mongodb origin pool"
+echo "-s40                           Create API origin pool"
+echo "-s41                           Create SPA origin pool"
+echo "-s42                           Create INV origin pool"
+echo "-s43                           Create Mongodb TCP load balancer (internal)"
+echo "-s44                           Create INV HTTP load balancer (internal)"
+echo "-s45                           Create SPA-API HTTPS lb (public manual cert cleartext)"
+echo "-s46                           Create SPA-API HTTPS lb (public manual cert blindfold)"
+echo "-s47                           Create SPA-API HTTPS lb (public autocert)"
+echo "-s48                           Create SPA-API HTTPS lb (public)"
 echo ""
 exit 0
 }
@@ -319,7 +319,7 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 f_mc_s21()
 {
 s_aws2_name=$v_aws2_site_name-vsite
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_brews_mongodb_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_mongodb_container_name'","image":{"name":"public.ecr.aws/o2z6z0t3/friday:demo","public":{},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"SEED_FILE","value":"beerProducts.json"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":27017,"protocol":"PROTOCOL_TCP","same_as_port":}}}}}},"resource_version":null}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/workloads" -d '{"metadata":{"name":"'$v_brews_mongodb_name'","'$v_namespace_1'"},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$v_mongodb_container_name'","image":{"name":"public.ecr.aws/o2z6z0t3/friday:demo","public":{},"pull_policy":"IMAGE_PULL_POLICY_ALWAYS"},"init_container":null,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":null,"args":null}],"volumes":null,"configuration":{"parameters":[{"env_var":{"name":"SEED_FILE","value":"beerProducts.json"}}]},"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'"}]}},"advertise_options":{"advertise_in_cluster":{"port":{"info":{"port":27017,"protocol":"PROTOCOL_TCP","same_as_port":{}}}}}}}}'
 }
 
 f_mc_s22()
@@ -422,52 +422,52 @@ s_re_name=$v_namespace_1-re-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-recs","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$s_re_name'","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"brews-recs"}},"template":{"metadata":{"creationTimestamp":null,"labels":{"ves.io/workload":"brews-recs"}},"spec":{"containers":[{"name":"brews-recs","image":"f5demos.azurecr.io/recs","env":[{"name":"MONGO_URL","value":"'$v_brews_mongodb_domain'"},{"name":"INVENTORY_URL","value":"http://'$v_brews_inv_domain'"},{"name":"RECOMMENDATIONS_URL","value":"https://'$v_brews_recs_domain'"}],"resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"imagePullSecrets":[{"name":"brews-recs-f5demos"}],"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}}'
 }
 
-f_mc_mclb1()
+f_mc_s35()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-mongodb-hc","labels":{}},"spec":{"tcp_health_check":{"send_payload":"abc123"},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30},"resource_version":"512132692"}}'
 }
 
-f_mc_mclb2()
+f_mc_s36()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-api-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/api/stats","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}
 }'
 }
 
-f_mc_mclb3()
+f_mc_s37()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{{"metadata":{"name":"brews-spa-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/products","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}}'
 }
 
-f_mc_mclb4()
+f_mc_s38()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/healthchecks" -d '{"metadata":{"name":"brews-inv-hc","labels":{}},"spec":{"http_health_check":{"use_origin_server_name":{},"path":"/api/stats","use_http2":false,"headers":{},"request_headers_to_remove":[]},"timeout":3,"interval":15,"unhealthy_threshold":1,"healthy_threshold":3,"jitter_percent":30}}'
 }
 
-f_mc_mclb5()
+f_mc_s39()
 {
 s_aws2_name=$v_aws2_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{"metadata":{"name":"brews-mongodb-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-mongodb.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":27017,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-mongodb-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}'
 }
 
-f_mc_mclb6()
+f_mc_s40()
 {
 s_aws1_name=$v_aws1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{"metadata":{"name":"brews-api-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-api.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws1_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":8000,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-api-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}'
 }
 
-f_mc_mclb7()
+f_mc_s41()
 {
 s_mcn_name=$v_namespace1-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{"metadata":{"name":"brews-spa-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-spa.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_mcn_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":8081,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-spa-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}'
 }
 
-f_mc_mclb8()
+f_mc_s42()
 {
 s_azure1_name=$v_azure1_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/origin_pools" -d '{"metadata":{"name":"brews-inv-pool","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"origin_servers":[{"k8s_service":{"service_name":"brews-inv.'$v_namespace_1'","site_locator":{"virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_azure1_name'","kind":"virtual_site"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":8002,"same_as_endpoint_port":{},"healthcheck":[{"namespace":"'$v_namespace_1'","name":"brews-inv-hc","kind":"healthcheck"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED"}}'
 }
 
-f_mc_mclb9()
+f_mc_s43()
 {
 s_aws1_name=$v_aws1_site_name-vsite
 s_aws2_name=$v_aws2_site_name-vsite
@@ -475,7 +475,7 @@ s_azure1_name=$v_azure1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/tcp_loadbalancers" -d '{"metadata":{"name":"brews-mongodb-tcp-lb","namespace":"'$v_namespace_1'","labels":{},"annotations":{},"description":"Brews MCN PoC","disable":false},"spec":{"domains":["'$v_brews_mondodb_domain'"],"listen_port":27017,"no_sni":{},"dns_volterra_managed":false,"origin_pools":[],"origin_pools_weights":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-mongodb-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"advertise_custom":{"advertise_where":[{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws1_site_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'}","name":"'$s_azure1_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'","kind":"virtual_site"}},"use_default_port":{}}]},"hash_policy_choice_round_robin":{},"idle_timeout":3600000,"retract_cluster":{},"tcp":{},"dns_info":[],"downstream_tls_certificate_expiration_timestamps":[]}}'
 }
 
-f_mc_mclb10()
+f_mc_s44()
 {
 s_aws1_name=$v_aws1_site_name-vsite
 s_aws2_name=$v_aws2_site_name-vsite
@@ -483,23 +483,23 @@ s_azure1_name=$v_azure1_site_name-vsite
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-inv-http-lb","labels":{},"description":"Brews PoC MCN"},"spec":{"domains":["'$v_brews_inc_domain'"],"http":{"dns_volterra_managed":false,"port":80},"advertise_custom":{"advertise_where":[{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws1_site_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_azure1_name'","kind":"virtual_site"}},"use_default_port":{}},{"virtual_site":{"network":"SITE_NETWORK_SERVICE","virtual_site":{"namespace":"'$v_namespace_1'","name":"'$s_aws2_name'","kind":"virtual_site"}},"use_default_port":{}}]},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-inv-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[],"disable_waf":{},"add_location":false,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"cookie_stickiness":{"name":"brews-inv"},"multi_lb_app":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
-f_mc_mclb11()
+f_mc_s45()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_momain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"clear_secret_info":{"url":"string:///{{base64EncodedKey}}","provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":"EncodingNone"},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
-f_mc_mclb12()
+f_mc_s46()
 {
 s_key="$v_namespace_1-key"
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_momain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"blindfold_secret_info":{"location":"string:///'$s_key'","decryption_provider":null,"store_provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":null},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
-f_mc_mclb13()
+f_mc_s47()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_domain'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"port":443,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"non_default_loadbalancer":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers": [],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
-f_mc_mclb14()
+f_mc_s48()
 {
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name": "brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_domain'"],"http":{"dns_volterra_managed":true,"port":80},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location": true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
@@ -638,7 +638,7 @@ while [ $# -gt 0 ]; do
    f_mc_s17
    ;;
    -s18)
-   f_echo "Creating vK8s cluster ..."
+   f_echo "Creating MCN vK8s cluster ..."
    f_mc_s18
    ;;
    -s19)
@@ -650,19 +650,19 @@ while [ $# -gt 0 ]; do
    f_mc_s20
    ;;
    -s21)
-   f_echo "Deploy Mongodb ..."
+   f_echo "Deploy MongoDB workload to AWS site 2..."
    f_mc_s21
    ;;
    -s22)
-   f_echo "Deploy SPA ..."
+   f_echo "Deploy SPA workload to MCN site ..."
    f_mc_s22
    ;;
    -s23)
-   f_echo "Deploy API ..."
+   f_echo "Deploy API workload to AWS site 1..."
    f_mc_s23
    ;;
    -s24)
-   f_echo "Deploy Inventory ..."
+   f_echo "Deploy Inventory workload to Azure site 1 ..."
    f_mc_s24
    ;;
    -s25)
@@ -721,61 +721,61 @@ while [ $# -gt 0 ]; do
    f_echo "Deploy Recommendations ..."
    f_mc_mcdp10
    ;;
-   -s35 | -mclb1)
+   -s35)
    f_echo "Create Mongodb healthcheck ..."
-   f_mc_mcdp1
+   f_mc_s35
    ;;
-   -s36 | -mclb2)
+   -s36)
    f_echo "Create API healthcheck ..."
-   f_mc_mcdp2
+   f_mc_s36
    ;;
-   -s37 | -mclb3)
+   -s37)
    f_echo "Create SPA healthcheck ..."
-   f_mc_mcdp3
+   f_mc_s37
    ;;
-   -s38 | -mclb4)
+   -s38)
    f_echo "Create INV healthcheck ..."
-   f_mc_mcdp4
+   f_mc_s38
    ;;
-   -s39 | -mclb5)
+   -s39)
    f_echo "Create Mongodb origin pool ..."
-   f_mc_mcdp5
+   f_mc_s39
    ;;
-   -s40 | -mclb6)
+   -s40)
    f_echo "Create API origin pool ..."
-   f_mc_mcdp6
+   f_mc_s40
    ;;
-   -s41 | -mclb7)
+   -s41)
    f_echo "Create SPA origin pool ..."
-   f_mc_mcdp7
+   f_mc_s41
    ;;
-   -s42 | -mclb8)
+   -s42)
    f_echo "Create INV origin pool ..."
-   f_mc_mcdp8
+   f_mc_s42
    ;;
-   -s43 | -mclb9)
+   -s43)
    f_echo "Create Mongodb TCP load balancer (internal) ..."
-   f_mc_mcdp9
+   f_mc_s43
    ;;
-   -s44 | -mclb10)
+   -s44)
    f_echo "Create INV HTTP load balancer (internal) ..."
-   f_mc_mcdp10
+   f_mc_s44
    ;;
-   -s45 | -mclb11)
+   -s45)
    f_echo "Create SPA-API HTTPS lb (public manual cert cleartext) ..."
-   f_mc_mcdp11
+   f_mc_s45
    ;;
-   -s46 | -mclb12)
+   -s46)
    f_echo "Create SPA-API HTTPS lb (public manual cert blindfold) ..."
-   f_mc_mcdp12
+   f_mc_s46
    ;;
-   -s47 | -mclb13)
+   -s47)
    f_echo "Create SPA-API HTTPS lb (public autocert) ..."
-   f_mc_mcdp13
+   f_mc_s47
    ;;
-   -s48 | -mclb14)
+   -s48)
    f_echo "Create SPA-API HTTPS lb (public) ..."
-   f_mc_mcdp14
+   f_mc_s48
    ;;
    *)
    ;;
