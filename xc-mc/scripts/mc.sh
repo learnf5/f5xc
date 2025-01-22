@@ -12,14 +12,14 @@ student_name=$2
 ### training-dev tenant
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
-v_token="PREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="FREpoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws_creds_name="learnf5-aws"
 ### v_azure_creds_name="all-students-credentials"
 v_azure_creds_name="f5xc-training-azure-deploy"
 
 ### tenant 1
-### v_token="TREdu7Yp55Pfvon+MmLXpavWV7uAYXw="
+### v_token="PREwu7Yp55Pfvon+MmLXpavWV7uAYXw="
 ### v_url="https://training.console.ves.volterra.io/api"
 ### v_tenant="training-ytfhxsmw"
 ### v_dom="aws.learnf5.cloud"
@@ -48,8 +48,8 @@ v_azure1_key1_value="student99-value1"
 v_azure1_key3="ves.io/siteName"
 v_azure1_key3_value="student99-vnet1"
 v_azure1_region="eastus"
-v_brews_spa_domain="brews99.aws.learnf5.cloud"
-v_brews_recs_domain="recs99.aws.learnf5.cloud"
+v_brews_spa_domain="brews99.dev.learnf5.cloud"
+v_brews_recs_domain="recs99.dev.learnf5.cloud"
 v_brews_inv_domain="inventory99.brews.local"
 v_brews_mongodb_domain="mongodb99.brews.local"
 v_namespace_1_cert="abcd"
@@ -112,8 +112,10 @@ echo "-s12                           Create Web App Firewall (referenced by load
 echo ""
 echo "Create vsites inside namespace and vK8s"
 echo ""
+echo "Created in Distributed Apps > <namespace> > Manage > Virtual Sites"
+echo ""
 echo "-s13                           Create MCN vsite"
-echo "NO -s14                           Create RE vsite with 2 locations"
+echo "NO -s14                        Create RE vsite with 2 locations"
 echo "-s15                           Create Azure 1 vsite"
 echo "-s16                           Create AWS 1 vsite"
 echo "-s17                           Create AWS 2 vsite"
@@ -122,29 +124,29 @@ echo "-s19                           Get vK8s status"
 echo ""
 echo "Create workloads"
 echo ""
-echo "-s20            do we need this ?               Create Container Registry"
+echo "-s20                           Create Container Registry"
 echo ""
-echo "NO -s21                           Deploy MongoDB workload to AWS site 2"
-echo "NO -s22                           Deploy SPA workload to MCN site"
-echo "NO -s23                           Deploy API workload to AWS site 1"
-echo "NO -s24                           Deploy INV workload to Azure site 1"
-echo "NO RE -s25                           Deploy Recommendations HTTPS LB manual cert cleartext"
-echo "NO RE -s26                           Deploy Recommendations HTTPS LB manual cert blindfold"
-echo "NO RE -s27                           Deploy Recommendations HTTPS LB autocert"
+echo "NO -s21                        Deploy MongoDB workload to AWS site 2"
+echo "NO -s22                        Deploy SPA workload to MCN site"
+echo "NO -s23                        Deploy API workload to AWS site 1"
+echo "NO -s24                        Deploy INV workload to Azure site 1"
+echo "NO RE -s25                     Deploy Recommendations HTTPS LB manual cert cleartext"
+echo "NO RE -s26                     Deploy Recommendations HTTPS LB manual cert blindfold"
+echo "NO RE -s27                     Deploy Recommendations HTTPS LB autocert"
 echo "-s28                           Deploy Recommendations HTTPS LB CE vsite"
 echo ""
 echo "More deployments"
 echo ""
-echo "NO -s25 -mcdp1                    Delete Recommendations deployment "
-echo "NO -s26 -mcdp2                    Delete Inventory deployment "
-echo "NO -s27 -mcdp3                    Delete API deployment "
-echo "NO -s28 -mcdp4                    Delete SPA deployment "
-echo "NO -s29 -mcdp5                    Delete Mongodb deployment "
-echo "-s30                    Deploy Mongodb via vk8s to AWS site 2"
-echo "-s31                    Deploy SPA via vk8s to MCN site"
-echo "-s32                    Deploy API via vk8s to AWS site 1"
-echo "-s33                    Deploy Inventory via vk8s to Azure site 1"
-echo "NO -s34 -mcdp10                   Deploy Recommendations via vk8s to RE site"
+echo "NO -s25 -mcdp1                 Delete Recommendations deployment "
+echo "NO -s26 -mcdp2                 Delete Inventory deployment "
+echo "NO -s27 -mcdp3                 Delete API deployment "
+echo "NO -s28 -mcdp4                 Delete SPA deployment "
+echo "NO -s29 -mcdp5                 Delete Mongodb deployment "
+echo "-s30                           Deploy Mongodb via vk8s to AWS site 2"
+echo "-s31                           Deploy SPA via vk8s to MCN site"
+echo "-s32                           Deploy API via vk8s to AWS site 1"
+echo "-s33                           Deploy Inventory via vk8s to Azure site 1"
+echo "NO -s34 -mcdp10                Deploy Recommendations via vk8s to RE site"
 echo ""
 echo "Create healthchecks, origin pools, and load balancers"
 echo ""
@@ -158,11 +160,11 @@ echo "-s39                           Create Mongodb origin pool"
 echo "-s40                           Create API origin pool"
 echo "-s41                           Create SPA origin pool"
 echo "-s42                           Create INV origin pool"
-echo "NO -s43                           Create Mongodb TCP load balancer (internal)"
-echo "NO -s44                           Create INV HTTP load balancer (internal)"
-echo "NO -s45                           Create SPA-API HTTPS lb (public manual cert cleartext)"
-echo "NO -s46                           Create SPA-API HTTPS lb (public manual cert blindfold)"
-echo "NO -s47                           Create SPA-API HTTPS lb (public autocert)"
+echo "NO -s43                        Create Mongodb TCP load balancer (internal)"
+echo "NO -s44                        Create INV HTTP load balancer (internal)"
+echo "NO -s45                        Create SPA-API HTTPS lb (public manual cert cleartext)"
+echo "NO -s46                        Create SPA-API HTTPS lb (public manual cert blindfold)"
+echo "NO -s47                        Create SPA-API HTTPS lb (public autocert)"
 echo "-s48                           Create SPA-API HTTPS lb (public)"
 echo ""
 echo "Finally connect to http://brews<student number>.dev.learnf5.cloud/stats"
@@ -496,23 +498,23 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 
 f_mc_s45()
 {
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_momain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"clear_secret_info":{"url":"string:///{{base64EncodedKey}}","provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":"EncodingNone"},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"Brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_momain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"clear_secret_info":{"url":"string:///{{base64EncodedKey}}","provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":"EncodingNone"},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
 f_mc_s46()
 {
 s_key="$v_namespace_1-key"
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_momain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"blindfold_secret_info":{"location":"string:///'$s_key'","decryption_provider":null,"store_provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":null},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"Brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_momain'"],"https":{"http_redirect":null,"add_hsts":null,"tls_parameters":{"tls_config":{"default_security":{}},"tls_certificates":[{"certificate_url":"string:///{{base64EncodedCert}}","private_key":{"blindfold_secret_info":{"location":"string:///'$s_key'","decryption_provider":null,"store_provider":null},"blindfold_secret_info_internal":null,"secret_encoding_type":null},"description":null}],"no_mtls":{}},"default_header":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
 f_mc_s47()
 {
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_domain'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"port":443,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"non_default_loadbalancer":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers": [],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name":"brews-shop-spa-http-lb","labels":{},"description":"Brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_domain'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"port":443,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"non_default_loadbalancer":{}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers": [],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"brews-spa-api-appwf","kind":"app_firewall"},"add_location":true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
 f_mc_s48()
 {
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name": "brews-shop-spa-http-lb","labels":{},"description":"brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_domain'"],"http":{"dns_volterra_managed":true,"port":80},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"'$v_brews_spa_api_waf'","kind":"app_firewall"},"add_location": true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_namespace_1/http_loadbalancers" -d '{"metadata":{"name": "brews-shop-spa-http-lb","labels":{},"description":"Brews MCN PoC"},"spec":{"domains":["'$v_brews_spa_domain'"],"http":{"dns_volterra_managed":true,"port":80},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-spa-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"routes":[{"simple_route":{"http_method":"ANY","path":{"prefix":"/api/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}},{"simple_route":{"http_method":"ANY","path":{"prefix":"/images/"},"origin_pools":[{"pool":{"namespace":"'$v_namespace_1'","name":"brews-api-pool","kind":"origin_pool"},"weight":1,"priority":1,"endpoint_subsets":{}}],"headers":[],"auto_host_rewrite":{}}}],"app_firewall":{"namespace":"'$v_namespace_1'","name":"'$v_brews_spa_api_waf'","kind":"app_firewall"},"add_location": true,"no_challenge":{},"user_id_client_ip":{},"disable_rate_limit":{},"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"enable_ddos_detection":{},"enable_malicious_user_detection":{},"enable_api_discovery":{"enable_learn_from_redirect_traffic":{}},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{}}}'
 }
 
 ### main
@@ -565,8 +567,8 @@ v_azure1_key3_value="$2-vnet1"
 v_azure1_region="eastus"
 v_namespace_1="$2-brews"
 v_app_name_1="brews$snum"
-v_brews_spa_domain="brews$snum.aws.learnf5.cloud"
-v_brews_recs_domain="recs$snum.aws.learnf5.cloud"
+v_brews_spa_domain="brews$snum.dev.learnf5.cloud"
+v_brews_recs_domain="recs$snum.dev.learnf5.cloud"
 v_brews_inv_domain="inventory$snum.brews.local"
 v_brews_mongodb_domain="mongodb$snum.brews.local"
 
