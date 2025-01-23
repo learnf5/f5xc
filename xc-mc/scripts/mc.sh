@@ -12,7 +12,7 @@ student_name=$2
 ### training-dev tenant
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
-v_token="FREpoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token="FREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
 v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws_creds_name="learnf5-aws"
 ### v_azure_creds_name="all-students-credentials"
@@ -142,11 +142,11 @@ echo "NO -s26 -mcdp2                 Delete Inventory deployment "
 echo "NO -s27 -mcdp3                 Delete API deployment "
 echo "NO -s28 -mcdp4                 Delete SPA deployment "
 echo "NO -s29 -mcdp5                 Delete Mongodb deployment "
-echo "-s30                           Deploy Mongodb via vk8s to AWS site 2"
-echo "-s31                           Deploy SPA via vk8s to MCN site"
-echo "-s32                           Deploy API via vk8s to AWS site 1"
-echo "-s33                           Deploy Inventory via vk8s to Azure site 1"
-echo "NO -s34 -mcdp10                Deploy Recommendations via vk8s to RE site"
+echo "-s30                           Deploy Mongodb workload via vk8s to AWS site 2"
+echo "-s31                           Deploy SPA workload via vk8s to MCN site"
+echo "-s32                           Deploy API workload via vk8s to AWS site 1"
+echo "-s33                           Deploy Inventory workload via vk8s to Azure site 1"
+echo "NO -s34 -mcdp10                Deploy Recommendations workload via vk8s to RE site"
 echo ""
 echo "Create healthchecks, origin pools, and load balancers"
 echo ""
@@ -406,7 +406,7 @@ curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/vk8s/namespaces/
 f_mc_s30()
 {
 s_app_vk8s_name=$v_app_name_1-vk8s
-curl -s -H "Authorization: APIToken $v_token" -H "Content-Type: application/json;" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"brews-mongodb","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$v_aws2_site_name'-vsite","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"'$v_brews_mongodb_name'"}},"template":{"metadata":{"labels":{"ves.io/workload":"'$v_brews_mongodb_name'"}},"spec":{"containers":[{"name":"'$v_brews_mongodb_name'","image":"public.ecr.aws/o2z6z0t3/friday:demo","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}'
+curl -s -H "Authorization: APIToken $v_token" -H "Content-Type: application/json;" -X POST "$v_url/vk8s/namespaces/$v_namespace_1/$s_app_vk8s_name/apis/apps/v1/namespaces/$v_namespace_1/deployments" -d '{"kind":"Deployment","apiVersion":"apps/v1","metadata":{"name":"'$v_brews_mongodb_name'","namespace":"'$v_namespace_1'","annotations":{"ves.io/virtual-sites":"'$v_namespace_1'/'$v_aws2_site_name'-vsite","ves.io/workload-flavor-brews-api":"'$v_namespace_1'-large-flavor"}},"spec":{"replicas":1,"selector":{"matchLabels":{"ves.io/workload":"'$v_brews_mongodb_name'"}},"template":{"metadata":{"labels":{"ves.io/workload":"'$v_brews_mongodb_name'"}},"spec":{"containers":[{"name":"'$v_brews_mongodb_name'","image":"public.ecr.aws/o2z6z0t3/friday:demo","resources":{},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","imagePullPolicy":"Always"}],"restartPolicy":"Always","terminationGracePeriodSeconds":30,"dnsPolicy":"ClusterFirst","securityContext":{},"schedulerName":"default-scheduler"}},"strategy":{"type":"RollingUpdate","rollingUpdate":{"maxUnavailable":"25%","maxSurge":"25%"}},"revisionHistoryLimit":10,"progressDeadlineSeconds":600}}'
 }
 
 f_mc_s31()
@@ -715,19 +715,19 @@ while [ $# -gt 0 ]; do
    f_mc_mcdp5
    ;;
    -s30)
-   f_echo "Deploy Mongodb ..."
+   f_echo "Deploy Mongodb workload via vK8s to AWS site 2..."
    f_mc_s30
    ;;
    -s31)
-   f_echo "Deploy SPA ..."
+   f_echo "Deploy SPA workload via vK8s to MCN site ..."
    f_mc_s31
    ;;
    -s32)
-   f_echo "Deploy API ..."
+   f_echo "Deploy API workload via vK8s to AWS site 1 ..."
    f_mc_s32
    ;;
    -s33)
-   f_echo "Deploy Inventory ..."
+   f_echo "Deploy Inventory workload via vK8s to Azure site 1 ..."
    f_mc_s33
    ;;
    -s34)
