@@ -10,7 +10,7 @@ student_name=$2
 ### Comment out variables to switch between them
 ### Points to classroom 2
 
-v_token="TREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
