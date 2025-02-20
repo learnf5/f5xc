@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.2"
+script_ver="1.3"
 script_name="class2.sh"
 student_name=$2
 
@@ -53,6 +53,7 @@ echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects"
 echo "-adkub7 <studentname>      ** Under Construction ** ADMIN - Download Kubeconfig in lab 7"
 echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
+echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-wadso <studentname>       WAAP - Delete single student objects"
@@ -444,6 +445,18 @@ echo "Now make a browser connection to http://studentX.f5training2.cloud"
 echo ""
 }
 
+f_admin_create_single_student_objects_labs11()
+{
+s_waf="$1-waf"
+echo "Creating WAF Policy for $1 ..."
+echo "Added the word Hey at the start of the blocking page message ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/app_firewalls" -d '{"metadata":{"name":"'$s_waf'","namespace":"'$1'"},"spec":{"blocking":{},"default_detection_settings":{},"default_bot_setting":{},"allow_all_response_codes":{},"default_anonymization":{},"blocking_page":{"blocking_page":"string:///PGh0bWw+PGhlYWQ+PHRpdGxlPlJlcXVlc3QgUmVqZWN0ZWQ8L3RpdGxlPjwvaGVhZD48Ym9keT5IZXkgVGhlIHJlcXVlc3RlZCBVUkwgd2FzIHJlamVjdGVkLiBQbGVhc2UgY29uc3VsdCB3aXRoIHlvdXIgYWRtaW5pc3RyYXRvci48YnIvPjxici8+WW91ciBzdXBwb3J0IElEIGlzOiB7e3JlcXVlc3RfaWR9fTxici8+PGJyLz48YSBocmVmPSJqYXZhc2NyaXB0Omhpc3RvcnkuYmFjaygpIj5bR28gQmFja108L2E+PC9ib2R5PjwvaHRtbD4=","response_code":"OK"}}}'
+sleep 1
+echo ""
+echo "The WAF Policy for $1 needs to be added to the load balancer ..."
+echo ""
+}
+
 f_admin_list_deployments()
 {
 echo "Listing DNS Domain..."
@@ -742,6 +755,14 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "Creating ADMIN lab 10 objects for $2 ..."
    f_admin_create_single_student_objects_labs10 $2
+   ;;
+   -adcre11)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Creating ADMIN lab 11 objects for $2 ..."
+   f_admin_create_single_student_objects_labs11 $2
    ;;
    -wadso)
    if [ "$#" != 2 ]; then
