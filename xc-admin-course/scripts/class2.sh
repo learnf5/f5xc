@@ -443,18 +443,27 @@ sleep 1
 echo ""
 echo "Now make a browser connection to http://studentX.f5training2.cloud"
 echo ""
+echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
+echo ""
 }
 
 f_admin_create_single_student_objects_labs11()
 {
+s_lb="$1-https-lb"
+s_dom="$1.$v_dom"
+s_op="$1-op"
 s_waf="$1-waf"
 echo "Creating WAF Policy for $1 ..."
+echo ""
 echo "Added the word Hey at the start of the blocking page message ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/app_firewalls" -d '{"metadata":{"name":"'$s_waf'","namespace":"'$1'"},"spec":{"blocking":{},"default_detection_settings":{},"default_bot_setting":{},"allow_all_response_codes":{},"default_anonymization":{},"blocking_page":{"blocking_page":"string:///PGh0bWw+PGhlYWQ+PHRpdGxlPlJlcXVlc3QgUmVqZWN0ZWQ8L3RpdGxlPjwvaGVhZD48Ym9keT5IZXkgVGhlIHJlcXVlc3RlZCBVUkwgd2FzIHJlamVjdGVkLiBQbGVhc2UgY29uc3VsdCB3aXRoIHlvdXIgYWRtaW5pc3RyYXRvci48YnIvPjxici8+WW91ciBzdXBwb3J0IElEIGlzOiB7e3JlcXVlc3RfaWR9fTxici8+PGJyLz48YSBocmVmPSJqYXZhc2NyaXB0Omhpc3RvcnkuYmFjaygpIj5bR28gQmFja108L2E+PC9ib2R5PjwvaHRtbD4=","response_code":"OK"}}}'
 sleep 1
 echo ""
-echo "The WAF Policy for $1 needs to be added to the load balancer ..."
+echo "Adding the WAF Policy for $1 to the $s_lb load balancer ..."
 echo ""
+### echo "Current listing ..."
+### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb"
+curl -s -H "Authorization: APIToken $v_token" -X PUT "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}}},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"app_firewall":{"name":"'$s_waf'","namespace":"'$1'"}}}'
 }
 
 f_admin_list_deployments()
