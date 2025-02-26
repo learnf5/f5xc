@@ -3,6 +3,8 @@ This directory contains files to be run ONLY by F5 Instructors
 Because we edit and copy the files from Linux, to Windows, to GitHub, and back again, the file formats and permissions are not being retained. 
 Usually, you have to change the permissions on them and change the file format from Windows-like back to Linux so they execute properly in Bash.
 
+The scripts are called class.sh, class1.sh, class2.sh for each Training environment
+
 Run these commands:
 
 (a) Change permissions
@@ -11,7 +13,7 @@ chmod 755 class.sh
 
 (b) Set Unix/Linux file format (otherwise you get a Bad Interpreter message on attempted execution)
 
-vi class1.sh
+vi class.sh
 :
 set ff=unix
 :wq!
