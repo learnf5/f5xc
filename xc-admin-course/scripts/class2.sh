@@ -7,7 +7,6 @@ script_ver="1.3"
 script_name="class2.sh"
 student_name=$2
 
-### Comment out variables to switch between them
 ### Points to classroom 2
 
 v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
