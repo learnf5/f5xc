@@ -9,7 +9,7 @@ student_name=$2
 
 ### Points to classroom 2
 
-v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="FREpRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
@@ -406,8 +406,9 @@ f_admin_create_single_student_kubeconfig_lab7()
 {
 s_vk8s="$1-vk8s"
 echo "Downloading vK8s Kubeconfig file for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
+### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
 echo "Waiting a bit ..."
+exit 0
 sleep 5
 cat ves_$1_$1-vk8s.yaml
 cat kubeconfig.error
