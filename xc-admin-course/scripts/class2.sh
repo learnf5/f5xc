@@ -9,7 +9,7 @@ student_name=$2
 
 ### Points to classroom 2
 
-v_token="PREwRwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="FREwRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
@@ -395,6 +395,10 @@ echo "cd /home/student/.kube"
 echo "mv /mnt/c/Users/student/Downloads/ves_studentX_studentX-vk8s.yaml ./config"
 echo "cd /home/student/f5xc/xc-admin-course"
 echo "kubectl apply -f online-boutique.yaml"
+echo ""
+echo "Or copy and paste these:"
+echo ""
+echo "cd /home/student/.kube; mv /mnt/c/Users/student/Downloads/ves_$1_$1-vk8s.yaml ./config; cd /home/student/f5xc/xc-admin-course; kubectl apply -f online-boutique.yaml --dry-run=server; kubectl apply -f online-boutique.yaml; cd scripts"
 echo ""
 ### echo "OR"
 ### echo ""
