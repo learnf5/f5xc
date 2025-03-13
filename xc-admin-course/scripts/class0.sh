@@ -15,7 +15,7 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 0 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="TRweu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="PREwu7Yp55Pfvon+MmLXpavWV7uAYXw="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -439,14 +439,14 @@ f_admin_create_single_student_objects_labs9()
 echo "Creating Health check for Origin Pool for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
-s_op="$1-k8s"
+s_op="$1-op"
 echo "Creating Origin Pool for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"boutique-frontend.'$1'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":80,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
 }
 
 f_admin_create_single_student_objects_labs10()
 {
-s_op="$1-k8s"
+s_op="$1-op"
 s_lb="$1-https-lb"
 s_dom="$1.$v_dom"
 echo "Creating HTTP Load Balancer for $1 ..."
