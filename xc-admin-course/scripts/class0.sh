@@ -404,6 +404,10 @@ echo "mv /mnt/c/Users/student/Downloads/ves_studentX_studentX-vk8s.yaml ./config
 echo "cd /home/student/f5xc/xc-admin-course"
 echo "kubectl apply -f online-boutique.yaml"
 echo ""
+echo "Or copy and paste these:"
+echo ""
+echo "cd /home/student/.kube; mv /mnt/c/Users/student/Downloads/ves_$1_$1-vk8s.yaml ./config; cd /home/student/f5xc/xc-admin-course; kubectl apply -f online-boutique.yaml --dry-run=server; kubectl apply -f online-boutique.yaml; cd scripts"
+echo ""
 ### echo "OR"
 ### echo ""
 ### echo "Run the -adkub7 option to download and move the Kubeconfig file automatically"
@@ -449,7 +453,7 @@ echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://studentX.aws.learnf5.cloud"
+echo "Now make a browser connection to http://$1.aws.learnf5.cloud"
 echo ""
 echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
 echo ""
@@ -472,6 +476,9 @@ echo ""
 ### echo "Current listing ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb"
 curl -s -H "Authorization: APIToken $v_token" -X PUT "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}}},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"app_firewall":{"name":"'$s_waf'","namespace":"'$1'"}}}'
+echo ""
+echo "Now make a connection to https://$1.aws.learnf5.cloud/test.exe"
+echo ""
 }
 
 f_admin_create_single_student_objects_labs14()
@@ -487,7 +494,7 @@ echo ""
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/workloads" -d '{"metadata":{"name":"'$s_wl'","namespace":"'$1'","labels":{},"annotations":{},"description":"","disable":false},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$s_container'","image":{"name":"'$s_image'","public":{},"pull_policy":"IMAGE_PULL_POLICY_DEFAULT"},"init_container":false,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":[],"args":[]}],"volumes":[{"name":"'$s_vol'","empty_dir":{"size_limit":4,"mount":{"mode":"VOLUME_MOUNT_READ_WRITE","mount_path":"/data","sub_path":""}}}],"configuration":null,"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"tenant":"'$v_tenant'","namespace":"shared","name":"'$s_vsite1'"}]}},"advertise_options":{"advertise_on_public":{"port":{"port":{"info":{"port":3000,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"legacy_header_transformation":{}},"connection_idle_timeout":120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}},"coalescing_options":{"default_coalescing":{}}},"default_route":{"auto_host_rewrite":{}}}}}},"family":{"v4":{}}}}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://studentX-workload.aws.learnf5.cloud"
+echo "Now make a browser connection to http://$1-workload.aws.learnf5.cloud"
 echo ""
 echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
 echo ""
@@ -574,9 +581,8 @@ f_waap_create_single_student_objects()
 ### Create labs 1-3 for a student
 ### Create the port number for the origin pool range is 1001 to 1012
 ### Tenant matters for JuiceShop check which tenant environment we are using
-### WAAP Lab 3 uses either studentX-juice.aws.learnf5.cloud or studentX-juice.dev.learnf5.cloud
-####fqdn="$1-juice.dev.learnf5.cloud"
 fqdn="$1-juice.aws.learnf5.cloud"
+s_juice_ip="23.22.60.254"
 ### Handle student names between 1-12 studentX has 9 chars, studentXX has 10
 singleordouble=`echo $1 | wc -m`
 if [ $singleordouble -eq 10 ]; then
@@ -594,7 +600,7 @@ echo "Creating Health check for HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 echo "Creating Origin Pool and Origin Server for HTTP Load Balancer for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"23.22.60.254"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-hc"}]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"'$s_juice_ip'"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-hc"}]}}' | jq
 sleep 1
 echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$1'-juice-lb","namespace":"'$1'"},"spec":{"domains":["'$fqdn'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$1'-juice-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
