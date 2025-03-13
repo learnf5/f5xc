@@ -574,21 +574,15 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/syst
 f_waap_create_single_student_objects()
 {
 ### Create labs 1-3 for a student
-### Create the port number for the origin pool range is 1201 to 1212
+### Create the port number for the origin pool range is 1001 to 1012
 ### Tenant matters for JuiceShop check which tenant environment we are using
-### WAAP Lab 3 uses either studentX-juice.f5training2.cloud
+### WAAP Lab 3 uses studentX-juice.f5training2.cloud
 fqdn="$1-juice.f5training2.cloud"
+s_juice_ip="34.197.42.60"
 snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
- snum=`echo -n $1 | tail -c 3`
- pnum="1$snum"
-elif
- [ $snumdigits -eq 10 ]; then
  snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
-else
- snum=`echo -n $1 | tail -c 1`
- pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$1'"},"spec":{}}' | jq
@@ -598,7 +592,7 @@ echo "Creating Health check for HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 echo "Creating Origin Pool and Origin Server for HTTP Load Balancer for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"23.22.60.254"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-hc"}]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"'$s_juice_ip'"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-hc"}]}}' | jq
 sleep 1
 echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$1'-juice-lb","namespace":"'$1'"},"spec":{"domains":["'$fqdn'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$1'-juice-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
