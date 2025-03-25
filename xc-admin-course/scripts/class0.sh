@@ -15,7 +15,7 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 0 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="PREwu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="u7Yp55Pfvon+MmLXpavWV7uAYXw="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -62,6 +62,7 @@ echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
+echo "-addas                     ADMIN - Delete all student objects (max 12)"
 echo "-wadso <studentname>       WAAP - Delete single student objects"
 echo "-wadall                    WAAP - Delete all student objects"
 echo "-walst <studentname>       WAAP - List first labs student objects"
@@ -275,8 +276,20 @@ echo ""
 
 f_delete_all_student_objects()
 {
-echo "Not built yet ... Exiting ..."
-exit 0
+for count in {1..12}
+do
+ echo "Deleting objects for student$count ..."
+ f_delete_single_student_objects student$count
+ echo "Done ..."
+done
+echo "First pass done ..."
+for count in {1..12}
+do
+ echo "Deleting objects again for student$count ..."
+ f_delete_single_student_objects student$count
+ echo "Done ..."
+done
+echo "Second pass done ..."
 }
 
 f_admin_list_single_student_aws_vpc()
@@ -718,14 +731,14 @@ while [ $# -gt 0 ]; do
    f_echo "Deleting $2 objects ..."
    f_delete_single_student_objects $2
    ;;
-   -del)
+   -addas)
    echo ""
-   echo "This option will remove all objects for all students from the admin course"
-   echo "You may prefer the the -dso option and check results per student as you go along"
+   echo "This option will remove all objects for students 1 to 12 for the admin course"
+   echo "You may prefer to use the -addso option and check results per student as you go along"
    echo ""
    read -p "Are you sure you wish to continue (y/n) ?" choice
    if [ "$choice" = "y" ]; then
-    f_echo "Deleting all student objects ..."
+    f_echo "Deleting objects for students (1-12, 101-112, 201-212) ..."
     f_delete_all_student_objects
    else
     echo "Exiting ..."
