@@ -9,7 +9,7 @@ student_name=$2
 
 ### Points to classroom 2
 
-v_token="PREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
