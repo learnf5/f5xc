@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.2"
+script_ver="1.3"
 script_name="class1.sh"
 student_name=$2
 
@@ -15,7 +15,7 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 1 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="AWeru7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="PREwAWeru7Yp55Pfvon+MmLXpavWV7uAYXw="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -48,7 +48,6 @@ echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
-echo "-del                       Delete all student objects"
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
@@ -71,7 +70,6 @@ echo "2 - Relies on students naming their namespace correctly"
 echo ""
 echo "Notes:"
 echo ""
-echo "Run the single options and starting options to see what's there, then go to delete all"
 echo "API calls are sent, with timers after them, so the script takes its time deleting each entry"
 echo ""
 exit 0
@@ -269,11 +267,22 @@ echo ""
 echo ". . . OR . . . delete the student AWS VPC object via the GUI, probably quicker"
 echo ""
 }
-
 f_delete_all_student_objects()
 {
-echo "Not built yet ... Exiting ..."
-exit 0
+for count in {101..112}
+do
+ echo "Deleting objects for student$count ..."
+ f_delete_single_student_objects student$count
+ echo "Done ..."
+done
+echo "First pass done ..."
+for count in {101..112}
+do
+ echo "Deleting objects again for student$count ..."
+ f_delete_single_student_objects student$count
+ echo "Done ..."
+done
+echo "Second pass done ..."
 }
 
 f_admin_list_single_student_aws_vpc()
@@ -669,14 +678,14 @@ while [ $# -gt 0 ]; do
    f_echo "Deleting $2 objects ..."
    f_delete_single_student_objects $2
    ;;
-   -del)
+   -addas)
    echo ""
-   echo "This option will remove all objects for all students from the admin course"
-   echo "You may prefer the the -dso option and check results per student as you go along"
+   echo "This option will remove all objects for students 1 to 12 for the admin course"
+   echo "You may prefer to use the -addso option and check results per student as you go along"
    echo ""
    read -p "Are you sure you wish to continue (y/n) ?" choice
    if [ "$choice" = "y" ]; then
-    f_echo "Deleting all student objects ..."
+    f_echo "Deleting objects for students (1-12, 101-112, 201-212) ..."
     f_delete_all_student_objects
    else
     echo "Exiting ..."
