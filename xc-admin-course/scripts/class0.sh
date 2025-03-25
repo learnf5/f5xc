@@ -15,7 +15,7 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 0 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="u7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="PREwu7Yp55Pfvon+MmLXpavWV7uAYXw="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -49,7 +49,6 @@ echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
-echo "-del                       Delete all student objects"
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
