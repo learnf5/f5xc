@@ -9,7 +9,7 @@ student_name=$2
 
 ### Points to classroom 2
 
-v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="PREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
@@ -270,14 +270,14 @@ echo ""
 
 f_delete_all_student_objects()
 {
-for count in {201..202}
+for count in {201..212}
 do
  echo "Deleting objects for student$count ..."
  f_delete_single_student_objects student$count
  echo "Done ..."
 done
 echo "First pass done ..."
-for count in {201..202}
+for count in {201..212}
 do
  echo "Deleting objects again for student$count ..."
  f_delete_single_student_objects student$count
