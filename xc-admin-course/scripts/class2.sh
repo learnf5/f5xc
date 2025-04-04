@@ -37,25 +37,28 @@ echo "-lan                       List all namespaces"
 echo "-lsn                       List student namespaces"
 echo "-lss <studentname>         List student sites"
 echo "-lvs <studentname>         List student virtual sites (vpc)"
-echo "-las <studentname>         List a student(s) details"
+echo "-las <studentname>         List student details"
 echo "-dss <studentname>         Disable student account"
 echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
+echo ""
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
 echo "-adapp4 <studentname>      ADMIN - Apply AWS VPC site created in lab 4"
-echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects"
-echo "-adkub7 <studentname>      ** Under Construction ** ADMIN - Download Kubeconfig in lab 7"
+echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects, manual Kubeconfig download and deploy"
+echo "-adkub7 <studentname>      ADMIN - Lab 7 automatic Kubeconfig download and deploy"
 echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
+echo "-adcreall <studentname>    ADMIN - Create all Admin class labs"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-addas                     ADMIN - Delete all student objects (max 12)"
+echo ""
 echo "-wadso <studentname>       WAAP - Delete single student objects"
 echo "-wadall                    WAAP - Delete all student objects"
 echo "-walst <studentname>       WAAP - List first labs student objects"
@@ -408,36 +411,43 @@ echo "mv /mnt/c/Users/student/Downloads/ves_studentX_studentX-vk8s.yaml ./config
 echo "cd /home/student/f5xc/xc-admin-course"
 echo "kubectl apply -f online-boutique.yaml"
 echo ""
-echo "Or copy and paste these:"
+echo "Or ...:"
+echo ""
+echo "Copy and paste these:"
 echo ""
 echo "cd /home/student/.kube; mv /mnt/c/Users/student/Downloads/ves_$1_$1-vk8s.yaml ./config; cd /home/student/f5xc/xc-admin-course; kubectl apply -f online-boutique.yaml --dry-run=server; kubectl apply -f online-boutique.yaml; cd scripts"
 echo ""
-### echo "OR"
-### echo ""
-### echo "Run the -adkub7 option to download and move the Kubeconfig file automatically"
-### echo ""
+echo "Or ...:"
+echo ""
+echo "Confirm the vK8s object is created - it takes some time"
+echo ""
+echo "Run the -adkub7 option and it downloads the kubeconfig and deploys the application automatically"
+echo ""
 }
 
 f_admin_create_single_student_kubeconfig_lab7()
 {
 s_vk8s="$1-vk8s"
+echo ""
+echo "The vK8s object must exist for the next steps to work ..."
+echo ""
 echo "Downloading vK8s Kubeconfig file for $1 ..."
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-echo "Waiting a bit ..."
-### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/sites/$s_vk8s/global-kubeconfigs"
-### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/sites/$s_vk8s/local-kubeconfigs"
-exit 0
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":10,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>encoded_ves_$1_$1-vk8s.yaml 2>kubeconfig.error
+echo "Takes a while ..."
 sleep 5
-cat ves_$1_$1-vk8s.yaml
-cat kubeconfig.error
-echo "Copying file to /home/student/.kube/config ..."
+### cat encoded_ves_$1_$1-vk8s.yaml
+### cat kubeconfig.error
+sleep 2
+echo "Decoding file ..."
+cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.[]' | sed '/'$1'/q' | sed '/==/q' | base64 --decode 1>ves_$1_$1-vk8s.yaml
+sleep 1
+### cat ves_$1_$1-vk8s.yaml
+echo "Copying kubeconfig file to /home/student/.kube/config ..."
 cp ves_$1_$1-vk8s.yaml /home/student/.kube/config
-echo ""
-echo "Now run these commands:"
-echo ""
-echo "cd /home/student/f5xc/xc-admin-course"
-echo "kubectl apply -f online-boutique.yaml"
-echo ""
+sleep 1
+echo "Deploying online-boutique application ..."
+cd /home/student/f5xc/xc-admin-course
+kubectl apply -f online-boutique.yaml
 }
 
 f_admin_create_single_student_objects_labs9()
@@ -505,6 +515,11 @@ echo "Now make a browser connection to http://$1-workload.f5training2.cloud"
 echo ""
 echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
 echo ""
+}
+
+f_admin_create_all_labs()
+{
+echo "To be built ..."
 }
 
 f_admin_list_deployments()
@@ -781,7 +796,7 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Downloading Kubeconfig file for $2 ..."
+   f_echo "Downloading Kubeconfig file for $2 and deploying application ..."
    f_admin_create_single_student_kubeconfig_lab7 $2
    ;;
    -adcre9)
@@ -815,6 +830,14 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "Creating ADMIN lab 14 objects for $2 ..."
    f_admin_create_single_student_objects_labs14 $2
+   ;;
+   -adcreall)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Creating all the ADMIN labs for $2 ..."
+   f_admin_create_all_labs $2
    ;;
    -wadso)
    if [ "$#" != 2 ]; then
