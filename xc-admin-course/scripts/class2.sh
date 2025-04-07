@@ -9,7 +9,7 @@ student_name=$2
 
 ### Points to classroom 2
 
-v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="Rwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
@@ -415,10 +415,8 @@ f_admin_create_single_student_objects_labs7()
 {
 ### Create labs 7 for studentX
 s_vk8s="$1-vk8s"
-### echo "Listing existing vk8s as GUI does not show JSON ..."
 echo "Creating vk8s for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
-echo ""
 echo ""
 echo "Now go to Distributed Apps > student namespace > Applications > Virtual K8s, wait for the create to finish then click 3 dots, Kubeconfig, download the file to the workstation and finish Lab 10 ..."
 echo ""
@@ -446,8 +444,11 @@ echo ""
 f_admin_create_single_student_kubeconfig_lab7()
 {
 s_vk8s="$1-vk8s"
+echo "Creating vk8s for $1 ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
 echo ""
-echo "The vK8s object must exist for the next steps to work ..."
+echo "The vK8s object must exist for the next steps to work. Sleeping for 60 ..."
+sleep 60
 echo ""
 echo "Downloading vK8s Kubeconfig file for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":10,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>encoded_ves_$1_$1-vk8s.yaml 2>kubeconfig.error
@@ -554,7 +555,7 @@ f_admin_create_single_student_objects_labs10 $1
 f_dots 120
 f_echo "Creating ADMIN lab 11 objects for $1 ..."
 f_admin_create_single_student_objects_labs11 $1
-f_dots 120
+f_dots 30
 f_echo "Creating ADMIN lab 14 objects for $1 ..."
 f_admin_create_single_student_objects_labs14 $1
 f_dots 120
