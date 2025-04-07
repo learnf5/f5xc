@@ -23,6 +23,17 @@ f_log()
  date >>$v_logfile
 }
 
+f_dots()
+{
+echo "Sleeping for $1 ..."
+i=1
+while [ "$i" -le "$1" ]; do
+ echo -n "*"
+ sleep 1
+ i=$(($i + 1))
+done
+}
+
 f_echo()
 {
 echo -e $1
@@ -54,8 +65,8 @@ echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
 echo "-adapp4 <studentname>      ADMIN - Apply AWS VPC site created in lab 4"
-echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects, manual Kubeconfig download and deploy"
-echo "-adkub7 <studentname>      ADMIN - Lab 7 automatic Kubeconfig download and deploy"
+echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects - manual"
+echo "-adkub7 <studentname>      ADMIN - Create Lab 7 student objects - automatic"
 echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
@@ -526,7 +537,27 @@ echo ""
 
 f_admin_create_all_student_labs()
 {
-echo "To be built ..."
+f_echo "Creating ADMIN labs 2-4 objects for $1 ..."
+f_admin_create_single_student_objects_labs234 $1
+f_dots 30
+f_echo "Applying ADMIN lab 4 AWS VPC site objects for $1..."
+f_admin_apply_single_student_objects_labs4 $1
+f_dots 300
+f_echo "Creating ADMIN lab 7 vK8s object, downloading Kubeconfig file for $1, and deploying application ..."
+f_admin_create_single_student_kubeconfig_lab7 $1
+f_dots 120
+f_echo "Creating ADMIN lab 9 objects for $1 ..."
+f_admin_create_single_student_objects_labs9 $1
+f_dots 20
+f_echo "Creating ADMIN lab 10 objects for $1 ..."
+f_admin_create_single_student_objects_labs10 $1
+f_dots 120
+f_echo "Creating ADMIN lab 11 objects for $1 ..."
+f_admin_create_single_student_objects_labs11 $1
+f_dots 120
+f_echo "Creating ADMIN lab 14 objects for $1 ..."
+f_admin_create_single_student_objects_labs14 $1
+f_dots 120
 }
 
 f_admin_create_all_12_student_labs()
@@ -639,6 +670,8 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 
 f_test()
 {
+f_dots 10
+exit 1
 echo "Listing API credentials ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials" | jq -r .[][].name | grep -E 'student[1-9]{1}'
 sleep 1
@@ -693,9 +726,8 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "testing with $2 ..."
-   f_admin_create_single_student_objects_labs234 $2
-   ### f_test $2
+   f_echo "Testing with $2 ..."
+   f_test $2
    ;;
    -tok)
    f_test_token
@@ -809,7 +841,7 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Downloading Kubeconfig file for $2 and deploying application ..."
+   f_echo "Creating ADMIN lab 7 vK8s object, downloading Kubeconfig file for $2, and deploying application ..."
    f_admin_create_single_student_kubeconfig_lab7 $2
    ;;
    -adcre9)
@@ -849,12 +881,31 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Creating all the ADMIN labs for $2 ..."
-   f_admin_create_all_student_labs $2
+   echo ""
+   echo "This option will create all the labs for the ADMIN class for $2. It will take some time"
+   echo ""
+   read -p "Are you sure you wish to continue (y/n) ?" choice
+   if [ "$choice" = "y" ]; then
+    f_echo "Creating all ADMIN labs for $1 ..."
+    f_admin_create_all_student_labs $2
+   else
+    echo "Exiting ..."
+    exit 0
+   fi
    ;;
    -adcreall12)
-   f_echo "Creating all the ADMIN labs for 12 students. This will take some time ..."
-   f_admin_create_all_12_student_labs
+   echo ""
+   echo "This option will create all the labs for the ADMIN class for all 12 students"
+   echo "It will take some time"
+   echo ""
+   read -p "Are you sure you wish to continue (y/n) ?" choice
+   if [ "$choice" = "y" ]; then
+    f_echo "Creating all the ADMIN labs for 12 students. This will take some time ..."
+    f_admin_create_all_12_student_labs
+   else
+    echo "Exiting ..."
+    exit 0
+   fi
    ;;
    -wadso)
    if [ "$#" != 2 ]; then
