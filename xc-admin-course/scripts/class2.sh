@@ -9,7 +9,7 @@ student_name=$2
 
 ### Points to classroom 2
 
-v_token="Rwnm8mg83l8C+cGJlwPCSLQPt3w="
+v_token="FREqRwnm8mg83l8C+cGJlwPCSLQPt3w="
 v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
@@ -20,6 +20,7 @@ v_logfile="$script_name.log"
 
 f_log()
 {
+ echo $1 >>$v_logfile
  date >>$v_logfile
 }
 
@@ -448,7 +449,7 @@ echo "Creating vk8s for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
 echo ""
 echo "The vK8s object must exist for the next steps to work. Sleeping for 60 ..."
-sleep 60
+f_dots 60
 echo ""
 echo "Downloading vK8s Kubeconfig file for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":10,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>encoded_ves_$1_$1-vk8s.yaml 2>kubeconfig.error
@@ -671,8 +672,6 @@ curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/
 
 f_test()
 {
-f_dots 10
-exit 1
 echo "Listing API credentials ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials" | jq -r .[][].name | grep -E 'student[1-9]{1}'
 sleep 1
@@ -695,20 +694,6 @@ echo "Get Internal View of Object ..."
 echo "Listing Namespace Discoverys ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/discoverys" | jq
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/discoverys" | jq
-echo "Downloading Kubeconfig ..."
-s_vk8s="$1-vk8s"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/virtual_k8ss/student14-vk8s"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' | base64 --decode 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"student14-vk8s","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"student14-vk8s","virtual_k8s_namespace":"'$1'"}}'
-cat ves_$1_$1-vk8s.yaml
-### cat kubeconfig.error
-exit 0
 }
 
 ### main
@@ -719,7 +704,7 @@ if [ $# -eq 0 ]; then
 f_usage
 fi
 
-f_log
+f_log start
 while [ $# -gt 0 ]; do
  case "$1" in
    -test)
@@ -949,5 +934,5 @@ while [ $# -gt 0 ]; do
  esac
  shift
 done
-f_log
+f_log end
 f_echo "End ..."
