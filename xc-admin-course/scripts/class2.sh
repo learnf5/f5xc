@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.3"
+script_ver="1.4"
 script_name="class2.sh"
 student_name=$2
 
@@ -14,8 +14,14 @@ v_url="https://training2.console.ves.volterra.io/api"
 v_tenant="training2-haiyaqtr"
 v_dom="f5training2.cloud"
 v_aws_creds_name="creds-aws1211gst02"
+v_logfile="$script_name.log"
 
 ### functions
+
+f_log()
+{
+ date >>$v_logfile
+}
 
 f_echo()
 {
@@ -54,7 +60,8 @@ echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
-echo "-adcreall <studentname>    ADMIN - Create all Admin class labs"
+echo "-adcreall <studentname>    ** Under construction ADMIN - Create all Admin class labs per student"
+echo "-adcreall12                ** Under construction ADMIN - Create all Admin class labs for 12 students"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-addas                     ADMIN - Delete all student objects (max 12)"
@@ -517,7 +524,12 @@ echo "It will take several minutes for the load balancer to be provisioned and a
 echo ""
 }
 
-f_admin_create_all_labs()
+f_admin_create_all_student_labs()
+{
+echo "To be built ..."
+}
+
+f_admin_create_all_12_student_labs()
 {
 echo "To be built ..."
 }
@@ -673,6 +685,7 @@ if [ $# -eq 0 ]; then
 f_usage
 fi
 
+f_log
 while [ $# -gt 0 ]; do
  case "$1" in
    -test)
@@ -837,7 +850,11 @@ while [ $# -gt 0 ]; do
     exit 1
    fi
    f_echo "Creating all the ADMIN labs for $2 ..."
-   f_admin_create_all_labs $2
+   f_admin_create_all_student_labs $2
+   ;;
+   -adcreall12)
+   f_echo "Creating all the ADMIN labs for 12 students. This will take some time ..."
+   f_admin_create_all_12_student_labs
    ;;
    -wadso)
    if [ "$#" != 2 ]; then
@@ -880,4 +897,5 @@ while [ $# -gt 0 ]; do
  esac
  shift
 done
+f_log
 f_echo "End ..."
