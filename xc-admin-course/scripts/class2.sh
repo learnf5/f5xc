@@ -72,7 +72,7 @@ echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
-echo "-adcreall <studentname>    ** Under construction ADMIN - Create all Admin class labs per student"
+echo "-adcreall <studentname>    ADMIN - Create all ADMIN class labs per student"
 echo "-adcreall12                ** Under construction ADMIN - Create all Admin class labs for 12 students"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
@@ -565,6 +565,15 @@ f_dots 120
 f_admin_create_all_12_student_labs()
 {
 echo "To be built ..."
+exit 0
+echo "Creating ADMIN class labs for all 12 students ..."
+for count in {201..212}
+do
+ echo "Creating ADMIN class labs for student$count ..."
+ f_admin_create_all_student_labs student$count
+ f_dots 740
+ echo "Done ..."
+done
 }
 
 f_admin_list_deployments()
@@ -868,7 +877,7 @@ while [ $# -gt 0 ]; do
     exit 1
    fi
    echo ""
-   echo "This option will create all the labs for the ADMIN class for $2. It will take some time"
+   echo "This option will create all the labs for the ADMIN class for $2. It takes some time (12 mins)"
    echo ""
    read -p "Are you sure you wish to continue (y/n) ?" choice
    if [ "$choice" = "y" ]; then
