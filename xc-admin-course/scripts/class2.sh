@@ -877,7 +877,7 @@ while [ $# -gt 0 ]; do
     exit 1
    fi
    echo ""
-   echo "This option will create all the labs for the ADMIN class for $2. It takes some time (12 mins)"
+   echo "This option will create all the labs for the ADMIN class for $2. It takes some time (20 mins)"
    echo ""
    read -p "Are you sure you wish to continue (y/n) ?" choice
    if [ "$choice" = "y" ]; then
@@ -885,7 +885,6 @@ while [ $# -gt 0 ]; do
     f_admin_create_all_student_labs $2
    else
     echo "Exiting ..."
-    exit 0
    fi
    ;;
    -adcreall12)
@@ -943,5 +942,5 @@ while [ $# -gt 0 ]; do
  esac
  shift
 done
-f_log end
 f_echo "End ..."
+f_log finish
