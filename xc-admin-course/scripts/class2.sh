@@ -72,8 +72,8 @@ echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
-echo "-adcreall <studentname>    ADMIN - Create all ADMIN class labs per student"
-echo "-adcreall12                ** Under construction ADMIN - Create all Admin class labs for 12 students"
+echo "-adcreall <studentname>    ** Testing ADMIN - Create all ADMIN class labs per student"
+echo "-adcreall12                ** Testing ADMIN - Create all Admin class labs for 12 students"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-addas                     ADMIN - Delete all student objects (max 12)"
@@ -571,7 +571,7 @@ for count in {201..212}
 do
  echo "Creating ADMIN class labs for student$count ..."
  f_admin_create_all_student_labs student$count
- f_dots 740
+ f_dots 300
  echo "Done ..."
 done
 }
