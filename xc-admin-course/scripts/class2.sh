@@ -72,8 +72,8 @@ echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
-echo "-adcreall <studentname>    ** Testing ADMIN - Create all ADMIN class labs per student"
-echo "-adcreall12                ** Testing ADMIN - Create all Admin class labs for 12 students"
+echo "-adcreall <studentname>    Testing ADMIN - Create all class labs per student (20 mins)"
+echo "-adcreall12                Testing ADMIN - Create all class labs for several students (max 12)"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-addas                     ADMIN - Delete all student objects (max 12)"
@@ -564,12 +564,18 @@ f_dots 120
 
 f_admin_create_all_12_student_labs()
 {
-echo "To be built ..."
-exit 0
-echo "Creating ADMIN class labs for all 12 students ..."
-for count in {201..212}
+echo ""
+echo "Creating ADMIN class labs for $1 students ..."
+snumdigits=`echo $1 | wc -m`
+if [ $snumdigits -eq 3 ]; then
+ lnum="2$1"
+ else
+ lnum="20$1"
+fi
+for count in {201..$lnum}
 do
- echo "Creating ADMIN class labs for student$count ..."
+ echo "Creating ADMIN class labs up to student$lnum ..."
+ exit 0
  f_admin_create_all_student_labs student$count
  f_dots 300
  echo "Done ..."
@@ -889,13 +895,22 @@ while [ $# -gt 0 ]; do
    ;;
    -adcreall12)
    echo ""
-   echo "This option will create all the labs for the ADMIN class for all 12 students"
-   echo "It will take some time"
+   echo "This option will create all the labs for the ADMIN class for several students"
+   echo "Enter a number from 1 to 12, the maximum number is 12."
+   echo "If 1, student201 is created, if 4, student201 to student204 are created"
    echo ""
+   read -p "Number of students ?" numstudents
+   snumdigits=`echo $numstudents | wc -m`
+   if [ $snumdigits -eq 3 ]; then
+   snum="student2$numstudents"
+   else
+   snum="student20$numstudents"
+   fi
    read -p "Are you sure you wish to continue (y/n) ?" choice
    if [ "$choice" = "y" ]; then
-    f_echo "Creating all the ADMIN labs for 12 students. This will take some time ..."
-    f_admin_create_all_12_student_labs
+    echo ""
+    f_echo "Creating all ADMIN labs from student201 to $snum. This will take some time ..."
+    f_admin_create_all_12_student_labs $numstudents
    else
     echo "Exiting ..."
     exit 0
@@ -942,5 +957,5 @@ while [ $# -gt 0 ]; do
  esac
  shift
 done
-f_echo "End ..."
 f_log finish
+f_echo "End ..."
