@@ -560,25 +560,17 @@ f_dots 30
 f_echo "Creating ADMIN lab 14 objects for $1 ..."
 f_admin_create_single_student_objects_labs14 $1
 f_dots 120
+return
 }
 
 f_admin_create_all_12_student_labs()
 {
 echo ""
-echo "Creating ADMIN class labs for $1 students ..."
-snumdigits=`echo $1 | wc -m`
-if [ $snumdigits -eq 3 ]; then
- lnum="2$1"
- else
- lnum="20$1"
-fi
-for count in {201..$lnum}
-do
- echo "Creating ADMIN class labs up to student$lnum ..."
- exit 0
- f_admin_create_all_student_labs student$count
+for ((i = $1; i <= $2; i++ )); do
+ echo $loopcount
+ echo "Creating ADMIN class labs for student$i ..."
+ f_admin_create_all_student_labs student$i
  f_dots 300
- echo "Done ..."
 done
 }
 
@@ -896,21 +888,26 @@ while [ $# -gt 0 ]; do
    -adcreall12)
    echo ""
    echo "This option will create all the labs for the ADMIN class for several students"
-   echo "Enter a number from 1 to 12, the maximum number is 12."
-   echo "If 1, student201 is created, if 4, student201 to student204 are created"
+   echo "Enter a start and finish number from 201 to 212, the maximum number of students is 12"
+   echo "If 203 to 205, then only student203 to student205 are created, if 201 to 212, then student201"
+   echo "to student212 are created"
    echo ""
-   read -p "Number of students ?" numstudents
-   snumdigits=`echo $numstudents | wc -m`
-   if [ $snumdigits -eq 3 ]; then
-   snum="student2$numstudents"
-   else
-   snum="student20$numstudents"
+   read -p "Start number ?" startnum
+   read -p "Finish number ?" finishnum
+   snumdigits_startnum=`echo $startnum | wc -m`
+   snumdigits_finishnum=`echo $finishnum | wc -m`
+   if [[ $snumdigits_startnum != 4 || $snumdigits_startnum != 4 ]]; then
+    exit 1
+   fi
+   if [[ $startnum < 201 || $finishnum > 212 ]]; then
+    exit 1
    fi
    read -p "Are you sure you wish to continue (y/n) ?" choice
    if [ "$choice" = "y" ]; then
     echo ""
-    f_echo "Creating all ADMIN labs from student201 to $snum. This will take some time ..."
-    f_admin_create_all_12_student_labs $numstudents
+    f_echo "Creating all ADMIN labs from student$startnum to student$finishnum ..."
+    f_echo "This will take some time ..."
+    f_admin_create_all_12_student_labs $startnum $finishnum
    else
     echo "Exiting ..."
     exit 0
