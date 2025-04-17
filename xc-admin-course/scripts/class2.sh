@@ -559,18 +559,19 @@ f_admin_create_single_student_objects_labs11 $1
 f_dots 30
 f_echo "Creating ADMIN lab 14 objects for $1 ..."
 f_admin_create_single_student_objects_labs14 $1
-f_dots 120
-return
 }
 
 f_admin_create_all_12_student_labs()
 {
 echo ""
-for ((i = $1; i <= $2; i++ )); do
- echo $loopcount
- echo "Creating ADMIN class labs for student$i ..."
- f_admin_create_all_student_labs student$i
- f_dots 300
+### have to use new vars as dollar 1 and 1 get reset in other functions we call as we loop
+startloop=$1
+endloop=$2
+for (( a = $startloop; a <= $endloop; a++ )); do
+ echo "Creating ADMIN class labs for student$a ..."
+ echo $1 $2 $a
+ f_admin_create_all_student_labs student$a
+ ### f_dots 300
 done
 }
 
