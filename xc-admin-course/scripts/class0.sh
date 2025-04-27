@@ -15,7 +15,7 @@ student_name=$2
 ### v_aws_creds_name="learnf5-aws"
 
 ### Points to classroom 0 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="PREwu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token="FREqMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
