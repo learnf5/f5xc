@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.3"
+script_ver="1.4"
 script_name="class0.sh"
 student_name=$2
 
@@ -14,14 +14,33 @@ student_name=$2
 ### v_dom="dev.learnf5.cloud"
 ### v_aws_creds_name="learnf5-aws"
 
-### Points to classroom 0 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="FREqMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
+### Points to classroom 0
+
+v_token="PWEfMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
 v_aws_creds_name="learnf5-aws"
+v_logfile="$script_name.log"
 
 ### functions
+
+f_log()
+{
+ echo $1 >>$v_logfile
+ date >>$v_logfile
+}
+
+f_dots()
+{
+echo "Sleeping for $1 ..."
+i=1
+while [ "$i" -le "$1" ]; do
+ echo -n "*"
+ sleep 1
+ i=$(($i + 1))
+done
+}
 
 f_echo()
 {
@@ -30,7 +49,7 @@ echo -e $1
 
 f_usage()
 {
-echo "Class setup script for Admin and WAAP"
+echo "Classroom 0 setup script for Admin and WAAP"
 echo ""
 echo "Student numbers run from 1 to 12"
 echo ""
@@ -38,30 +57,36 @@ echo "Usage: ./${script_name} -option"
 echo ""
 echo "Options:"
 echo ""
+echo ""
+echo ""
 echo "-tok                       Test token"
 echo "-lan                       List all namespaces"
 echo "-lsn                       List student namespaces"
 echo "-lss <studentname>         List student sites"
 echo "-lvs <studentname>         List student virtual sites (vpc)"
-echo "-las <studentname>         List a student(s) details"
+echo "-las <studentname>         List student details"
 echo "-dss <studentname>         Disable student account"
 echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
+echo ""
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
 echo "-adapp4 <studentname>      ADMIN - Apply AWS VPC site created in lab 4"
-echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects"
-echo "-adkub7 <studentname>      ** Under Construction ** ADMIN - Download Kubeconfig in lab 7"
+echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects - manual"
+echo "-adkub7 <studentname>      ADMIN - Create Lab 7 student objects - automatic"
 echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
+echo "-adcreall <studentname>    ADMIN - Create all class labs per student (20 mins)"
+echo "-adcreall12                Testing ADMIN - Create all class labs for several students (max 12)"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-addas                     ADMIN - Delete all student objects (max 12)"
+echo ""
 echo "-wadso <studentname>       WAAP - Delete single student objects"
 echo "-wadall                    WAAP - Delete all student objects"
 echo "-walst <studentname>       WAAP - List first labs student objects"
@@ -302,7 +327,6 @@ else
  pnum="100$snum"
 fi
 s_aws_vpc_name="$1-vpc"
-### aws vpc objects are created tn the system namesapce, not shared, not student
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$s_aws_vpc_name"
 }
@@ -398,14 +422,13 @@ echo ""
 echo "Check the GUI for the green Apply button and check AWS. Process takes some minutes to run ..."
 }
 
+
 f_admin_create_single_student_objects_labs7()
 {
 ### Create labs 7 for studentX
 s_vk8s="$1-vk8s"
-### echo "Listing existing vk8s as GUI does not show JSON ..."
 echo "Creating vk8s for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
-echo ""
 echo ""
 echo "Now go to Distributed Apps > student namespace > Applications > Virtual K8s, wait for the create to finish then click 3 dots, Kubeconfig, download the file to the workstation and finish Lab 10 ..."
 echo ""
@@ -416,33 +439,46 @@ echo "mv /mnt/c/Users/student/Downloads/ves_studentX_studentX-vk8s.yaml ./config
 echo "cd /home/student/f5xc/xc-admin-course"
 echo "kubectl apply -f online-boutique.yaml"
 echo ""
-echo "Or copy and paste these:"
+echo "Or ...:"
+echo ""
+echo "Copy and paste these:"
 echo ""
 echo "cd /home/student/.kube; mv /mnt/c/Users/student/Downloads/ves_$1_$1-vk8s.yaml ./config; cd /home/student/f5xc/xc-admin-course; kubectl apply -f online-boutique.yaml --dry-run=server; kubectl apply -f online-boutique.yaml; cd scripts"
 echo ""
-### echo "OR"
-### echo ""
-### echo "Run the -adkub7 option to download and move the Kubeconfig file automatically"
-### echo ""
+echo "Or ...:"
+echo ""
+echo "Confirm the vK8s object is created - it takes some time"
+echo ""
+echo "Run the -adkub7 option and it downloads the kubeconfig and deploys the application automatically"
+echo ""
 }
 
 f_admin_create_single_student_kubeconfig_lab7()
 {
 s_vk8s="$1-vk8s"
+echo "Creating vk8s for $1 ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
+echo ""
+echo "The vK8s object must exist for the next steps to work. Sleeping for 60 ..."
+f_dots 60
+echo ""
 echo "Downloading vK8s Kubeconfig file for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-echo "Waiting a bit ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":10,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>encoded_ves_$1_$1-vk8s.yaml 2>kubeconfig.error
+echo "Takes a while ..."
 sleep 5
-cat ves_$1_$1-vk8s.yaml
-cat kubeconfig.error
-echo "Copying file to /home/student/.kube/config ..."
+### cat encoded_ves_$1_$1-vk8s.yaml
+### cat kubeconfig.error
+sleep 2
+echo "Decoding file ..."
+cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.[]' | sed '/'$1'/q' | sed '/==/q' | base64 --decode 1>ves_$1_$1-vk8s.yaml
+sleep 1
+### cat ves_$1_$1-vk8s.yaml
+echo "Copying kubeconfig file to /home/student/.kube/config ..."
 cp ves_$1_$1-vk8s.yaml /home/student/.kube/config
-echo ""
-echo "Now run these commands:"
-echo ""
-echo "cd /home/student/f5xc/xc-admin-course"
-echo "kubectl apply -f online-boutique.yaml"
-echo ""
+sleep 1
+echo "Deploying online-boutique application ..."
+cd /home/student/f5xc/xc-admin-course
+kubectl apply -f online-boutique.yaml
 }
 
 f_admin_create_single_student_objects_labs9()
@@ -510,6 +546,43 @@ echo "Now make a browser connection to http://$1-workload.aws.learnf5.cloud"
 echo ""
 echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
 echo ""
+}
+
+f_admin_create_all_student_labs()
+{
+f_echo "Creating ADMIN labs 2-4 objects for $1 ..."
+f_admin_create_single_student_objects_labs234 $1
+f_dots 30
+f_echo "Applying ADMIN lab 4 AWS VPC site objects for $1..."
+f_admin_apply_single_student_objects_labs4 $1
+f_dots 300
+f_echo "Creating ADMIN lab 7 vK8s object, downloading Kubeconfig file for $1, and deploying application ..."
+f_admin_create_single_student_kubeconfig_lab7 $1
+f_dots 120
+f_echo "Creating ADMIN lab 9 objects for $1 ..."
+f_admin_create_single_student_objects_labs9 $1
+f_dots 20
+f_echo "Creating ADMIN lab 10 objects for $1 ..."
+f_admin_create_single_student_objects_labs10 $1
+f_dots 120
+f_echo "Creating ADMIN lab 11 objects for $1 ..."
+f_admin_create_single_student_objects_labs11 $1
+f_dots 30
+f_echo "Creating ADMIN lab 14 objects for $1 ..."
+f_admin_create_single_student_objects_labs14 $1
+}
+
+f_admin_create_all_12_student_labs()
+{
+echo ""
+startloop=$1
+endloop=$2
+for (( a = $startloop; a <= $endloop; a++ )); do
+ echo "Creating ADMIN class labs for student$a ..."
+ echo $1 $2 $a
+ f_admin_create_all_student_labs student$a
+ ### f_dots 300
+done
 }
 
 f_admin_list_deployments()
@@ -642,20 +715,6 @@ echo "Get Internal View of Object ..."
 echo "Listing Namespace Discoverys ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/discoverys" | jq
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/discoverys" | jq
-echo "Downloading Kubeconfig ..."
-s_vk8s="$1-vk8s"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/virtual_k8ss/student14-vk8s"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials"
-echo "hhhhhhhhhhhhhhhhhhhhhhhhhhhh"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' | base64 --decode 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"student14-vk8s","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"student14-vk8s","virtual_k8s_namespace":"'$1'"}}'
-cat ves_$1_$1-vk8s.yaml
-### cat kubeconfig.error
 exit 0
 }
 
@@ -674,7 +733,7 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "testing with $2 ..."
+   f_echo "Testing with $2 ..."
    f_test $2
    ;;
    -tok)
@@ -824,6 +883,54 @@ while [ $# -gt 0 ]; do
    f_echo "Creating ADMIN lab 14 objects for $2 ..."
    f_admin_create_single_student_objects_labs14 $2
    ;;
+   -adcreall)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   echo ""
+   echo "This option will create all the labs for the ADMIN class for $2. It takes some time (20 mins)"
+   echo ""
+   read -p "Are you sure you wish to continue (y/n) ?" choice
+   if [ "$choice" = "y" ]; then
+    f_echo "Creating all ADMIN labs for $1 ..."
+    f_admin_create_all_student_labs $2
+   else
+    echo "Exiting ..."
+   fi
+   ;;
+   -adcreall12)
+   echo ""
+   echo "This option will create all the labs for the ADMIN class for several students"
+   echo "Enter a start and finish number from 1 to 12, the maximum number of students is 12"
+   echo "If 3 to 5, then only student3 to student5 are created, if 1 to 12, then student1"
+   echo "to student12 are created"
+   echo ""
+   read -p "Start number ?" startnum
+   read -p "Finish number ?" finishnum
+   snumdigits_startnum=`echo $startnum | wc -m`
+   snumdigits_finishnum=`echo $finishnum | wc -m`
+   ### single digits are 2, doubledigits are 3, three digits are 4
+   echo $snumdigits_startnum
+   echo $snumdigits_finishnum
+   exit 0
+   if [[ $snumdigits_startnum != 2 || $snumdigits_startnum != 3 ]]; then
+    exit 1
+   fi
+   if [[ $startnum < 1 || $finishnum > 12 ]]; then
+    exit 1
+   fi
+   read -p "Are you sure you wish to continue (y/n) ?" choice
+   if [ "$choice" = "y" ]; then
+    echo ""
+    f_echo "Creating all ADMIN labs from student$startnum to student$finishnum ..."
+    f_echo "This will take some time ..."
+    f_admin_create_all_12_student_labs $startnum $finishnum
+   else
+    echo "Exiting ..."
+    exit 0
+   fi
+   ;;
    -wadso)
    if [ "$#" != 2 ]; then
     f_echo "Missing student name ... "
@@ -864,5 +971,6 @@ while [ $# -gt 0 ]; do
    ;;
  esac
  shift
+f_log finish
 done
 f_echo "End ..."
