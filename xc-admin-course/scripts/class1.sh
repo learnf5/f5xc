@@ -3,26 +3,35 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.3"
+script_ver="1.4"
 script_name="class1.sh"
 student_name=$2
 
-### Points to the Training Development F5XC console which points to the Internal Training AWS instance
-### v_token="FREqCfxhI08CzaktknCrXwsrCmOPibI="
-### v_url="https://training-dev.console.ves.volterra.io/api"
-### v_tenant="training-dev-fcphvhww"
-### v_dom="dev.learnf5.cloud"
-### v_aws_creds_name="learnf5-aws"
-
-### Points to classroom 1 - the First Public Training F5XC console which points to the Training AWS instance
-v_token="PREwAWeru7Yp55Pfvon+MmLXpavWV7uAYXw="
-v_url="https://training.console.ves.volterra.io/api"
-v_tenant="training-ytfhxsmw"
-v_dom="aws.learnf5.cloud"
-### AWS creds inside Multi-Cloud Network Connect > Manage > Site Management > Cloud Credentials > Cloud Sites
-v_aws_creds_name="learnf5-aws"
+v_token=""
+v_url="https://training1.console.ves.volterra.io/api"
+v_tenant=""
+v_dom="f5training1.cloud"
+v_aws_creds_name=""
+v_logfile="$script_name.log"
 
 ### functions
+
+f_log()
+{
+ echo $1 >>$v_logfile
+ date >>$v_logfile
+}
+
+f_dots()
+{
+echo "Sleeping for $1 ..."
+i=1
+while [ "$i" -le "$1" ]; do
+ echo -n "*"
+ sleep 1
+ i=$(($i + 1))
+done
+}
 
 f_echo()
 {
@@ -33,6 +42,8 @@ f_usage()
 {
 echo "Classroom 1 setup script for Admin and WAAP"
 echo ""
+echo "Student numbers run from 101 to 112"
+echo ""
 echo "Usage: ./${script_name} -option"
 echo ""
 echo "Options:"
@@ -42,22 +53,29 @@ echo "-lan                       List all namespaces"
 echo "-lsn                       List student namespaces"
 echo "-lss <studentname>         List student sites"
 echo "-lvs <studentname>         List student virtual sites (vpc)"
-echo "-las <studentname>         List a student(s) details"
+echo "-las <studentname>         List student details"
 echo "-dss <studentname>         Disable student account"
 echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
+echo ""
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
 echo "-adcre234 <studentname>    ADMIN - Create labs 2-4 student objects"
 echo "-adapp4 <studentname>      ADMIN - Apply AWS VPC site created in lab 4"
-echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects"
-echo "-adkub7 <studentname>      ** Under Construction ** ADMIN - Download Kubeconfig in lab 7"
+echo "-adcre7 <studentname>      ADMIN - Create lab 7 student objects - manual"
+echo "-adkub7 <studentname>      ADMIN - Create Lab 7 student objects - automatic"
 echo "-adcre9 <studentname>      ADMIN - Create lab 9 student objects"
 echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
+echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
+echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
+echo "-adcreall <studentname>    ADMIN - Create all class labs per student (20 mins)"
+echo "-adcreall12                Testing ADMIN - Create all class labs for several students (max 12)"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
+echo "-addas                     ADMIN - Delete all student objects (max 12)"
+echo ""
 echo "-wadso <studentname>       WAAP - Delete single student objects"
 echo "-wadall                    WAAP - Delete all student objects"
 echo "-walst <studentname>       WAAP - List first labs student objects"
@@ -70,6 +88,7 @@ echo "2 - Relies on students naming their namespace correctly"
 echo ""
 echo "Notes:"
 echo ""
+echo "Run the single options and starting options to see what's there, then go to delete all"
 echo "API calls are sent, with timers after them, so the script takes its time deleting each entry"
 echo ""
 exit 0
@@ -296,8 +315,6 @@ else
  pnum="100$snum"
 fi
 s_aws_vpc_name="$1-vpc"
-### aws vpc objects are created tn the system namesapce, not shared, not student
-### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites"
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites/$s_aws_vpc_name"
 }
 
@@ -396,10 +413,8 @@ f_admin_create_single_student_objects_labs7()
 {
 ### Create labs 7 for studentX
 s_vk8s="$1-vk8s"
-### echo "Listing existing vk8s as GUI does not show JSON ..."
 echo "Creating vk8s for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
-echo ""
 echo ""
 echo "Now go to Distributed Apps > student namespace > Applications > Virtual K8s, wait for the create to finish then click 3 dots, Kubeconfig, download the file to the workstation and finish Lab 10 ..."
 echo ""
@@ -410,29 +425,46 @@ echo "mv /mnt/c/Users/student/Downloads/ves_studentX_studentX-vk8s.yaml ./config
 echo "cd /home/student/f5xc/xc-admin-course"
 echo "kubectl apply -f online-boutique.yaml"
 echo ""
-### echo "OR"
-### echo ""
-### echo "Run the -adkub7 option to download and move the Kubeconfig file automatically"
-### echo ""
+echo "Or ...:"
+echo ""
+echo "Copy and paste these:"
+echo ""
+echo "cd /home/student/.kube; mv /mnt/c/Users/student/Downloads/ves_$1_$1-vk8s.yaml ./config; cd /home/student/f5xc/xc-admin-course; kubectl apply -f online-boutique.yaml --dry-run=server; kubectl apply -f online-boutique.yaml; cd scripts"
+echo ""
+echo "Or ...:"
+echo ""
+echo "Confirm the vK8s object is created - it takes some time"
+echo ""
+echo "Run the -adkub7 option and it downloads the kubeconfig and deploys the application automatically"
+echo ""
 }
 
 f_admin_create_single_student_kubeconfig_lab7()
 {
 s_vk8s="$1-vk8s"
+echo "Creating vk8s for $1 ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
+echo ""
+echo "The vK8s object must exist for the next steps to work. Sleeping for 60 ..."
+f_dots 60
+echo ""
 echo "Downloading vK8s Kubeconfig file for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-echo "Waiting a bit ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":10,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>encoded_ves_$1_$1-vk8s.yaml 2>kubeconfig.error
+echo "Takes a while ..."
 sleep 5
-cat ves_$1_$1-vk8s.yaml
-cat kubeconfig.error
-echo "Copying file to /home/student/.kube/config ..."
+### cat encoded_ves_$1_$1-vk8s.yaml
+### cat kubeconfig.error
+sleep 2
+echo "Decoding file ..."
+cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.[]' | sed '/'$1'/q' | sed '/==/q' | base64 --decode 1>ves_$1_$1-vk8s.yaml
+sleep 1
+### cat ves_$1_$1-vk8s.yaml
+echo "Copying kubeconfig file to /home/student/.kube/config ..."
 cp ves_$1_$1-vk8s.yaml /home/student/.kube/config
-echo ""
-echo "Now run these commands:"
-echo ""
-echo "cd /home/student/f5xc/xc-admin-course"
-echo "kubectl apply -f online-boutique.yaml"
-echo ""
+sleep 1
+echo "Deploying online-boutique application ..."
+cd /home/student/f5xc/xc-admin-course
+kubectl apply -f online-boutique.yaml
 }
 
 f_admin_create_single_student_objects_labs9()
@@ -455,8 +487,87 @@ echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://studentX.aws.learnf5.cloud"
+echo "Now make a browser connection to http://studentX.f5training1.cloud"
 echo ""
+}
+
+f_admin_create_single_student_objects_labs11()
+{
+s_lb="$1-https-lb"
+s_dom="$1.$v_dom"
+s_op="$1-op"
+s_waf="$1-waf"
+echo "Creating WAF Policy for $1 ..."
+echo ""
+echo "Added the word Hey at the start of the blocking page message ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/app_firewalls" -d '{"metadata":{"name":"'$s_waf'","namespace":"'$1'"},"spec":{"blocking":{},"default_detection_settings":{},"default_bot_setting":{},"allow_all_response_codes":{},"default_anonymization":{},"blocking_page":{"blocking_page":"string:///PGh0bWw+PGhlYWQ+PHRpdGxlPlJlcXVlc3QgUmVqZWN0ZWQ8L3RpdGxlPjwvaGVhZD48Ym9keT5IZXkgVGhlIHJlcXVlc3RlZCBVUkwgd2FzIHJlamVjdGVkLiBQbGVhc2UgY29uc3VsdCB3aXRoIHlvdXIgYWRtaW5pc3RyYXRvci48YnIvPjxici8+WW91ciBzdXBwb3J0IElEIGlzOiB7e3JlcXVlc3RfaWR9fTxici8+PGJyLz48YSBocmVmPSJqYXZhc2NyaXB0Omhpc3RvcnkuYmFjaygpIj5bR28gQmFja108L2E+PC9ib2R5PjwvaHRtbD4=","response_code":"OK"}}}'
+sleep 1
+echo ""
+echo "Adding the WAF Policy for $1 to the $s_lb load balancer ..."
+echo ""
+### echo "Current listing ..."
+### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb"
+curl -s -H "Authorization: APIToken $v_token" -X PUT "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}}},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"app_firewall":{"name":"'$s_waf'","namespace":"'$1'"}}}'
+echo ""
+echo "Now make a connection to https://$1.f5training2.cloud/test.exe"
+echo ""
+}
+
+f_admin_create_single_student_objects_labs14()
+{
+s_wl="$1-workload"
+s_container="$1-container"
+s_image="public.ecr.aws/o2z6z0t3/juice-shop"
+s_vol="$1-volume"
+s_vsite1="$1-vsite"
+s_dom="$1-workload.$v_dom"
+echo "Creating vK8s workload for $1 ..."
+echo ""
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/workloads" -d '{"metadata":{"name":"'$s_wl'","namespace":"'$1'","labels":{},"annotations":{},"description":"","disable":false},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$s_container'","image":{"name":"'$s_image'","public":{},"pull_policy":"IMAGE_PULL_POLICY_DEFAULT"},"init_container":false,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":[],"args":[]}],"volumes":[{"name":"'$s_vol'","empty_dir":{"size_limit":4,"mount":{"mode":"VOLUME_MOUNT_READ_WRITE","mount_path":"/data","sub_path":""}}}],"configuration":null,"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"tenant":"'$v_tenant'","namespace":"shared","name":"'$s_vsite1'"}]}},"advertise_options":{"advertise_on_public":{"port":{"port":{"info":{"port":3000,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"legacy_header_transformation":{}},"connection_idle_timeout":120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}},"coalescing_options":{"default_coalescing":{}}},"default_route":{"auto_host_rewrite":{}}}}}},"family":{"v4":{}}}}}'
+sleep 1
+echo ""
+echo "Now make a browser connection to http://$1-workload.f5training2.cloud"
+echo ""
+echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
+echo ""
+}
+
+f_admin_create_all_student_labs()
+{
+f_echo "Creating ADMIN labs 2-4 objects for $1 ..."
+f_admin_create_single_student_objects_labs234 $1
+f_dots 30
+f_echo "Applying ADMIN lab 4 AWS VPC site objects for $1..."
+f_admin_apply_single_student_objects_labs4 $1
+f_dots 300
+f_echo "Creating ADMIN lab 7 vK8s object, downloading Kubeconfig file for $1, and deploying application ..."
+f_admin_create_single_student_kubeconfig_lab7 $1
+f_dots 120
+f_echo "Creating ADMIN lab 9 objects for $1 ..."
+f_admin_create_single_student_objects_labs9 $1
+f_dots 20
+f_echo "Creating ADMIN lab 10 objects for $1 ..."
+f_admin_create_single_student_objects_labs10 $1
+f_dots 120
+f_echo "Creating ADMIN lab 11 objects for $1 ..."
+f_admin_create_single_student_objects_labs11 $1
+f_dots 30
+f_echo "Creating ADMIN lab 14 objects for $1 ..."
+f_admin_create_single_student_objects_labs14 $1
+}
+
+f_admin_create_all_12_student_labs()
+{
+echo ""
+### have to use new vars as dollar 1 and 1 get reset in other functions we call as we loop
+startloop=$1
+endloop=$2
+for (( a = $startloop; a <= $endloop; a++ )); do
+ echo "Creating ADMIN class labs for student$a ..."
+ echo $1 $2 $a
+ f_admin_create_all_student_labs student$a
+ ### f_dots 300
+done
 }
 
 f_admin_list_deployments()
@@ -540,17 +651,13 @@ f_waap_create_single_student_objects()
 ### Create labs 1-3 for a student
 ### Create the port number for the origin pool range is 1001 to 1012
 ### Tenant matters for JuiceShop check which tenant environment we are using
-### WAAP Lab 3 uses either studentX-juice.aws.learnf5.cloud or studentX-juice.dev.learnf5.cloud
-####fqdn="$1-juice.dev.learnf5.cloud"
-fqdn="$1-juice.aws.learnf5.cloud"
-### Handle student names between 1-12 studentX has 9 chars, studentXX has 10
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
+### WAAP Lab 3 uses studentX-juice.f5training2.cloud
+fqdn="$1-juice.f5training1.cloud"
+s_juice_ip="23.22.60.254"
+snumdigits=`echo $1 | wc -m`
+if [ $snumdigits -eq 11 ]; then
  snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
-else
- snum=`echo -n $1 | tail -c 1`
- pnum="100$snum"
 fi
 echo "Creating Namespace for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$1'"},"spec":{}}' | jq
@@ -560,7 +667,7 @@ echo "Creating Health check for HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-juice-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 echo "Creating Origin Pool and Origin Server for HTTP Load Balancer for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"23.22.60.254"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-juice-hc"}]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$1'-juice-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"'$s_juice_ip'"},"labels":{}}],"port":"'$pnum'","healthcheck":[{"namespace":"'$1'","name":"'$1'-juice-hc"}]}}' | jq
 sleep 1
 echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$1'-juice-lb","namespace":"'$1'"},"spec":{"domains":["'$fqdn'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$1'-juice-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
@@ -590,21 +697,6 @@ echo "Get Internal View of Object ..."
 echo "Listing Namespace Discoverys ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/discoverys" | jq
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/discoverys" | jq
-echo "Downloading Kubeconfig ..."
-s_vk8s="$1-vk8s"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/virtual_k8ss/student14-vk8s"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials"
-echo "hhhhhhhhhhhhhhhhhhhhhhhhhhhh"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' | base64 --decode 1>ves_$1_$1-vk8s.yaml 2>kubeconfig.error
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"student14-vk8s","namespaces":"system","expiration_days":30,"spec":{"type":"KUBE_CONFIG","users":["student14@f5.com"],"password":"$Tudent123","virtual_k8s_name":"student14-vk8s","virtual_k8s_namespace":"'$1'"}}'
-cat ves_$1_$1-vk8s.yaml
-### cat kubeconfig.error
-exit 0
 }
 
 ### main
@@ -615,6 +707,7 @@ if [ $# -eq 0 ]; then
 f_usage
 fi
 
+f_log start
 while [ $# -gt 0 ]; do
  case "$1" in
    -test)
@@ -737,7 +830,7 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Downloading Kubeconfig file for $2 ..."
+   f_echo "Creating ADMIN lab 7 vK8s object, downloading Kubeconfig file for $2, and deploying application ..."
    f_admin_create_single_student_kubeconfig_lab7 $2
    ;;
    -adcre9)
@@ -755,6 +848,66 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "Creating ADMIN lab 10 objects for $2 ..."
    f_admin_create_single_student_objects_labs10 $2
+   ;;
+    -adcre11)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Creating ADMIN lab 11 objects for $2 ..."
+   f_admin_create_single_student_objects_labs11 $2
+   ;;
+   -adcre14)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Creating ADMIN lab 14 objects for $2 ..."
+   f_admin_create_single_student_objects_labs14 $2
+   ;;
+    -adcreall)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   echo ""
+   echo "This option will create all the labs for the ADMIN class for $2. It takes some time (20 mins)"
+   echo ""
+   read -p "Are you sure you wish to continue (y/n) ?" choice
+   if [ "$choice" = "y" ]; then
+    f_echo "Creating all ADMIN labs for $1 ..."
+    f_admin_create_all_student_labs $2
+   else
+    echo "Exiting ..."
+   fi
+   ;;
+   -adcreall12)
+   echo ""
+   echo "This option will create all the labs for the ADMIN class for several students"
+   echo "Enter a start and finish number from 101 to 112, the maximum number of students is 112"
+   echo "If 103 to 105, then only student103 to student105 are created, if 101 to 112, then student101"
+   echo "to student112 are created"
+   echo ""
+   read -p "Start number ?" startnum
+   read -p "Finish number ?" finishnum
+   snumdigits_startnum=`echo $startnum | wc -m`
+   snumdigits_finishnum=`echo $finishnum | wc -m`
+   if [[ $snumdigits_startnum != 4 || $snumdigits_startnum != 4 ]]; then
+    exit 1
+   fi
+   if [[ $startnum < 101 || $finishnum > 112 ]]; then
+    exit 1
+   fi
+   read -p "Are you sure you wish to continue (y/n) ?" choice
+   if [ "$choice" = "y" ]; then
+    echo ""
+    f_echo "Creating all ADMIN labs from student$startnum to student$finishnum ..."
+    f_echo "This will take some time ..."
+    f_admin_create_all_12_student_labs $startnum $finishnum
+   else
+    echo "Exiting ..."
+    exit 0
+   fi
    ;;
    -wadso)
    if [ "$#" != 2 ]; then
@@ -797,4 +950,5 @@ while [ $# -gt 0 ]; do
  esac
  shift
 done
+f_log finish
 f_echo "End ..."
