@@ -16,7 +16,7 @@ student_name=$2
 
 ### Points to classroom 0
 
-v_token="PWEfMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
+v_token="PTRqMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -971,6 +971,6 @@ while [ $# -gt 0 ]; do
    ;;
  esac
  shift
-f_log finish
 done
+f_log finish
 f_echo "End ..."
