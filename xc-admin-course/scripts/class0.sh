@@ -16,7 +16,7 @@ student_name=$2
 
 ### Points to classroom 0
 
-v_token="PTRqMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
+v_token="PREqMC3zGuaYcZSEuTz9bSqkfv2wqHQ="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -726,6 +726,7 @@ if [ $# -eq 0 ]; then
 f_usage
 fi
 
+f_log start
 while [ $# -gt 0 ]; do
  case "$1" in
    -test)
