@@ -17,3 +17,5 @@ vi class0.sh
 :
 set ff=unix
 :wq!
+
+(c) Edit in your tenant access token
