@@ -7,7 +7,7 @@ script_ver="1.0"
 script_name="logs.sh"
 
 ### Points to classroom 1 - the First Public Training F5XC console
-v_token="TREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token=""
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 
