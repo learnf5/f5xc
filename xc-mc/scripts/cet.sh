@@ -8,7 +8,7 @@ script_name="cet.sh"
 student_name=$2
 
 ### Points to classroom 1
-v_token="TREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
+v_token=""
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
