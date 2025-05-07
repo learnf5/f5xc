@@ -12,14 +12,14 @@ student_name=$2
 ### training-dev tenant
 v_tenant="training-dev-fcphvhww"
 v_dom="dev.learnf5.cloud"
-v_token="PREqoGYFFHzhM0iLQKkQ9TK5y3N0/xA="
+v_token=""
 v_url="https://training-dev.console.ves.volterra.io/api"
 v_aws_creds_name="learnf5-aws"
 ### v_azure_creds_name="all-students-credentials"
 v_azure_creds_name="f5xc-training-azure-deploy"
 
 ### tenant 1
-### v_token="FREqu7Yp55Pfvon+MmLXpavWV7uAYXw="
+### v_token=""
 ### v_url="https://training.console.ves.volterra.io/api"
 ### v_tenant="training-ytfhxsmw"
 ### v_dom="aws.learnf5.cloud"
