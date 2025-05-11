@@ -8,7 +8,7 @@ script_name="class0.sh"
 student_name=$2
 
 ### Points to the Training Development F5XC console which points to the Internal Training AWS instance
-### v_token=""
+### v_token="FREqTREfCfxhI08CzaktknCrXwsrCmOPibI="
 ### v_url="https://training-dev.console.ves.volterra.io/api"
 ### v_tenant="training-dev-fcphvhww"
 ### v_dom="dev.learnf5.cloud"
