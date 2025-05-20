@@ -9,9 +9,9 @@ student_name=$2
 
 v_token=""
 v_url="https://training1.console.ves.volterra.io/api"
-v_tenant=""
+v_tenant="training1-rcfjmagj"
 v_dom="f5training1.cloud"
-v_aws_creds_name=""
+v_aws_creds_name="creds-aws1211gst01"
 v_logfile="$script_name.log"
 
 ### functions
