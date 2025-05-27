@@ -584,7 +584,7 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/vk8s/namespaces/$1/
 echo "Listing student endpoints ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints?report_fields" | jq
 echo "Listing a specific endpoint ... service discovery is done through the k8s origin pool name"
-k8s_objects_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints?report_fields" | jq -r .[][].name | grep $1-k8s)"
+k8s_objects_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints?report_fields" | jq -r .[][].name | grep $1-op)"
 for k8s_name in ${k8s_objects_list[@]}; do
  echo $k8s_objects_list
  curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints/$k8s_name" | jq
