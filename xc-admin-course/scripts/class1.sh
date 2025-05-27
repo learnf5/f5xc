@@ -473,14 +473,14 @@ f_admin_create_single_student_objects_labs9()
 echo "Creating Health check for Origin Pool for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
-s_op="$1-k8s"
+s_op="$1-op"
 echo "Creating Origin Pool for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"boutique-frontend.'$1'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":80,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
 }
 
 f_admin_create_single_student_objects_labs10()
 {
-s_op="$1-k8s"
+s_op="$1-op"
 s_lb="$1-https-lb"
 s_dom="$1.$v_dom"
 echo "Creating HTTP Load Balancer for $1 ..."
@@ -579,7 +579,7 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/vk8s/namespaces/$1/
 echo "Listing student endpoints ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints?report_fields" | jq
 echo "Listing a specific endpoint ... service discovery is done through the k8s origin pool name"
-k8s_objects_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints?report_fields" | jq -r .[][].name | grep $1-k8s)"
+k8s_objects_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints?report_fields" | jq -r .[][].name | grep $1-op)"
 for k8s_name in ${k8s_objects_list[@]}; do
  echo $k8s_objects_list
  curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/endpoints/$k8s_name" | jq
@@ -682,7 +682,7 @@ sleep 1
 echo "Listing students endpoints ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/endpoints?report_fields" | jq
 echo "Listing a specific endpoint ..."
-### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/endpoints/ves-io-origin-pool-student14-k8s-57455d94bf" | jq
+### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/endpoints/ves-io-origin-pool-student14-op-57455d94bf" | jq
 echo "Listing vK8s structures ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/student14/virtual_k8ss" | jq
 echo "Listing a specific vK8s structure ..."
