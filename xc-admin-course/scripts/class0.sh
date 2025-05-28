@@ -8,7 +8,7 @@ script_name="class0.sh"
 student_name=$2
 
 ### Points to the Training Development F5XC console which points to the Internal Training AWS instance
-### v_token=""
+### v_token="FREqTREfCfxhI08CzaktknCrXwsrCmOPibI="
 ### v_url="https://training-dev.console.ves.volterra.io/api"
 ### v_tenant="training-dev-fcphvhww"
 ### v_dom="dev.learnf5.cloud"
@@ -16,7 +16,7 @@ student_name=$2
 
 ### Points to classroom 0
 
-v_token=""
+v_token="MC3zGuaYcZSEuTz9bSqkfv2wqHQ="
 v_url="https://training.console.ves.volterra.io/api"
 v_tenant="training-ytfhxsmw"
 v_dom="aws.learnf5.cloud"
@@ -254,10 +254,11 @@ echo "Deleting HTTP load balancer ..."
 sleep 2
 curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/http_loadbalancers/$1-https-lb" | jq
 echo "Deleting Origin pools  ..."
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-tcp" | jq
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-op" | jq
 sleep 2
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-k8s" | jq
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-op2" | jq
 sleep 2
+
 echo "Deleting Health checks  ..."
 curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/healthchecks/$1-hc" | jq
 sleep 2
