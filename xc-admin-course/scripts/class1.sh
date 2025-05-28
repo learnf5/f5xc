@@ -243,9 +243,9 @@ echo "Deleting HTTP load balancer ..."
 sleep 2
 curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/http_loadbalancers/$1-https-lb" | jq
 echo "Deleting Origin pools  ..."
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-tcp" | jq
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-op" | jq
 sleep 2
-curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-k8s" | jq
+curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/origin_pools/$1-op2" | jq
 sleep 2
 echo "Deleting Health checks  ..."
 curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/$1/healthchecks/$1-hc" | jq
@@ -350,9 +350,13 @@ echo "The AWS VPC Site needs to be created manually in Lab 4 for $1 ..."
 
 f_admin_create_single_student_objects_labs234()
 {
-### Create labs 2-4 for a student
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
+### Create labs 2-3 for a student
+snumdigits=`echo $1 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $1 | tail -c 3`
+ pnum="1$snum"
+elif
+ [ $snumdigits -eq 10 ]; then
  snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
 else
@@ -390,8 +394,12 @@ echo "The AWS VPC Site configuration needs to be APPLYied using the -adapp4 opti
 f_admin_apply_single_student_objects_labs4()
 {
 ### Apply labs 4 for a student
-singleordouble=`echo $1 | wc -m`
-if [ $singleordouble -eq 10 ]; then
+snumdigits=`echo $1 | wc -m`
+if [ $snumdigits -eq 11 ]; then
+ snum=`echo -n $1 | tail -c 3`
+ pnum="1$snum"
+elif
+ [ $snumdigits -eq 10 ]; then
  snum=`echo -n $1 | tail -c 2`
  pnum="10$snum"
 else
