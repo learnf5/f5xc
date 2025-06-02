@@ -71,7 +71,7 @@ echo "-adcre10 <studentname>     ADMIN - Create lab 10 student objects"
 echo "-adcre11 <studentname>     ADMIN - Create lab 11 student objects"
 echo "-adcre14 <studentname>     ADMIN - Create lab 14 student objects"
 echo "-adcreall <studentname>    ADMIN - Create all class labs per student (20 mins)"
-echo "-adcreall12                Testing ADMIN - Create all class labs for several students (max 12)"
+echo "-adcreall12                ADMIN - Create all class labs for several students (max 12)"
 echo "-adlstd <studentname>      ADMIN - List student vK8s deployments and other details"
 echo "-addso <studentname>       ADMIN - Delete single student objects"
 echo "-addas                     ADMIN - Delete all student objects (max 12)"
@@ -495,7 +495,7 @@ echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://studentX.f5training1.cloud"
+echo "Now make a browser connection to http://studentX.$v_dom"
 echo ""
 }
 
@@ -517,7 +517,7 @@ echo ""
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb"
 curl -s -H "Authorization: APIToken $v_token" -X PUT "$v_url/config/namespaces/$1/http_loadbalancers/$s_lb" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}}},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"app_firewall":{"name":"'$s_waf'","namespace":"'$1'"}}}'
 echo ""
-echo "Now make a connection to https://$1.f5training2.cloud/test.exe"
+echo "Now make a connection to https://$1.$v_dom/test.exe"
 echo ""
 }
 
@@ -534,7 +534,7 @@ echo ""
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/workloads" -d '{"metadata":{"name":"'$s_wl'","namespace":"'$1'","labels":{},"annotations":{},"description":"","disable":false},"spec":{"service":{"num_replicas":1,"containers":[{"name":"'$s_container'","image":{"name":"'$s_image'","public":{},"pull_policy":"IMAGE_PULL_POLICY_DEFAULT"},"init_container":false,"flavor":"CONTAINER_FLAVOR_TYPE_TINY","liveness_check":null,"readiness_check":null,"command":[],"args":[]}],"volumes":[{"name":"'$s_vol'","empty_dir":{"size_limit":4,"mount":{"mode":"VOLUME_MOUNT_READ_WRITE","mount_path":"/data","sub_path":""}}}],"configuration":null,"deploy_options":{"deploy_ce_virtual_sites":{"virtual_site":[{"tenant":"'$v_tenant'","namespace":"shared","name":"'$s_vsite1'"}]}},"advertise_options":{"advertise_on_public":{"port":{"port":{"info":{"port":3000,"protocol":"PROTOCOL_TCP","same_as_port":{}}},"http_loadbalancer":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"legacy_header_transformation":{}},"connection_idle_timeout":120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}},"coalescing_options":{"default_coalescing":{}}},"default_route":{"auto_host_rewrite":{}}}}}},"family":{"v4":{}}}}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://$1-workload.f5training2.cloud"
+echo "Now make a browser connection to http://$1-workload.$v_dom"
 echo ""
 echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
 echo ""
@@ -659,7 +659,7 @@ f_waap_create_single_student_objects()
 ### Create labs 1-3 for a student
 ### Create the port number for the origin pool range is 1001 to 1012
 ### Tenant matters for JuiceShop check which tenant environment we are using
-### WAAP Lab 3 uses studentX-juice.f5training2.cloud
+### WAAP Lab 3 uses studentX-juice.f5training1.cloud
 fqdn="$1-juice.f5training1.cloud"
 s_juice_ip="23.22.60.254"
 snumdigits=`echo $1 | wc -m`
