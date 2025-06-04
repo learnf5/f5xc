@@ -459,7 +459,8 @@ sleep 5
 ### cat kubeconfig.error
 sleep 2
 echo "Decoding file ..."
-cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.[]' | sed '/'$1'/q' | sed '/==/q' | base64 --decode 1>ves_$1_$1-vk8s.yaml
+### cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.[]' | sed '/'$1'/q' | sed '/==/q' | base64 --decode 1>ves_$1_$1-vk8s.yaml
+cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.data' | base64 --decode 1>ves_$1_$1-vk8s.yaml
 sleep 1
 ### cat ves_$1_$1-vk8s.yaml
 echo "Copying kubeconfig file to /home/student/.kube/config ..."
