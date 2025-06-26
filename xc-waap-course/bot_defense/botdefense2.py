@@ -1,7 +1,7 @@
 """Juice Shop Bot defense test v1.3 E.Novak 26 June 2025"""
 # Line 37 added to account for differences in pure Linux vs. Linux subsystem for Windows
-# Line 53 commented out due to change in v17.0 of Juice Shop
-# Line 54 added to replace line 53 due to change in v17.0 of Juice Shop
+# Line 53 commented out due to change in v17.3.0 of Juice Shop
+# Line 54 added to replace line 53 due to change in v17.3.0 of Juice Shop
 import sys
 import time
 from selenium import webdriver
