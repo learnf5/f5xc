@@ -1,5 +1,7 @@
-"""Juice Shop Bot defense test v1.2 E.Novak 12/6/2024"""
+"""Juice Shop Bot defense test v1.3 E.Novak 26 June 2025"""
 # Line 37 added to account for differences in pure Linux vs. Linux subsystem for Windows
+# Line 53 commented out due to change in v17.0 of Juice Shop
+# Line 54 added to replace line 53 due to change in v17.0 of Juice Shop
 import sys
 import time
 from selenium import webdriver
@@ -50,7 +52,8 @@ def main(credentials):
             browser.execute_script("arguments[0].click();", element)
             time.sleep(1.0)
             try:
-                browser.find_element(by=By.XPATH, value='/html/body/app-root/div/mat-sidenav-container/mat-sidenav-content/app-search-result/div/div/div[2]/mat-grid-list/div/mat-grid-tile[1]/div/mat-card/div[1]/div[1]/img')
+               # browser.find_element(by=By.XPATH, value='/html/body/app-root/div/mat-sidenav-container/mat-sidenav-content/app-search-result/div/div/div[2]/mat-grid-list/div/mat-grid-tile[1]/div/mat-card/div[1]/div[1]/img')
+                browser.find_element(by=By.XPATH, value='/html/body/app-root/mat-sidenav-container/mat-sidenav-content/app-search-result/div/div/div[2]/mat-grid-list/div/mat-grid-tile[1]/div/mat-card/div[1]/div[1]/img')
                 time.sleep(1.0)
                 print("FOUND THE PASSWORD! BREAKING")
                 time.sleep(20)
