@@ -605,8 +605,7 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$
 f_waap_delete_single_student_objects()
 {
 ### Only need to delete student namespace to delete all objects
-### If only delete the HTTP load balancer it removs half of the objects as well
-### except when XC puts objects into shared space like App Firewalls sometimes and they are not deleted
+### If only delete the HTTP load balancer it removes half of the objects as well
 echo "Deleting namespace ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/cascade_delete" | jq
 sleep 2
