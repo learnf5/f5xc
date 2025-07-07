@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.4"
+script_ver="1.5"
 script_name="class0.sh"
 student_name=$2
 
@@ -615,7 +615,17 @@ apicreds_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/we
 for apicred_name in ${apicreds_list[@]}; do
  curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/system/revoke/api_credentials" -d '{"name":"'$apicred_name'"}' | jq
 done
-echo "Run the -lso option again to check for object outliers and manually delete them ..."
+echo "Deleting user mitigations in shared namespace ..."
+mu_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name | grep -E $1)"
+for mu_name in ${mu_list[@]}; do
+ curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/shared/malicious_user_mitigations/$mu_name" | jq
+done
+echo "Deleting user identifications in shared namespace ..."
+ui_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/user_identifications" | jq -r .[][].name | grep -E $1)"
+for ui_name in ${ui_list[@]}; do
+ curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/shared/user_identifications/$ui_name" | jq
+done
+echo "Run the -walst and -lso options again to check for object outliers and manually delete them ..."
 }
 
 f_waap_delete_all_student_objects()
@@ -633,8 +643,18 @@ do
  for apicred_name in ${apicreds_list[@]}; do
   curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/system/revoke/api_credentials" -d '{"name":"'$apicred_name'"}' | jq
  done
+ echo "Deleting user mitigations in shared namespace ..."
+ mu_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name | grep -E $1)"
+ for mu_name in ${mu_list[@]}; do
+  curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/shared/malicious_user_mitigations/$mu_name" | jq
+ done
+ echo "Deleting user identifications in shared namespace ..."
+ ui_list="$(curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/user_identifications" | jq -r .[][].name | grep -E $1)"
+ for ui_name in ${ui_list[@]}; do
+  curl -s -H "Authorization: APIToken $v_token" -X DELETE "$v_url/config/namespaces/shared/user_identifications/$ui_name" | jq
+ done
 done
-echo "Run the -lso and -walst options again to check for object outliers and manually delete them ..."
+echo "Run the -walst and -lso options again to check for object outliers and manually delete them ..."
 }
 
 f_waap_list_single_student_objects()
@@ -654,6 +674,10 @@ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$
 sleep 2
 echo "API credentials ..."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials" | jq -r .[][].name | grep -E $1
+echo "Malicious user mitigations in shared namespace ..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name | grep -E $1
+echo "User identifications in shared namespace ..."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/user_identifications" | jq -r .[][].name | grep -E $1
 }
 
 f_waap_create_single_student_objects()
