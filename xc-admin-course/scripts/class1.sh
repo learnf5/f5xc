@@ -747,6 +747,18 @@ echo "Listing Sites ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites" | jq -r .[][].name
 echo "Listing Virtual Sites ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/virtual_sites" | jq -r .[][].name
+echo "Listing Load Balancers ......................."
+for ns in ${ns_list[@]}; do
+ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/http_loadbalancers" | jq -r .[][].name
+done
+echo "Listing Origin Pools ......................."
+for ns in ${ns_list[@]}; do
+ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/origin_pools" | jq -r .[][].name
+done
+echo "Listing Health Checks ......................."
+for ns in ${ns_list[@]}; do
+ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/healthchecks" | jq -r .[][].name
+done
 echo "Listing API Credentials ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials" | jq -r .[][].name
 echo "Listing Alert Receivers ......................."
