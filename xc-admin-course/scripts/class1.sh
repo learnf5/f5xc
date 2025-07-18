@@ -59,6 +59,7 @@ echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
+echo "-lao                       TESTING ** List all ADMIN and WAAP objects no filtering"
 echo ""
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
@@ -731,6 +732,35 @@ echo "Listing Namespace Discoverys ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/discoverys" | jq
 }
 
+f_list_all_known_objects()
+{
+echo "Listing Namespaces ......................."
+ns_list="$(curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq -r .[][].name)"
+echo $ns_list
+echo "Listing User Accounts ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/custom/namespaces/system/user_roles" | jq -r '.[][].name'
+echo "Listing Known Keys ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/known_label_keys?key=&namespace=shared&query=QUERY_ALL_LABEL_KEYS" | jq -r .label_key[].key
+echo "Listing Known Labels ......................"
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/known_labels?key=&namespace=shared&query=QUERY_ALL_LABELS&value=" | jq -r .label[].value
+echo "Listing Sites ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites" | jq -r .[][].name
+echo "Listing Virtual Sites ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/virtual_sites" | jq -r .[][].name
+echo "Listing API Credentials ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials" | jq -r .[][].name
+echo "Listing Alert Receivers ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/alert_receivers" | jq -r .[][].name
+echo "Listing Alert Policies ........................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/alert_policys" | jq -r .[][].name
+echo "Listing Active Alert Policies ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/alert_policys" | jq -r .[][].name
+echo "Listing User Mitigations ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name
+echo "Listing User Identifications ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/user_identifications" | jq -r .[][].name
+}
+
 ### main
 
 f_echo "F5 Training $product_name script Version $script_ver"
@@ -794,6 +824,10 @@ while [ $# -gt 0 ]; do
    -lso)
    f_echo "Listing ${student_name} objects ..."
    f_list_student_objects
+   ;;
+   -lao)
+   f_echo "Listing all objects in all namespaces for ADMIN and WAAP ..."
+   f_list_all_known_objects
    ;;
    -addso)
    if [ "$#" != 2 ]; then
