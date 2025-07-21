@@ -747,16 +747,24 @@ echo "Listing Sites ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites" | jq -r .[][].name
 echo "Listing Virtual Sites ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/virtual_sites" | jq -r .[][].name
+echo "Listing vK8s Objects ......................."
+for ns in ${ns_list[@]}; do
+ echo ".Namespace. $ns"
+ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/virtual_k8ss" | jq -r .[][].name
+done
 echo "Listing Load Balancers ......................."
 for ns in ${ns_list[@]}; do
+ echo ".Namespace. $ns"
  curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/http_loadbalancers" | jq -r .[][].name
 done
 echo "Listing Origin Pools ......................."
 for ns in ${ns_list[@]}; do
+ echo ".Namespace. $ns"
  curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/origin_pools" | jq -r .[][].name
 done
 echo "Listing Health Checks ......................."
 for ns in ${ns_list[@]}; do
+ echo ".Namespace. $ns"
  curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/healthchecks" | jq -r .[][].name
 done
 echo "Listing API Credentials ......................."
@@ -767,6 +775,11 @@ echo "Listing Alert Policies ........................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/alert_policys" | jq -r .[][].name
 echo "Listing Active Alert Policies ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/alert_policys" | jq -r .[][].name
+echo "Listing Application Firewalls ......................."
+for ns in ${ns_list[@]}; do
+ echo ".Namespace. $ns"
+ curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/app_firewalls" | jq -r .[][].name
+done
 echo "Listing User Mitigations ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name
 echo "Listing User Identifications ......................."
