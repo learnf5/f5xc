@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.5"
+script_ver="1.6"
 script_name="class2.sh"
 student_name=$2
 
