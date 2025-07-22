@@ -3,7 +3,7 @@
 ### variables
 
 product_name="F5 Distributed Cloud"
-script_ver="1.5"
+script_ver="1.6"
 script_name="class1.sh"
 student_name=$2
 
@@ -59,7 +59,7 @@ echo "-ess <studentname>         Enable student account"
 echo "-dis                       Disable all student accounts (20 secs per student)"
 echo "-ena                       Enable all student accounts (ditto)"
 echo "-lso                       List all student objects"
-echo "-lao                       TESTING ** List all ADMIN and WAAP objects no filtering"
+echo "-lao                       List all ADMIN and WAAP objects no filtering"
 echo ""
 echo "-adlst <studentname>       ADMIN - List student AWS VPC"
 echo "-adcre23 <studentname>     ADMIN - Create labs 2-3 and do 4 manually"
@@ -747,6 +747,8 @@ echo "Listing Sites ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites" | jq -r .[][].name
 echo "Listing Virtual Sites ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/virtual_sites" | jq -r .[][].name
+echo "Listing AWS VPC Sites ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites" | jq -r .[][].name
 echo "Listing vK8s Objects ......................."
 for ns in ${ns_list[@]}; do
  echo ".Namespace. $ns"
@@ -784,6 +786,10 @@ echo "Listing User Mitigations ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name
 echo "Listing User Identifications ......................."
 curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/user_identifications" | jq -r .[][].name
+echo "Listing Managed Kubernetes Clusters ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/k8s_clusters" | jq -r .[][].name
+echo "Listing App Stack Sites ......................."
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/voltstack_sites" | jq -r .[][].name
 }
 
 ### main
