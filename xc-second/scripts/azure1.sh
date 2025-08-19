@@ -1,3 +1,21 @@
+F5 Training F5 Distributed Cloud script Version 1.0
+Classroom 1 setup script for Deploying an Application to Microsoft Azure
+
+Student numbers run from 101 to 112
+
+Usage: ./azure1.sh -option
+
+Options:
+
+-tok                       Test token
+-s23 <studentname>         Create labs 2-3 objects (namespace, key, label, VNET)
+-s3 <studentname>          Apply Azure VNET site created in lab 3
+-s4 <studentname>          Create Lab 4 objects (vK8s)
+-s5 <studentname>          Create lab 5 objects (HTTP lb, Origin Pool, Origin Server)
+
+-lao                       List all objects no filtering
+-dso <studentname>         Delete single student objects
+student@pc18:~/f5xc/xc-admin-course/scripts$ cat azure1.sh
 #!/bin/bash
 
 ### variables
@@ -49,11 +67,10 @@ echo ""
 echo "Options:"
 echo ""
 echo "-tok                       Test token"
-echo "-s234 <studentname>        Create labs 2-4 student objects"
-echo "-s4 <studentname>          Apply Azure VNET site created in lab 4"
-echo "-s7 <studentname>          Create Lab 7 student objects"
-echo "-s9 <studentname>          Create lab 9 student objects"
-echo "-s10 <studentname>         Create lab 10 student objects"
+echo "-s23 <studentname>         Create labs 2-3 objects (namespace, key, label, VNET)"
+echo "-s3 <studentname>          Apply Azure VNET site created in lab 3"
+echo "-s4 <studentname>          Create Lab 4 objects (vK8s)"
+echo "-s5 <studentname>          Create lab 5 objects (HTTP lb, Origin Pool, Origin Server)"
 echo ""
 echo "-lao                       List all objects no filtering"
 echo "-dso <studentname>         Delete single student objects"
@@ -65,7 +82,7 @@ f_test_token()
 curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 }
 
-f_labs234()
+f_labs23()
 {
 snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
@@ -104,10 +121,10 @@ echo "Azure site verification is very slow, run apply in the next script option 
 echo ""
 echo "First go to the F5XC console and wait for it to indicate Validation Succeeded ..."
 echo ""
-echo "The Azure VNET site configuration needs to be applied using the -s4 option for $1 ..."
+echo "The Azure VNET site configuration needs to be applied using the -s3 option for $1 ..."
 }
 
-f_labs4()
+f_labs3()
 {
 snumdigits=`echo $1 | wc -m`
 if [ $snumdigits -eq 11 ]; then
@@ -123,15 +140,15 @@ else
 fi
 s_azure_vnet_name="$1-vnet"
 echo "Status of Terraform Plan for Azure VNET site configuration for $1 ..."
-### curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/azure_vnet_site/$s_azure_vnet_name/status" | jq
+curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/terraform_parameters/azure_vnet_site/$s_azure_vnet_name/status" | jq
 sleep 2
 echo "Applying Terraform Plan for Azure VNET site configuration for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/azure_vnet_site/$s_azure_vnet_name/run" -d '{"action":"APPLY"}'
 echo ""
-echo "Check the GUI for the green Apply button and check AWS. Process takes some minutes to run ..."
+echo "Check the GUI for the green Apply button and check Azure. Process takes some minutes to run ..."
 }
 
-f_labs7()
+f_labs4()
 {
 s_vk8s="$1-vk8s"
 echo "Creating vk8s for $1 ..."
@@ -155,32 +172,29 @@ sleep 1
 echo "Copying kubeconfig file to /home/student/.kube/config ..."
 cp ves_$1_$1-vk8s.yaml /home/student/.kube/config
 sleep 1
-echo "Deploying online-boutique application ..."
+echo "Deploying f5trnapp application ..."
 cd /home/student/f5xc/xc-admin-course
 kubectl apply -f f5trnapp.yaml
 }
 
-f_labs9()
+f_labs5()
 {
-### Have to create the healthcheck beforehand
 echo "Creating Health check for Origin Pool for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 s_op="$1-op"
 echo "Creating Origin Pool for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"boutique-frontend.'$1'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":80,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
-}
-
-f_labs10()
-{
-s_op="$1-op"
-s_lb="$1-https-lb"
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"f5trnapp.'$1'",protocol":"PROTOCOL_TCP","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":3005,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
+sleep 1
+s_lb="$1-http-lb"
 s_dom="$1.$v_dom"
 echo "Creating HTTP Load Balancer for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
+### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
+### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"add_location":true,"advertise_on_public_default_vip":{},"api_protection_rules":null,"api_rate_limit_legacy":null,"auto_cert_info":{"auto_cert_expiry":null,"auto_cert_issuer":"","auto_cert_state":"AutoCertNotApplicable","auto_cert_subject":"","dns_records":[],"state_start_time":null},},"blocked_clients":[],"cert_state":"AutoCertNotApplicable","cors_policy":null,"csrf_policy":null,"data_guard_rules":[],"ddos_mitigation_rules":[],"default_route_pools":[{"endpoint_subsets":{},"pool":{"name":"student113-op","namespace":"student113","tenant":"training1-rcfjmagj"},"priority":1,"weight":1}],"default_sensitive_data_policy":{},"disable_api_definition":{},"disable_api_discovery":{},"disable_api_testing":{},"disable_bot_defense":{},"disable_client_side_defense":{},"disable_ip_reputation":{},"disable_malicious_user_detection":{},"disable_malware_protection":{},"disable_rate_limit":{},"disable_threat_mesh":{},"disable_trust_client_ip_headers":{},"disable_waf":{},"dns_info":[{"internal_cdn_service_domain":"","ip_address":"159.60.152.44"}],"domains":["student113.f5training1.cloud"],"downstream_tls_certificate_expiration_timestamps":[],"graphql_rules":[],"host_name":"ves-io-5f4e9605-7cbb-4e64-a87e-93040e6404f2.ac.vh.ves.io","http":{"dns_volterra_managed":true,"port":3005},"internet_vip_info":[],"jwt_validation":null,"l7_ddos_protection":{"clientside_action_none":{},"ddos_policy_none":{},"mitigation_block":{},"rps_threshold":0},"malicious_user_mitigation":null,"more_option":null,"no_challenge":{},"origin_server_subset_rule_list":null,"protected_cookies":[],"round_robin":{},"routes":[],"sensitive_data_disclosure_rules":null,"service_policies_from_namespace":{},"state":"VIRTUAL_HOST_READY","system_default_timeouts":{},"trusted_clients":[],"user_id_client_ip":{},"waf_exclusion":null,"waf_exclusion_rules":[]}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"add_location":true,"advertise_on_public_default_vip":{},"api_protection_rules":null,"api_rate_limit_legacy":null,"auto_cert_info":{"auto_cert_expiry":null,"auto_cert_issuer":"","auto_cert_state":"AutoCertNotApplicable","auto_cert_subject":"","dns_records":[],"state_start_time":null},},"blocked_clients":[],"cert_state":"AutoCertNotApplicable","cors_policy":null,"csrf_policy":null,"data_guard_rules":[],"ddos_mitigation_rules":[],"default_route_pools":[{"endpoint_subsets":{},"pool":{"name":"'$s_op'","namespace":"'$1'","tenant":"'$v_tenant'"},"priority":1,"weight":1}],"default_sensitive_data_policy":{},"disable_api_definition":{},"disable_api_discovery":{},"disable_api_testing":{},"disable_bot_defense":{},"disable_client_side_defense":{},"disable_ip_reputation":{},"disable_malicious_user_detection":{},"disable_malware_protection":{},"disable_rate_limit":{},"disable_threat_mesh":{},"disable_trust_client_ip_headers":{},"disable_waf":{},"domains":["'$s_dom'"],"downstream_tls_certificate_expiration_timestamps":[],"graphql_rules":[],"http":{"dns_volterra_managed":true,"port":3005},"internet_vip_info":[],"jwt_validation":null,"l7_ddos_protection":{"clientside_action_none":{},"ddos_policy_none":{},"mitigation_block":{},"rps_threshold":0},"malicious_user_mitigation":null,"more_option":null,"no_challenge":{},"origin_server_subset_rule_list":null,"protected_cookies":[],"round_robin":{},"routes":[],"sensitive_data_disclosure_rules":null,"service_policies_from_namespace":{},"system_default_timeouts":{},"trusted_clients":[],"user_id_client_ip":{},"waf_exclusion":null,"waf_exclusion_rules":[]}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to http://studentX.$v_dom"
+echo "Now make a browser connection to the f5trnapp application at http://studentX.$v_dom:3005"
 echo ""
 }
 
@@ -270,45 +284,37 @@ while [ $# -gt 0 ]; do
    f_echo "Deleting $2 objects ..."
    f_delete_single_student_objects $2
    ;;
-   -s234)
+   -s23)
    if [ "$#" != 2 ]; then
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Creating labs 2-4 objects for $2 ..."
-   f_labs234 $2
+   f_echo "Creating labs 2-3 objects for $2 ..."
+   f_labs23 $2
+   ;;
+   -s3)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Applying lab 3 Azure VNET site objects for $2 ..."
+   f_labs3 $2
    ;;
    -s4)
    if [ "$#" != 2 ]; then
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Applying lab 4 Azure VNET site objects for $2 ..."
+   f_echo "Creating lab 4 vK8s object, downloading Kubeconfig file for $2, and deploying application ..."
    f_labs4 $2
    ;;
-   -s7)
+   -s5)
    if [ "$#" != 2 ]; then
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Creating lab 7 vK8s object, downloading Kubeconfig file for $2, and deploying application ..."
-   f_labs7 $2
-   ;;
-   -s9)
-   if [ "$#" != 2 ]; then
-    f_echo "Missing student name ... "
-    exit 1
-   fi
-   f_echo "Creating lab 9 objects for $2 ..."
-   f_labs9 $2
-   ;;
-   -s10)
-   if [ "$#" != 2 ]; then
-    f_echo "Missing student name ... "
-    exit 1
-   fi
-   f_echo "Creating lab 10 objects for $2 ..."
-   f_labs10 $2
+   f_echo "Creating lab 5 objects for $2 ..."
+   f_labs5 $2
    ;;
    *)
    ;;
