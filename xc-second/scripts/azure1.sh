@@ -132,7 +132,7 @@ echo "Check the GUI for the green Apply button and check Azure. Process takes so
 f_labs4()
 {
 s_vk8s="$1-vk8s"
-echo "Creating vk8s for $1 ..."
+echo "Creating vK8s for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/virtual_k8ss" -d '{"metadata":{"name":"'$s_vk8s'","namespace":"'$1'"},"spec":{"vsite_refs":[{"kind":"virtual_site","uid":"","tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}],"disabled":{},"default_flavor_ref":null}}'
 echo ""
 echo "The vK8s object must exist for the next steps to work. Sleeping for 60 ..."
