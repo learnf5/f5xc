@@ -52,10 +52,9 @@ echo "-tok                       Test token"
 echo "-s23 <studentname>         Create labs 2-3 objects (namespace, key, label, VNET)"
 echo "-s3 <studentname>          Apply Azure VNET site created in lab 3"
 echo "-s4 <studentname>          Create Lab 4 objects (vK8s)"
-echo "-s5 <studentname>          Create lab 5 objects (HTTP lb, Origin Pool, Origin Server)"
+echo "-s5 <studentname>          Create lab 5 objects (HTTPS load balancer, Origin Pool, Origin Server)"
+echo "-s6 <studentname>          Create lab 6 objects (HTTP load balancer)"
 echo ""
-echo "-lao                       List all objects no filtering"
-echo "-dso <studentname>         Delete single student objects"
 exit 0
 }
 
@@ -143,14 +142,9 @@ echo "Downloading vK8s Kubeconfig file for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces/$1/api_credentials" -d '{"name":"'$s_vk8s'","namespaces":"system","expiration_days":10,"spec":{"type":"KUBE_CONFIG","users":[],"password":null,"virtual_k8s_name":"'$s_vk8s'","virtual_k8s_namespace":"'$1'"}}' 1>encoded_ves_$1_$1-vk8s.yaml 2>kubeconfig.error
 echo "Takes a while ..."
 sleep 5
-### cat encoded_ves_$1_$1-vk8s.yaml
-### cat kubeconfig.error
-sleep 2
 echo "Decoding file ..."
-### cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.[]' | sed '/'$1'/q' | sed '/==/q' | base64 --decode 1>ves_$1_$1-vk8s.yaml
 cat encoded_ves_$1_$1-vk8s.yaml | jq -r '.data' | base64 --decode 1>ves_$1_$1-vk8s.yaml
 sleep 1
-### cat ves_$1_$1-vk8s.yaml
 echo "Copying kubeconfig file to /home/student/.kube/config ..."
 cp ves_$1_$1-vk8s.yaml /home/student/.kube/config
 sleep 1
@@ -169,74 +163,32 @@ s_service="f5trnapp.$1"
 echo "Creating Origin Pool for $1 ..."
 ### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"'$s_service'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":3005,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
 sleep 1
+s_lb="$1-https-lb"
+s_dom="$1.$v_dom"
+echo "Creating HTTPS Load Balancer for $1 ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'"},"spec":{"domains":["'$s_dom'"],"https_auto_cert":{"http_redirect":true,"add_hsts":true,"tls_config":{"default_security":{}},"no_mtls":{},"default_header":{},"enable_path_normalize":{},"port":443,"non_default_loadbalancer":{},"header_transformation_type":{"default_header_transformation":{}},"connection_idle_timeout": 120000,"http_protocol_options":{"http_protocol_enable_v1_v2":{}}},"advertise_on_public_default_vip":{},"default_route_pools":[{"pool":{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$s_op'"},"weight":1,"priority":1,"endpoint_subsets":{}}],"origin_server_subset_rule_list":null,"disable_waf":{},"add_location":true,"no_challenge":{},"more_option":null,"user_id_client_ip":{},"disable_rate_limit":{},"malicious_user_mitigation":null,"waf_exclusion_rules":[],"data_guard_rules":[],"blocked_clients":[],"trusted_clients":[],"api_protection_rules":null,"ddos_mitigation_rules":[],"service_policies_from_namespace":{},"round_robin":{},"disable_trust_client_ip_headers":{},"disable_ddos_detection":{},"disable_malicious_user_detection":{},"disable_api_discovery":{},"disable_bot_defense":{},"disable_api_definition":{},"disable_ip_reputation":{},"disable_client_side_defense":{},"csrf_policy":null,"graphql_rules":[],"protected_cookies":[],"host_name":"","dns_info":[],"dns_records":[],"state_start_time":null}}'
+sleep 1
+echo ""
+echo "Now make a browser connection to the f5trnapp application at https://studentX.$v_dom"
+echo ""
+echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
+echo ""
+}
+
+f_labs6()
+{
+s_op="$1-op"
+s_service="f5trnapp.$1"
 s_lb="$1-http-lb"
 s_dom="$1.$v_dom"
 echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"add_location":true,"advertise_on_public_default_vip":{},"api_protection_rules":null,"api_rate_limit_legacy":null,"auto_cert_info":{"auto_cert_expiry":null,"auto_cert_issuer":"","auto_cert_state":"AutoCertNotApplicable","auto_cert_subject":"","dns_records":[],"state_start_time":null},},"blocked_clients":[],"cert_state":"AutoCertNotApplicable","cors_policy":null,"csrf_policy":null,"data_guard_rules":[],"ddos_mitigation_rules":[],"default_route_pools":[{"endpoint_subsets":{},"pool":{"name":"'$s_op'","namespace":"'$1'","tenant":"'$v_tenant'"},"priority":1,"weight":1}],"default_sensitive_data_policy":{},"disable_api_definition":{},"disable_api_discovery":{},"disable_api_testing":{},"disable_bot_defense":{},"disable_client_side_defense":{},"disable_ip_reputation":{},"disable_malicious_user_detection":{},"disable_malware_protection":{},"disable_rate_limit":{},"disable_threat_mesh":{},"disable_trust_client_ip_headers":{},"disable_waf":{},"dns_info":[{"internal_cdn_service_domain":""}],"domains":["'$s_dom'"],"downstream_tls_certificate_expiration_timestamps":[],"graphql_rules":[],"http":{"dns_volterra_managed":true,"port":3005},"internet_vip_info":[],"jwt_validation":null,"l7_ddos_protection":{"clientside_action_none":{},"ddos_policy_none":{},"mitigation_block":{},"rps_threshold":0},"malicious_user_mitigation":null,"more_option":null,"no_challenge":{},"origin_server_subset_rule_list":null,"protected_cookies":[],"round_robin":{},"routes":[],"sensitive_data_disclosure_rules":null,"service_policies_from_namespace":{},"system_default_timeouts":{},"trusted_clients":[],"user_id_client_ip":{},"waf_exclusion":null,"waf_exclusion_rules":[]}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to the f5trnapp application at http://studentX.$v_dom:3005"
+echo "Now make a browser connection to the f5trnapp application at http://studentX.$v_dom"
 echo ""
-}
-
-f_list_all_known_objects()
-{
-echo "Listing Namespaces ......................."
-ns_list="$(curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq -r .[][].name)"
-echo $ns_list
-echo "Listing User Accounts ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/custom/namespaces/system/user_roles" | jq -r '.[][].name'
-echo "Listing Known Keys ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/known_label_keys?key=&namespace=shared&query=QUERY_ALL_LABEL_KEYS" | jq -r .label_key[].key
-echo "Listing Known Labels ......................"
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/known_labels?key=&namespace=shared&query=QUERY_ALL_LABELS&value=" | jq -r .label[].value
-echo "Listing Sites ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/sites" | jq -r .[][].name
-echo "Listing Virtual Sites ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/virtual_sites" | jq -r .[][].name
-echo "Listing Azure VNET Sites ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/aws_vpc_sites" | jq -r .[][].name
-echo "Listing vK8s Objects ......................."
-for ns in ${ns_list[@]}; do
- echo ".Namespace. $ns"
- curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/virtual_k8ss" | jq -r .[][].name
-done
-echo "Listing Load Balancers ......................."
-for ns in ${ns_list[@]}; do
- echo ".Namespace. $ns"
- curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/http_loadbalancers" | jq -r .[][].name
-done
-echo "Listing Origin Pools ......................."
-for ns in ${ns_list[@]}; do
- echo ".Namespace. $ns"
- curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/origin_pools" | jq -r .[][].name
-done
-echo "Listing Health Checks ......................."
-for ns in ${ns_list[@]}; do
- echo ".Namespace. $ns"
- curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/healthchecks" | jq -r .[][].name
-done
-echo "Listing API Credentials ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/web/namespaces/system/api_credentials" | jq -r .[][].name
-echo "Listing Alert Receivers ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/alert_receivers" | jq -r .[][].name
-echo "Listing Alert Policies ........................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/alert_policys" | jq -r .[][].name
-echo "Listing Active Alert Policies ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/alert_policys" | jq -r .[][].name
-echo "Listing Application Firewalls ......................."
-for ns in ${ns_list[@]}; do
- echo ".Namespace. $ns"
- curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/$ns/app_firewalls" | jq -r .[][].name
-done
-echo "Listing User Mitigations ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/malicious_user_mitigations" | jq -r .[][].name
-echo "Listing User Identifications ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/shared/user_identifications" | jq -r .[][].name
-echo "Listing Managed Kubernetes Clusters ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/k8s_clusters" | jq -r .[][].name
-echo "Listing App Stack Sites ......................."
-curl -s -H "Authorization: APIToken $v_token" -X GET "$v_url/config/namespaces/system/voltstack_sites" | jq -r .[][].name
+echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
+echo ""
 }
 
 ### main
@@ -252,18 +204,6 @@ while [ $# -gt 0 ]; do
  case "$1" in
    -tok)
    f_test_token
-   ;;
-   -lao)
-   f_echo "Listing all objects in all namespaces for ADMIN and WAAP ..."
-   f_list_all_known_objects
-   ;;
-   -dso)
-   if [ "$#" != 2 ]; then
-    f_echo "Missing student name ... "
-    exit 1
-   fi
-   f_echo "Deleting $2 objects ..."
-   f_delete_single_student_objects $2
    ;;
    -s23)
    if [ "$#" != 2 ]; then
@@ -296,6 +236,14 @@ while [ $# -gt 0 ]; do
    fi
    f_echo "Creating lab 5 objects for $2 ..."
    f_labs5 $2
+   ;;
+   -s6)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Creating lab 6  objects for $2 ..."
+   f_labs6 $2
    ;;
    *)
    ;;
