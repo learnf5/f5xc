@@ -156,12 +156,12 @@ kubectl apply -f f5trnapp.yaml
 f_labs5()
 {
 echo "Creating Health check for Origin Pool for $1 ..."
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/healthchecks" -d '{"metadata":{"name":"'$1'-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 s_op="$1-op"
 s_service="f5trnapp.$1"
 echo "Creating Origin Pool for $1 ..."
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"'$s_service'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":3005,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"k8s_service":{"service_name":"'$s_service'","site_locator":{"virtual_site":{"tenant":"'$v_tenant'","namespace":"shared","name":"'$1'-vsite"}},"vk8s_networks":{}},"labels":{}}],"no_tls":{},"port":3005,"same_as_endpoint_port":{},"healthcheck":[{"tenant":"'$v_tenant'","namespace":"'$1'","name":"'$1'-hc"}],"loadbalancer_algorithm":"LB_OVERRIDE","endpoint_selection":"LOCAL_PREFERRED","advanced_options":null}}'
 sleep 1
 s_lb="$1-https-lb"
 s_dom="$1.$v_dom"
@@ -180,12 +180,12 @@ f_labs6()
 s_op="$1-op"
 s_service="f5trnapp.$1"
 s_lb="$1-http-lb"
-s_dom="$1.$v_dom"
+s_dom="$s_lb.$v_dom"
 echo "Creating HTTP Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{"metadata":{"name":"'$s_lb'","namespace":"'$1'"},"spec":{"add_location":true,"advertise_on_public_default_vip":{},"api_protection_rules":null,"api_rate_limit_legacy":null,"auto_cert_info":{"auto_cert_expiry":null,"auto_cert_issuer":"","auto_cert_state":"AutoCertNotApplicable","auto_cert_subject":"","dns_records":[],"state_start_time":null},},"blocked_clients":[],"cert_state":"AutoCertNotApplicable","cors_policy":null,"csrf_policy":null,"data_guard_rules":[],"ddos_mitigation_rules":[],"default_route_pools":[{"endpoint_subsets":{},"pool":{"name":"'$s_op'","namespace":"'$1'","tenant":"'$v_tenant'"},"priority":1,"weight":1}],"default_sensitive_data_policy":{},"disable_api_definition":{},"disable_api_discovery":{},"disable_api_testing":{},"disable_bot_defense":{},"disable_client_side_defense":{},"disable_ip_reputation":{},"disable_malicious_user_detection":{},"disable_malware_protection":{},"disable_rate_limit":{},"disable_threat_mesh":{},"disable_trust_client_ip_headers":{},"disable_waf":{},"dns_info":[{"internal_cdn_service_domain":""}],"domains":["'$s_dom'"],"downstream_tls_certificate_expiration_timestamps":[],"graphql_rules":[],"http":{"dns_volterra_managed":true,"port":3005},"internet_vip_info":[],"jwt_validation":null,"l7_ddos_protection":{"clientside_action_none":{},"ddos_policy_none":{},"mitigation_block":{},"rps_threshold":0},"malicious_user_mitigation":null,"more_option":null,"no_challenge":{},"origin_server_subset_rule_list":null,"protected_cookies":[],"round_robin":{},"routes":[],"sensitive_data_disclosure_rules":null,"service_policies_from_namespace":{},"system_default_timeouts":{},"trusted_clients":[],"user_id_client_ip":{},"waf_exclusion":null,"waf_exclusion_rules":[]}}'
 sleep 1
 echo ""
-echo "Now make a browser connection to the f5trnapp application at http://studentX.$v_dom"
+echo "Now make a browser connection to the f5trnapp application at http://$s_dom"
 echo ""
 echo "It will take several minutes for the load balancer to be provisioned and active in F5XC"
 echo ""
@@ -242,7 +242,7 @@ while [ $# -gt 0 ]; do
     f_echo "Missing student name ... "
     exit 1
    fi
-   f_echo "Creating lab 6  objects for $2 ..."
+   f_echo "Creating lab 6 objects for $2 ..."
    f_labs6 $2
    ;;
    *)
