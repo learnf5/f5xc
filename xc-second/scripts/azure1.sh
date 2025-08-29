@@ -14,6 +14,10 @@ v_dom="f5training1.cloud"
 v_azure_creds_name="creds-azr1211gst01"
 v_logfile="$script_name.log"
 
+### Default is blank, let F5XC decide the version automatically
+### v_volterra_software_version=""
+v_volterra_software_version="crt-20250321-3112"
+
 ### functions
 
 f_log()
@@ -95,14 +99,18 @@ sleep 1
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/virtual_sites" -d '{"metadata":{"name":"'$s_vsite_name'","namespace":"'$1'"},"spec":{"site_selector":{"expressions":["'$s_key' in ('$s_value')"]},"site_type":"CUSTOMER_EDGE"}}'
 sleep 1
 echo "Creating Azure VNET site configuration for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/azure_vnet_sites" -d '{"metadata":{"name":"'$s_azure_site_name'","namespace":"system","labels":{"domain":"","'$s_key'":"'$s_value'"}},"spec":{"resource_group":"'$s_azure_resource_group'","azure_region":"'$s_azure_region'","vnet":{"new_vnet":{"name":"'$s_azure_vnet_name'","primary_ipv4":"172.31.0.0/16"}},"ingress_gw":{"az_nodes":[{"azure_az":"1","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24","ipv6":""}},"disk_size":0}],"azure_certified_hw":"azure-byol-voltmesh","performance_enhancement_mode":{"perf_mode_l7_enhanced":{}},"accelerated_networking":{"enable": {}}},"azure_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_azure_creds_name'"},"machine_type":"Standard_D3_v2","disk_size":0,"ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","logs_streaming_disabled":{},"no_worker_nodes":{},"default_blocked_services":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}}}}'
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/azure_vnet_sites" -d '{"metadata":{"name":"'$s_azure_site_name'","namespace":"system","labels":{"domain":"","'$s_key'":"'$s_value'"}},"spec":{"resource_group":"'$s_azure_resource_group'","azure_region":"'$s_azure_region'","vnet":{"new_vnet":{"name":"'$s_azure_vnet_name'","primary_ipv4":"172.31.0.0/16"}},"ingress_gw":{"az_nodes":[{"azure_az":"1","local_subnet":{"subnet_param":{"ipv4":"172.31.'$snum'.0/24","ipv6":""}},"disk_size":0}],"azure_certified_hw":"azure-byol-voltmesh","performance_enhancement_mode":{"perf_mode_l7_enhanced":{}},"accelerated_networking":{"enable": {}}},"azure_cred":{"tenant":"'$v_tenant'","namespace":"system","name":"'$v_azure_creds_name'"},"machine_type":"Standard_D3_v2","disk_size":0,"volterra_software_version":"'$v_volterra_software_version'","ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDc+HSquvm6Bbvnk4h2KMR51MwnzBPWzbmhK5tiW8sC4rh+VzrcjNgnrc4Op7tFtLkv2sq/Vecg9QB6jMamGoBrqWP3qjejSxYWwr8xP/ZNRlqJNwGxEAQlDkUkKtUfNWgmOZtoVq249vvewyUCbmOlpgFDPPeNGfQrutJkOHmUj53kEIhhkoE+ZieY2Ls5fHTNgUDznf8KysnrIAr+reEKt7FREL+4kKnCp9ZlZtw/nw5sSDFNU9PRZuTwZIE85oY9nDxe9fRRttBSMHq9g0GD0iZg9fjafuB0Ft7qzkSq20vGrtYxfGgPW8kIjZBA95CSyA2gRsnSxUF7Fq+W50EWZfqU4O9KOZwKo8dTcbjmS+S5S5avK37uVn1v99rdG3Z9xbfBW8tohARDGlzC1R1Qh+LrfPgjds7oKXewT6hiHDe0wsMp25IxYUGEHqdEaAs4Bfos4Qw2Lwhjc2brNAO1aD9VpQPf9RMkv+gEDLoWdLEHw+qpRInDcO1N3kt8bQM= student@PC01","logs_streaming_disabled":{},"no_worker_nodes":{},"default_blocked_services":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}}}}'
 sleep 1
 echo ""
-echo "Azure site verification is very slow, run apply in the next script option ..."
-echo ""
-echo "First go to the F5XC console and wait for it to indicate Validation Succeeded ..."
+echo "Go to the F5XC console and wait for the Azure site verification to succeed, then run apply "
+echo "in the next script option or use the GUI option."
 echo ""
 echo "The Azure VNET site configuration needs to be applied using the -s3 option for $1 ..."
+echo ""
+echo "Azure verification and apply is relatively slow, it can take from 15-40 mins to apply"
+echo "and fully provision so the site is ready for application deployment. Take a break before"
+echo "doing the next steps."
+echo ""
 }
 
 f_labs3()
@@ -127,6 +135,10 @@ echo "Applying Terraform Plan for Azure VNET site configuration for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/terraform/namespaces/system/terraform/azure_vnet_site/$s_azure_vnet_name/run" -d '{"action":"APPLY"}'
 echo ""
 echo "Check the GUI for the green Apply button and check Azure. Process takes some minutes to run ..."
+echo ""
+echo "Azure apply is relatively slow, it can take from 15-40 mins to apply and fully provision"
+echo "so the site is ready for application deployment. Take a break before doing the next steps."
+echo ""
 }
 
 f_labs4()
