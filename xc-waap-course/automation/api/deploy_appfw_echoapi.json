@@ -26,10 +26,10 @@
 				"env_var_list": {
 					"voltconsole-host": {
 						"key": "voltconsole-host",
-						"value": "training-dev",
-						"current_value": "training-dev",
+						"value": "training",
+						"current_value": "training",
 						"description": ""
-					},
+					
 					"api_credential": {
 						"key": "api_credential",
 						"value": "paste value",
@@ -92,14 +92,14 @@
 					},
 					"api_credential": {
 						"key": "api_credential",
-						"value": "f2123123123123",
+						"value": "paste from clipboard",
 						"current_value": "paste from clipboard",
 						"description": ""
 					},
 					"namespace1": {
 						"key": "namespace1",
-						"value": "student1",
-						"current_value": "student1",
+						"value": "studentX",
+						"current_value": "studentX",
 						"description": ""
 					},
 					"shared-appfw": {
@@ -110,8 +110,8 @@
 					},
 					"shared-appfw-name": {
 						"key": "shared-appfw-name",
-						"value": "student1shared-appfw",
-						"current_value": "student1-shared-appfw",
+						"value": "studentXshared-appfw",
+						"current_value": "studentX-shared-appfw",
 						"description": ""
 					},
 					"APIToken": {
