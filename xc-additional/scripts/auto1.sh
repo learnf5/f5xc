@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ### variables
-v_token="M6KjxIsIhxqzyNxKI6wUe36Kt+U="
+v_token=""
 v_url="training1.console.ves.volterra.io/api"
 v_studentname="student107"
 v_key="student107-key"
