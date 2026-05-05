@@ -992,15 +992,13 @@ while [ $# -gt 0 ]; do
    echo ""
    read -p "Start number ?" startnum
    read -p "Finish number ?" finishnum
-   snumdigits_startnum=`echo $startnum | wc -m`
-   snumdigits_finishnum=`echo $finishnum | wc -m`
+   ### snumdigits_startnum=`echo $startnum | wc -m`
+   ### snumdigits_finishnum=`echo $finishnum | wc -m`
    ### single digits are 2, doubledigits are 3, three digits are 4
-   echo $snumdigits_startnum
-   echo $snumdigits_finishnum
-   exit 0
-   if [[ $snumdigits_startnum != 2 || $snumdigits_startnum != 3 ]]; then
-    exit 1
-   fi
+   ### if [[ $snumdigits_startnum != 2 || $snumdigits_startnum != 3 ]]; then
+   ### echo "here ..."
+   ### exit 1
+   ### fi
    if [[ $startnum < 1 || $finishnum > 12 ]]; then
     exit 1
    fi
