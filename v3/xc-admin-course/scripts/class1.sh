@@ -51,7 +51,8 @@ echo ""
 echo "-tok                       Test token"
 echo ""
 echo "-a1 <password>             ADMIN - Encrypt AWS Keys - requires awskeys file"
-echo "-a2 <password>             ADMIN - Decrypt AWS Keys"
+echo "-a2                        ADMIN - Remove awskeys file"
+echo "-a3 <password>             ADMIN - Decrypt AWS Keys"
 echo ""
 echo "-w1                        WAAP - Do something"
 echo ""
@@ -73,11 +74,15 @@ curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 
 f_a1()
 {
-echo $1
 openssl enc -aes-256-cbc -salt -a -pbkdf2 -in awskeys -out awskeys.enc -pass pass:$1
 }
 
 f_a2()
+{
+rm -rf awskeys
+}
+
+f_a3()
 {
 awsk1=""
 awsk2=""
@@ -119,12 +124,16 @@ while [ $# -gt 0 ]; do
    f_a1
    ;;
    -a2)
+   f_echo "Remove AWS keys file ..."
+   f_a2
+   ;;
+   -a3)
    if [ "$#" != 2 ]; then
     f_echo "Missing password ... "
    exit 1
    fi
    f_echo "Decrypt AWS keys ..."
-   f_a2
+   f_a3
    ;;
    *)
    ;;
