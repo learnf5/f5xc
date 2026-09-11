@@ -7,7 +7,7 @@ resource "time_sleep" "site_ready" {
 
   depends_on = [volterra_securemesh_site_v2.student]
 
-  create_duration = "30s"
+  create_duration = "50s"
 }
 
 resource "volterra_token" "student" {
@@ -25,7 +25,7 @@ resource "time_sleep" "token_ready" {
 
   depends_on = [volterra_token.student]
 
-  create_duration = "10s"
+  create_duration = "30s"
 }
 
 # ============================================================
