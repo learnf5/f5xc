@@ -1,10 +1,14 @@
 # ============================================================
-# namespace origin pool origin server
+# namespace
 # ============================================================
 
 resource "volterra_namespace" "my_namespace" {
  name  = var.my_namespace
 }
+
+# ============================================================
+# origin pool origin server
+# ============================================================
 
 resource "volterra_origin_pool" "my_pool" {
   name = "${var.my_pool}"
@@ -19,7 +23,7 @@ resource "volterra_origin_pool" "my_pool" {
       site_locator {
        site {
         tenant = "${var.f5xc_tenant_id}"
-        namespace = "instructor"
+        namespace = "system"
         name = "demo-smsv2-ce-aws2"
        }
      }
@@ -27,6 +31,9 @@ resource "volterra_origin_pool" "my_pool" {
     }
   }
   no_tls = "true"
+ depends_on = [
+ volterra_namespace.my_namespace
+ ]
 }
 
 # ============================================================
