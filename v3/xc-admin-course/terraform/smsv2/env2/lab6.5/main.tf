@@ -43,7 +43,7 @@ resource "volterra_http_loadbalancer" "my_loadbalancer" {
   name = "${var.my_loadbalancer}"
   namespace = "${var.my_namespace}"
 
-  domains = ["demo-smsv2-ce-aws2-lbtest.f5training2.cloud"]
+  domains = ["${var.my_domain}"]
   https_auto_cert {
    http_redirect = "true"
    add_hsts = "true"
