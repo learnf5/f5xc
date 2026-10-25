@@ -33,3 +33,9 @@ variable "my_loadbalancer" {
   type        = string
   default     = "demo-smsv2-ce-aws2-lbtest"
 }
+
+variable "my_domain" {
+  description = "XC instructor load_balancer domain"
+  type        = string
+  default     = "demo-smsv2-ce-aws2-lb.f5training2.cloud"
+}
