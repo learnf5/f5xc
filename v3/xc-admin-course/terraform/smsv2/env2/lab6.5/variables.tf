@@ -10,19 +10,26 @@ variable "f5xc_api_url" {
   default     = "https://XXXXXX.console.ves.volterra.io/api"
 }
 
-variable "f5xc_tenant_id" {
-  description = "F5 XC tenant ID"
-  type        = string
-  default     = "XXXXXX-XXXXXX"
-}
 variable "my_namespace" {
   description = "XC instructor namespace"
   type        = string
   default     = "instructor"
 }
 
+variable "my_ce" {
+  description = "XC SMSv2 CE"
+  type        = string
+  default     = "demo-smsv2-ce-aws2"
+}
+
 variable "my_pool" {
   description = "XC instructor origin pool"
   type        = string
   default     = "demo-smsv2-ce-aws2-op"
+}
+
+variable "my_loadbalancer" {
+  description = "XC instructor load_balancer"
+  type        = string
+  default     = "demo-smsv2-ce-aws2-lbtest"
 }
