@@ -19,7 +19,7 @@ resource "volterra_origin_pool" "my_pool" {
 
   origin_servers {
     private_ip {
-      ip = "172.31.71.71"
+      ip = "172.26.61.61"
       site_locator {
        site {
         namespace = "system"
