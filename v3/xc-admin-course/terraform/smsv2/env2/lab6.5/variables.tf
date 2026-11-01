@@ -22,6 +22,12 @@ variable "my_ce" {
   default     = "demo-smsv2-ce-aws2"
 }
 
+variable "my_healthcheck" {
+  description = "XC instructor health check"
+  type        = string
+  default     = "demo-smsv2-ce-aws2-hc"
+}
+
 variable "my_pool" {
   description = "XC instructor origin pool"
   type        = string
