@@ -7,8 +7,23 @@ resource "volterra_namespace" "my_namespace" {
 }
 
 # ============================================================
-# origin pool origin server
+# health check origin pool origin server
 # ============================================================
+
+resource "volterra_healthcheck" "my_hc" {
+  name = "${var.my_healthcheck}"
+  namespace = "${var.my_namespace}"
+
+  http_health_check {
+      path = "/"
+      use_http2 = "false"
+      expected_status_codes = ["200"]
+    }
+  timeout = "3"
+  interval = "15"
+  unhealthy_threshold = "1"
+  healthy_threshold = "3"
+}
 
 resource "volterra_origin_pool" "my_pool" {
   name = "${var.my_pool}"
@@ -16,6 +31,11 @@ resource "volterra_origin_pool" "my_pool" {
   loadbalancer_algorithm = "LB_OVERRIDE"
   endpoint_selection = "LOCAL_PREFERRED"
   port = "80"
+
+  healthcheck {
+    name = "${var.my_healthcheck}"
+    namespace = "${var.my_namespace}"
+  }
 
   origin_servers {
     private_ip {
