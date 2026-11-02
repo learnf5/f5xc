@@ -105,7 +105,7 @@ echo "Creating Health Check ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/healthchecks" -d '{"metadata":{"name":"lab33-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 echo "Creating Origin Pool and Origin Server ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/origin_pools" -d '{"metadata":{"name":"lab33-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"34.195.42.136"},"labels":{}}],"port":"80","healthcheck":[{"namespace":"instructor","name":"lab33-hc"}]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/origin_pools" -d '{"metadata":{"name":"lab33-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"3.209.174.119"},"labels":{}}],"port":"80","healthcheck":[{"namespace":"instructor","name":"lab33-hc"}]}}' | jq
 sleep 1
 echo "Creating HTTPS Load Balancer ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/http_loadbalancers" -d '{ "metadata":{"name":"lab33-lb","namespace":"instructor"},"spec":{"domains":["lab33.f5training2.cloud"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"instructor","name":"lab33-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
