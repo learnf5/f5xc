@@ -59,6 +59,8 @@ echo "Options:"
 echo ""
 echo "-tok                       Test token"
 echo ""
+echo "-lab33                     ADMIN - Create Lab 3.3 all objects"
+echo ""
 echo "-cert <cert password>      ADMIN - Create and download F5XC API Certificate"
 echo "-keys                      ADMIN - Retrieve AWS Keys"
 echo "-a1 <keys password>        ADMIN - Encrypt AWS Keys - requires awskeys file"
@@ -92,6 +94,21 @@ exit 0
 f_test_token()
 {
 curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
+}
+
+f_lab33()
+{
+echo "Creating Instructor namespace ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"instructor"},"spec":{}}' | jq
+sleep 1
+echo "Creating Health Check ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/healthchecks" -d '{"metadata":{"name":"lab33-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
+sleep 1
+echo "Creating Origin Pool and Origin Server ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/origin_pools" -d '{"metadata":{"name":"lab33-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"34.195.42.136"},"labels":{}}],"port":"80","healthcheck":[{"namespace":"instructor","name":"lab33-hc"}]}}' | jq
+sleep 1
+echo "Creating HTTPS Load Balancer ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/http_loadbalancers" -d '{ "metadata":{"name":"lab33-lb","namespace":"instructor"},"spec":{"domains":["lab33.f5training2.cloud"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"instructor","name":"lab33-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
 }
 
 f_cert()
@@ -197,30 +214,6 @@ f_s2()
 s_aws_ce_name="demo-smsv2-ce-aws2"
 echo "Creating SMSv2 CE $s_aws_ce_name on XC ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/securemesh_site_v2s" -d '{"metadata":{"name":"'$s_aws_ce_name'","namespace":"system","labels":{"ves.io/provider":"ves-io-AWS"}},"spec":{"aws":{"not_managed":{"node_list":[]}},"block_all_services":{},"disable_ha":{},"disable_log_anonymization":{},"disable_management_network":{},"disable_url_categorization":{},"dns_ntp_config":{"f5_dns_default":{},"f5_ntp_default":{}},"f5_proxy":{},"load_balancing":{"vip_vrrp_mode":"VIP_VRRP_ENABLE"},"local_vrf":{"default_config":{},"default_sli_config":{}},"logs_streaming_disabled":{},"no_forward_proxy":{},"no_network_policy":{},"no_proxy_bypass":{},"no_s2s_connectivity_sli":{},"no_s2s_connectivity_slo":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"operating_system_version":"","performance_enhancement_mode":{"perf_mode_l7_enhanced":{"jumbo_disabled":{}}},"re_select":{"geo_proximity":{}},"site_errors":[],"software_settings":{"os":{"default_os_version":{}},"sw":{"default_sw_version":{}},"waf_signatures":{"manual":{}}},"tunnel_type":"SITE_TO_SITE_TUNNEL_IPSEC_OR_SSL","upgrade_settings":{"kubernetes_upgrade_drain":{"enable_upgrade_drain":{"disable_vega_upgrade_mode":{},"drain_max_unavailable_node_count":1,"drain_node_timeout":300}}},"volterra_software_version":"","site_type":"CUSTOMER_EDGE"}}'
-sleep 1
-echo "Done ..."
-}
-
-f_s222()
-{
-### SMSv2 create entirely via API simply dont work if it ever did
-echo "Creating Namespace for $1 ..."
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$1'"},"spec":{}}' | jq
-sleep 1
-echo "Creating Key and Label for $1 ..."
-s_key="$1-key"
-s_value="$1-value"
-s_vsite_name="$1-vsite"
-s_aws_ce_name="$1-smsv2-ce"
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label_key/create" -d '{"key":"'$s_key'","namespace":"'$1'"}'
-sleep 1
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/known_label/create" -d '{"key":"'$s_key'","namespace":"'$1'","value":"'$s_value'"}'
-sleep 1
-echo "Creating Virtual Site of type CE for $1 ..."
-sleep 1
-### curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/shared/virtual_sites" -d '{"metadata":{"name":"'$s_vsite_name'","namespace":"'$1'"},"spec":{"site_selector":{"expressions":["'$s_key' in ('$s_value')"]},"site_type":"CUSTOMER_EDGE"}}'
-echo "Creating SMSv2 CE on AWS for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/system/securemesh_site_v2s" -d '{"metadata":{"name":"'$s_aws_ce_name'","namespace":"system","description":"SMSv2 CE for '$1'","labels":{"hw-model":"m5-2xlarge","'$s_key'":"'$s_value'"}},"spec":{"aws":{"not_managed":{"node_list":[{"hostname":"ip-172-31-80-80","interface_list":[{"ethernet_interface":{"device":"ens5"},"name":"ens5","network_option":{"site_local_inside_network":{}},"priority":0},{"ethernet_interface":{"device":"ens6"},"name":"ens6","network_option":{"site_local_inside_network":{}},"priority":0}],"public_ip":"","type":"Control"}]}},"disable_ha":{},"load_balancing":{"vip_vrrp_mode":"VIP_VRRP_ENABLE"},"local_vrf":{"default_config":{},"default_sli_config":{}},"logs_streaming_disabled":{},"no_forward_proxy":{},"no_network_policy":{},"no_proxy_bypass":{},"no_s2s_connectivity_sli":{},"no_s2s_connectivity_slo":{},"offline_survivability_mode":{"no_offline_survivability_mode":{}},"operating_system_version":"9.2026.17","performance_enhancement_mode":{"perf_mode_l7_enhanced":{"jumbo_disabled":{}}},"re_select":{"geo_proximity":{}},"software_settings":{"os":{"default_os_version":{}},"sw":{"default_sw_version":{}}},"tunnel_type":"SITE_TO_SITE_TUNNEL_IPSEC_OR_SSL","upgrade_settings":{"kubernetes_upgrade_drain":{"enable_upgrade_drain":{"disable_vega_upgrade_mode":{},"drain_max_unavailable_node_count":1,"drain_node_timeout":300}}},"site_type":"CUSTOMER_EDGE"}}'
 sleep 1
 echo "Done ..."
 }
@@ -344,6 +337,10 @@ while [ $# -gt 0 ]; do
  case "$1" in
    -tok)
    f_test_token
+   ;;
+   -lab33)
+   f_echo "Building namespace, healthcheck, pool, load balancer for Lab 3.3..."
+   f_lab33
    ;;
    -cert)
    if [ "$#" != 2 ]; then
