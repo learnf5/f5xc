@@ -48,7 +48,7 @@ resource "aws_security_group" "ce_slo" {
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] 
   }
 
   ingress {
@@ -56,7 +56,7 @@ resource "aws_security_group" "ce_slo" {
     from_port   = 65500
     to_port     = 65500
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["0.0.0.0/0"] # LOCK THIS DOWN IF RESTRICTED IN COURSE
   }
 
   egress {
