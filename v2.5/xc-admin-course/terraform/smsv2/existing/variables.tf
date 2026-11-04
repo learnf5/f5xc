@@ -39,18 +39,21 @@ variable "f5xc_namespace" {
 }
 
 variable "students" {
-  description = "Map of student configurations"
+  description = "Set of student identifiers to deploy CE instances for"
   type        = set(string)
 }
 
-variable "existing_network" {
-  description = "Existing AWS network resources keyed by student name"
-  type = map(object({
-    vpc_id             = string
-    slo_subnet_id      = string
-    sli_subnet_id      = string
-    slo_security_group = string
-    sli_security_group = string
-    slo_eip_allocation = string
-  }))
+variable "vpc_id" {
+  description = "Existing AWS VPC ID where CE instances will be deployed"
+  type        = string
+}
+
+variable "slo_subnet_id" {
+  description = "Existing AWS Subnet ID for SLO (outside) interfaces"
+  type        = string
+}
+
+variable "sli_subnet_id" {
+  description = "Existing AWS Subnet ID for SLI (inside) interfaces"
+  type        = string
 }
