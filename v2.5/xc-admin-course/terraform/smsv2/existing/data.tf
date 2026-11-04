@@ -18,3 +18,7 @@ data "aws_ami" "f5xc_ce" {
   }
 }
 
+data "aws_vpc" "selected" {
+  id = var.vpc_id
+}
+
