@@ -24,7 +24,81 @@ resource "local_sensitive_file" "ssh_private_key" {
   file_permission = "0600"
 }
 
+# ============================================================
+# SECURITY GROUPS (Auto-configured per student)
+# ============================================================
 
+resource "aws_security_group" "ce_slo" {
+  for_each = var.students
+
+  name        = "${each.key}-ce-slo-sg"
+  description = "SLO security group for ${each.key}"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # LOCK THIS DOWN IF RESTRICTED IN COURSE
+  }
+
+  ingress {
+    description = "All ICMP - IPv4"
+    from_port   = -1
+    to_port     = -1
+    protocol    = "icmp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Local UI Access"
+    from_port   = 65500
+    to_port     = 65500
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name    = "${each.key}-ce-slo-sg"
+    Student = each.key
+  }
+}
+
+resource "aws_security_group" "ce_sli" {
+  for_each = var.students
+
+  name        = "${each.key}-ce-sli-sg"
+  description = "SLI security group for ${each.key}"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description = "All from VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [data.aws_vpc.selected.cidr_block]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name    = "${each.key}-ce-sli-sg"
+    Student = each.key
+  }
+}
 
 # ============================================================
 # NETWORK INTERFACES
@@ -33,8 +107,8 @@ resource "local_sensitive_file" "ssh_private_key" {
 resource "aws_network_interface" "ce_slo" {
   for_each = var.students
 
-  subnet_id         = var.existing_network[each.key].slo_subnet_id
-  security_groups   = [var.existing_network[each.key].slo_security_group]
+  subnet_id         = var.slo_subnet_id
+  security_groups   = [aws_security_group.ce_slo[each.key].id]
   source_dest_check = false
 
   tags = {
@@ -46,8 +120,8 @@ resource "aws_network_interface" "ce_slo" {
 resource "aws_network_interface" "ce_sli" {
   for_each = var.students
 
-  subnet_id         = var.existing_network[each.key].sli_subnet_id
-  security_groups   = [var.existing_network[each.key].sli_security_group]
+  subnet_id         = var.sli_subnet_id
+  security_groups   = [aws_security_group.ce_sli[each.key].id]
   source_dest_check = false
 
   tags = {
@@ -56,16 +130,31 @@ resource "aws_network_interface" "ce_sli" {
   }
 }
 
+# ============================================================
+# ELASTIC IPs (Allocated on-demand and associated to SLO)
+# ============================================================
+
+resource "aws_eip" "ce_slo" {
+  for_each = var.students
+
+  domain = "vpc"
+
+  tags = {
+    Name    = "${each.key}-ce-slo-eip"
+    Student = each.key
+  }
+}
+
 resource "aws_eip_association" "ce_slo" {
-  depends_on = [aws_network_interface.ce_slo]
+  depends_on = [aws_eip.ce_slo, aws_network_interface.ce_slo]
   for_each   = var.students
 
-  allocation_id        = var.existing_network[each.key].slo_eip_allocation
+  allocation_id        = aws_eip.ce_slo[each.key].id
   network_interface_id = aws_network_interface.ce_slo[each.key].id
 }
 
 # ============================================================
-# CE INSTANCES — Token now comes from volterra_token resource
+# CE INSTANCES
 # ============================================================
 
 resource "aws_instance" "ce_node" {
@@ -83,7 +172,7 @@ resource "aws_instance" "ce_node" {
       content: |
         token: ${volterra_token.student[each.key].id}
         cluster_name: ${each.key}
-        hostname: ${each.key}-ce-node
+        hostname: ${each.key}-ce
       owner: root
       permissions: '0644'
   EOF
@@ -104,18 +193,16 @@ resource "aws_instance" "ce_node" {
     delete_on_termination = true
   }
 
-  # Explicit dependency — don't launch until site object and token exist
-  # Explicit dependency - wait for the CE site and token to become usable before bootstrapping the CE node
+  # Explicit dependency — wait for the CE site, token, and EIP association
   depends_on = [
     volterra_securemesh_site_v2.student,
     volterra_token.student,
-    time_sleep.token_ready
+    time_sleep.token_ready,
+    aws_eip_association.ce_slo
   ]
 
   tags = {
-    Name    = "${each.key}-ce-node"
+    Name    = "${each.key}-ce"
     Student = each.key
   }
 }
-
-
