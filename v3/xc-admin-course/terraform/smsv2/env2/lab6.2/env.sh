@@ -1,0 +1,8 @@
+#!/bin/bash
+
+export VES_P12_PASSWORD="enter your API P12 secret password here"
+export AWS_ACCESS_KEY_ID="enter your AWS Access Key ID here"
+export AWS_SECRET_ACCESS_KEY="enter your AWS Secret Access Key here"
+export AWS_SESSION_TOKEN="enter your AWS Session Token here"
+
+echo ".env.sh values have been successfully exported!"
