@@ -22,6 +22,7 @@ v_certname="training2.console.ves.volterra.io.api-creds"
 v_VES_P12_PASSWORD=""
 v_awskeys_password=""
 v_f5xc_ssh_key="sshkeys"
+v_instructor_name="instructor2"
 
 ### ADMIN functions
 
@@ -59,7 +60,8 @@ echo "Options:"
 echo ""
 echo "-tok                       Test token"
 echo ""
-echo "-lab33                     ADMIN - Create Lab 3.3 all objects"
+echo "-lab33                     ADMIN - Create Lab 3.3 all objects for $v_instructor_name"
+echo "-lab63 <studentname>       ADMIN - Create Lab 6.3 all objects"
 echo ""
 echo "-cert <cert password>      ADMIN - Create and download F5XC API Certificate"
 echo "-keys                      ADMIN - Retrieve AWS Keys"
@@ -98,17 +100,33 @@ curl -s -X GET -H "Authorization: APIToken $v_token" $v_url/web/namespaces | jq
 
 f_lab33()
 {
-echo "Creating Instructor namespace ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"instructor"},"spec":{}}' | jq
+echo "Creating Instructor namespace for $v_instructor_name ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/web/namespaces" -d '{"metadata":{"name":"'$v_instructor_name'"},"spec":{}}' | jq
 sleep 1
 echo "Creating Health Check ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/healthchecks" -d '{"metadata":{"name":"lab33-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_instructor_name/healthchecks" -d '{"metadata":{"name":"lab33-hc"},"spec":{"healthy_threshold":3,"http_health_check":{"expected_status_codes":["200"],"path":"/"},"interval":15,"timeout":3,"jitter_percent":30,"unhealthy_threshold":1}}' | jq
 sleep 1
 echo "Creating Origin Pool and Origin Server ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/origin_pools" -d '{"metadata":{"name":"lab33-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"3.209.174.119"},"labels":{}}],"port":"80","healthcheck":[{"namespace":"instructor","name":"lab33-hc"}]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_instructor_name/origin_pools" -d '{"metadata":{"name":"lab33-op"},"spec":{"gc_spec":{},"origin_servers":[{"public_ip":{"ip":"3.209.174.119"},"labels":{}}],"port":"80","healthcheck":[{"namespace":"'$v_instructor_name'","name":"lab33-hc"}]}}' | jq
 sleep 1
 echo "Creating HTTPS Load Balancer ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/instructor/http_loadbalancers" -d '{ "metadata":{"name":"lab33-lb","namespace":"instructor"},"spec":{"domains":["lab33.f5training2.cloud"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"instructor","name":"lab33-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$v_instructor_name/http_loadbalancers" -d '{ "metadata":{"name":"lab33-lb","namespace":"'$v_instructor_name'"},"spec":{"domains":["lab33.'$v_dom'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$v_instructor_name'","name":"lab33-op"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
+}
+
+f_lab63()
+{
+s_op="$1-ce-int-op"
+s_ce_name="$1-smsv2-ce"
+s_lb_name="$1-ce-int-lb"
+s_domain="$s_lb_name.$v_dom"
+echo ""
+echo "It is assumed the namespace and the CE already exists for $1 ..."
+echo ""
+echo "Creating Origin Pool and Origin Server for $1 ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"private_ip":{"ip":"172.31.51.51","site_locator":{"site":{"name":"'$s_ce_name'"}},"inside_network":{},"snat_pool":{}},"labels":{}}],"port":"80","healthcheck":[]}}' | jq
+sleep 1
+echo "Creating HTTPS Load Balancer for $1 ..."
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$s_lb_name'","namespace":"'$1'"},"spec":{"domains":["'$s_domain'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$s_op'"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
 }
 
 f_cert()
@@ -341,6 +359,14 @@ while [ $# -gt 0 ]; do
    -lab33)
    f_echo "Building namespace, healthcheck, pool, load balancer for Lab 3.3..."
    f_lab33
+   ;;
+   -lab63)
+   if [ "$#" != 2 ]; then
+    f_echo "Missing student name ... "
+    exit 1
+   fi
+   f_echo "Building pool, load balancer for Lab 6.3..."
+   f_lab63 $2
    ;;
    -cert)
    if [ "$#" != 2 ]; then
