@@ -123,7 +123,7 @@ echo ""
 echo "It is assumed the namespace and the CE already exists for $1 ..."
 echo ""
 echo "Creating Origin Pool and Origin Server for $1 ..."
-curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"private_ip":{"ip":"172.31.51.51","site_locator":{"site":{"name":"'$s_ce_name'"}},"inside_network":{},"snat_pool":{}},"labels":{}}],"port":"80","healthcheck":[]}}' | jq
+curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/origin_pools" -d '{"metadata":{"name":"'$s_op'"},"spec":{"origin_servers":[{"private_ip":{"ip":"172.31.51.51","site_locator":{"site":{"namespace":"system","name":"'$s_ce_name'"}},"inside_network":{},"snat_pool":{}},"labels":{}}],"port":"80","healthcheck":[]}}' | jq
 sleep 1
 echo "Creating HTTPS Load Balancer for $1 ..."
 curl -s -H "Authorization: APIToken $v_token" -X POST "$v_url/config/namespaces/$1/http_loadbalancers" -d '{ "metadata":{"name":"'$s_lb_name'","namespace":"'$1'"},"spec":{"domains":["'$s_domain'"],"https_auto_cert":{"add_hsts":true,"http_redirect":true},"port":"443","default_route_pools":[{"pool":{"namespace":"'$1'","name":"'$s_op'"},"weight":"1","priority":"1"}],"add_location":true,"enable_api_discovery":{"enable_learn_from_redirect_traffic":{},"discovered_api_settings":{"purge_duration_for_inactive_discovered_apis":2}}} }' | jq
