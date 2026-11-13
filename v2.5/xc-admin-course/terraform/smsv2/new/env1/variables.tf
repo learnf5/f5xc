@@ -44,7 +44,6 @@ variable "f5xc_namespace" {
   default     = "system"
 }
 
-# UPDATED: site_token removed from the student map — it's now auto-generated
 variable "students" {
   description = "Map of student configurations"
   type = map(object({
