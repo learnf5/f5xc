@@ -1,13 +1,13 @@
 variable "f5xc_api_p12_file" {
   description = "Path to XC API P12 certificate file"
   type        = string
-  default     = "./training2.console.ves.volterra.io.api-creds.p12"
+  default     = "./training1.console.ves.volterra.io.api-creds.p12"
 }
 
 variable "f5xc_api_url" {
   description = "F5 XC tenant API URL"
   type        = string
-  default     = "https://training2.console.ves.volterra.io/api"
+  default     = "https://training1.console.ves.volterra.io/api"
 }
 
 variable "my_namespace" {
@@ -43,5 +43,5 @@ variable "my_loadbalancer" {
 variable "my_domain" {
   description = "XC instructor load_balancer domain"
   type        = string
-  default     = "demo-smsv2-ce-aws2-lb.f5training2.cloud"
+  default     = "demo-smsv2-ce-aws2-lb.f5training1.cloud"
 }
