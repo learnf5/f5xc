@@ -1,0 +1,5 @@
+f5xc_api_p12_file = "./XXXXXX.console.ves.volterra.io.api-creds.p12"
+f5xc_api_url = "https://XXXXXX.console.ves.volterra.io/api"
+my_namespace = "XXXXXX"
+my_ce = "demo-smsv2-ce-aws2"
+my_xc_domain = "XXXXXX"
