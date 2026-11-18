@@ -10,4 +10,4 @@ slo_subnet_id = "subnet-REPLACE-ME"
 sli_subnet_id = "subnet-REPLACE-ME"
 
 # Set of students to deploy CE instances for
-students = ["student201","student202","student203","student204","student205","student206","student207","student208","student209","student210","student211","student212","student213","student214"]
+students = ["student201","student202","student203","student204","student205","student206","student207","student208","student209","student210","student211","student212"]
