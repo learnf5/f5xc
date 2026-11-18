@@ -63,7 +63,7 @@ resource "volterra_origin_pool" "my_pool" {
 # ============================================================
 
 resource "volterra_http_loadbalancer" "my_loadbalancer" {
-  name = "${var.my_ce}-lb}"
+  name = "${var.my_ce}-lb"
   namespace = "${var.my_namespace}"
 
   domains = ["${var.my_ce}-lb.${var.my_xc_domain}"]
@@ -79,7 +79,7 @@ resource "volterra_http_loadbalancer" "my_loadbalancer" {
   default_route_pools {
         pool {
           namespace = "${var.my_namespace}"
-          name = "${var.my_ce}-pool}"
+          name = "${var.my_ce}-pool"
         }
         weight = "1"
         priority = "1"
