@@ -23,6 +23,9 @@ resource "volterra_healthcheck" "my_healthcheck" {
   interval = "15"
   unhealthy_threshold = "1"
   healthy_threshold = "3"
+  depends_on = [
+  volterra_namespace.my_namespace
+  ]
 }
 
 resource "volterra_origin_pool" "my_pool" {
@@ -51,7 +54,7 @@ resource "volterra_origin_pool" "my_pool" {
   }
   no_tls = "true"
  depends_on = [
- volterra_namespace.my_namespace
+ volterra_healthcheck.my_healthcheck
  ]
 }
 
@@ -81,7 +84,6 @@ resource "volterra_http_loadbalancer" "my_loadbalancer" {
         weight = "1"
         priority = "1"
   }
-
   depends_on = [
   volterra_origin_pool.my_pool
   ]
