@@ -10,7 +10,7 @@ resource "volterra_namespace" "my_namespace" {
 # health check origin pool origin server
 # ============================================================
 
-resource "volterra_healthcheck" "my_hc" {
+resource "volterra_healthcheck" "my_healthcheck" {
   name = "${var.my_healthcheck}"
   namespace = "${var.my_namespace}"
 
