@@ -13,7 +13,7 @@ variable "f5xc_api_url" {
 variable "my_namespace" {
   description = "XC instructor namespace"
   type        = string
-  default     = "instructor"
+  default     = "instructor2"
 }
 
 variable "my_ce" {
